@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Microservices with Docker, Flask, and React</title>
+    <meta charset="utf-8">
+    <style>
+      @import url(https://fonts.googleapis.com/css?family=Yanone+Kaffeesatz);
+      @import url(https://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic);
+      @import url(https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,400italic);
+
+      body { font-family: 'Droid Serif'; }
+      h1, h2, h3 {
+        font-family: 'Yanone Kaffeesatz';
+        font-weight: normal;
+      }
+      td {
+        padding-left: 5px;
+        padding-right: 5px;
+      }
+      .remark-code { font-family: 'Ubuntu Mono'; }
+      .remark-inline-code {
+        font-family: 'Ubuntu Mono';
+        padding: 2px 4px;
+        font-size: 90%;
+        color: #c7254e;
+        background-color: #f9f2f4;
+        border-radius: 0;
+       }
+    </style>
+  </head>
+  <body>
+    <textarea id="source">
+
+class: center, middle
+
+# Developing and Testing Microservices <br> with Docker, Flask, and React
+
+<div style="text-align:center;">
+  <img src="images/testdriven-architecture.png" style="max-width: 40%; border:0; box-shadow: none;" alt="microservice architecture">
+</div>
+
+<br>
+
+Presented by *Michael Herman*
+
+---
+
+### Agenda
+
+--
+
+##### (1) Intro
+
+1. About Me
+1. Objectives
+1. Architecture
+1. Why Microservices?
+1. Project Setup
+
+--
+
+##### (2) Containers and Services
+
+1. Users DB (postgres)
+1. Users API (flask)
+1. Client (react)
+1. Workflow
+1. End-to-End Tests
+1. Swagger
+
+--
+
+##### (3) Goodbye
+
+1. Next Steps
+1. Questions
+
+---
+
+## About Michael
+
+```
+$ whoami
+michael.herman
+```
+--
+
+#### Day Job:
+
+[Galvanize](http://www.galvanize.com/) (since May 2015)...
+
+1. ~~Lead Instructor Full Stack~~
+1. ~~Curriculum Developer~~
+1. Senior Software Engineer
+
+--
+
+#### Also:
+
+1. Co-founder/author of [Real Python](https://realpython.com)
+1. 😍 - [tech writing](http://mherman.org), [open source](http://github.com/mjhea0), [financial models](http://www.starterfinancialmodel.com/), [radiohead](http://radiohead.com/), [chilling](images/me.jpg)
+
+---
+
+### Objectives
+
+By the end of this talk, you should be able to:
+
+1. Configure and run **microservices** locally with Docker and Docker Compose
+1. Utilize **volumes** to mount your code into a container
+1. Run unit and integration **tests** inside a Docker container
+1. Enable services running in different containers to **talk** to one other
+1. Secure your services via **JWT-based authentication**
+1. Work with **React** running inside a Docker Container
+1. Configure **Swagger** to interact with a service`*`
+1. Test the entire set of services with **functional, end-to-end** tests`*`
+1. **Debug** a running Docker container`*`
+
+`*`time permitting ⏱
+
+---
+
+## Architecture
+
+| Name             | Repo | Container | Tech                 |
+|------------------|---------|-----------|----------------------|
+| Users API | [flask-microservices-users](https://github.com/realpython/flask-microservices-users) | `users-service` | Flask, gunicorn  |
+| Users DB | [flask-microservices-users](https://github.com/realpython/flask-microservices-users) | `users-db` | Postgres  |
+| Client | [flask-microservices-client](https://github.com/realpython/flask-microservices-client) | `web-service` | React, React-Router  |
+| Swagger | [flask-microservices-swagger](https://github.com/realpython/flask-microservices-swagger) | `swagger` | Swagger UI  |
+| e2e Tests | [flask-microservices-main](https://github.com/realpython/flask-microservices-main) | N/A | TestCafe  |
+| Nginx | [flask-microservices-main](https://github.com/realpython/flask-microservices-main) | `nginx` | Nginx  |
+
+<div>
+  <img src="images/tech.png" style="max-width: 25%; border:0; box-shadow: none; padding-top:20px" alt="microservice tech">
+</div>
+
+--
+
+#### In general, services are...
+
+1. Organized around domain
+1. Easy to replace (if stateless)
+1. Implemented using different technologies
+
+---
+
+### Why Microservices?
+
+--
+
+- Complexity shifts from the inside (code, vertical stack) to the outside (platform, horizontal stack), managing each dependency, which *can* be good if you have a younger team in terms of developers. Junior developers are free to experiment and muck up smaller apps. You must have solid dev ops support though.
+
+  <img src="images/microservices.png" style="max-width: 25%; border:0; box-shadow: none;" alt="microservice">
+
+
+--
+
+- Less coupling, which makes scaling easier
+
+--
+
+- Flexible - different apps can have different code bases and dependencies
+
+--
+
+- Smaller code base, less coupled, solid API design, not having to understand the full system = easier to read code
+
+---
+
+### Project Setup
+
+--
+
+#### Repos
+
+`git clone` each repo...
+
+1. [flask-microservices-main](https://github.com/realpython/flask-microservices-main) - mgmt scripts, docker-compose, nginx, e2e tests
+1. [flask-microservices-users](https://github.com/realpython/flask-microservices-users) - flask api
+1. [flask-microservices-client](https://github.com/realpython/flask-microservices-client) - react app
+1. [flask-microservices-swagger](https://github.com/realpython/flask-microservices-swagger) - api documentation
+
+--
+
+#### Docker Compose
+
+An orchestration tool for running multi-container apps.
+
+*Often, when developing applications with a microservice architecture, you cannot fully test out all services until you deploy to a staging server. This takes much too long to get feedback. Docker helps to speed up this process by making it easier to link together small, independent services locally.*
+
+Docker 101: http://mherman.org/docker-workshop
+
+<img src="images/docker-compose.png" alt="docker compose logo" style="width:60px;">
+
+---
+
+### Users DB
+
+https://github.com/realpython/flask-microservices-users/tree/master/project/db
+
+#### Steps:
+
+1. Quick code review
+1. *Dockerfile*
+1. *docker-compose.yml*
+1. Build image, run container
+1. Test/Sanity Check
+
+<div>
+  <img src="images/postgres.png" style="max-width: 20%; border:0; box-shadow: none;" alt="postgres logo">
+</div>
+
+---
+
+### Users API
+
+https://github.com/realpython/flask-microservices-users
+
+#### Steps:
+
+1. Quick code review
+1. *Dockerfile*
+1. *docker-compose.yml*
+1. Build image, run container
+1. Test/Sanity Check
+
+<br>
+
+<div>
+  <img src="images/flask.png" style="max-width: 15%; border:0; box-shadow: none;" alt="flask logo">
+</div>
+
+---
+
+### Client
+
+https://github.com/realpython/flask-microservices-client
+
+#### Steps:
+
+1. Quick code review
+1. *Dockerfile*
+1. *docker-compose.yml*
+1. Build image, run container
+1. Test/Sanity Check
+
+<br>
+
+<div>
+  <img src="images/react-logo.svg" style="max-width: 15%; border:0; box-shadow: none;" alt="react logo">
+</div>
+
+---
+
+## Workflow
+
+1. Live reload
+1. Debugging
+1. Linting
+1. Docker logs
+
+<br>
+
+<div style="text-align:left;">
+  <img src="images/docker-logo.png" style="max-width: 30%; border:0; box-shadow: none;" alt="docker logo">
+</div>
+
+---
+
+### End-to-End Tests
+
+https://github.com/realpython/flask-microservices-client
+
+#### Steps:
+
+1. Quick code review
+1. Shell script
+
+<br>
+
+<div>
+  <img src="images/testcafe-logo.png" style="max-width: 100%; border:0; box-shadow: none;" alt="testcafe logo">
+</div>
+
+TestCafe 101: http://mherman.org/testcafe-example
+
+---
+
+### Swagger
+
+https://github.com/realpython/flask-microservices-swagger
+
+#### Steps:
+
+1. Quick code review
+1. *Dockerfile*
+1. *docker-compose.yml*
+1. Build image, run container
+1. Test/Sanity Check
+
+
+---
+
+### That's it!
+
+What's next?
+
+--
+
+**Resources**:
+
+1. [Slides](http://mherman.org/presentations/microservices-flask-docker)
+1. [Testdrive.io](http://testdriven.io/) - full tutorial!
+1. [How to Build 12 Factor Microservices on Docker](https://www.packtpub.com/books/content/how-to-build-12-factor-design-microservices-on-docker-part-1)
+1. [Docker Cheat Sheet](https://github.com/wsargent/docker-cheat-sheet)
+
+--
+
+**Other examples**:
+
+1. [Developing and Testing Microservices With Docker](http://mherman.org/blog/2017/04/18/developing-and-testing-microservices-with-docker)
+1. [Developing Microservices - Node, React, and Docker](http://mherman.org/blog/2017/05/11/developing-microservices-node-react-docker)
+1. [Developing React with Docker](http://mherman.org/node-workshop/slides/react-docker)
+
+--
+
+<br><br>
+
+Questions?
+
+
+    </textarea>
+    <script src="https://remarkjs.com/downloads/remark-latest.min.js">
+    </script>
+    <script>
+      var slideshow = remark.create();
+    </script>
+  </body>
+</html>
