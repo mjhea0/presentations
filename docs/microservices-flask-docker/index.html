@@ -65,12 +65,13 @@ Presented by *Michael Herman*
 1. Users API (flask)
 1. Client (react)
 1. Workflow
+1. Nginx
 1. End-to-End Tests
 1. Swagger
 
 --
 
-##### (3) Goodbye
+##### (3) Goodbye 😞
 
 1. Next Steps
 1. Questions
@@ -111,10 +112,10 @@ By the end of this talk, you should be able to:
 1. Run unit and integration **tests** inside a Docker container
 1. Enable services running in different containers to **talk** to one other
 1. Secure your services via **JWT-based authentication**
-1. Work with **React** running inside a Docker Container
-1. Configure **Swagger** to interact with a service`*`
+1. Configure **React** to work with Docker
+1. **Auto reload** Python/Flask code running inside a Docker Conatiner
 1. Test the entire set of services with **functional, end-to-end** tests`*`
-1. **Debug** a running Docker container`*`
+1. Configure **Swagger** to interact with a service`*`
 
 `*`time permitting ⏱
 
@@ -197,18 +198,32 @@ Docker 101: http://mherman.org/docker-workshop
 
 ### Users DB
 
+<div>
+  <img src="images/testdriven-users-db.png" style="max-width:100%; border:0; box-shadow: none;" alt="testdriven-users-db">
+</div>
+
+---
+
+### Users DB
+
 https://github.com/realpython/flask-microservices-users/tree/master/project/db
 
 #### Steps:
 
-1. Quick code review
-1. *Dockerfile*
-1. *docker-compose.yml*
-1. Build image, run container
-1. Test/Sanity Check
+1. Review *[Dockerfile](https://github.com/realpython/flask-microservices-users/blob/master/project/db/Dockerfile)* and *[docker-compose.yml](https://github.com/realpython/flask-microservices-main/blob/master/docker-compose.yml)*
+1. Build image, run container: `docker-compose up -d --build users-db`
+1. Test/Sanity Check: `docker exec -ti users-db psql -U postgres -W`
 
 <div>
   <img src="images/postgres.png" style="max-width: 20%; border:0; box-shadow: none;" alt="postgres logo">
+</div>
+
+---
+
+### Users API
+
+<div>
+  <img src="images/testdriven-users.png" style="max-width:100%; border:0; box-shadow: none;" alt="testdriven-users">
 </div>
 
 ---
@@ -219,16 +234,30 @@ https://github.com/realpython/flask-microservices-users
 
 #### Steps:
 
-1. Quick code review
-1. *Dockerfile*
-1. *docker-compose.yml*
-1. Build image, run container
-1. Test/Sanity Check
+1. Quick [code](https://github.com/realpython/flask-microservices-users) review
+1. Review *[Dockerfile-local](https://github.com/realpython/flask-microservices-users/blob/master/Dockerfile-local)* and *[docker-compose.yml](https://github.com/realpython/flask-microservices-main/blob/master/docker-compose.yml)*
+1. Build image, run container: `docker-compose up -d --build users-service`
+1. Test/Sanity Check:
+    ```sh
+    # create and seed the db
+    $ docker-compose run users-service python manage.py recreate_db
+    $ docker-compose run users-service python manage.py seed_db
+    # run unit and integration tests
+    $ docker-compose run users-service python manage.py test
+    ```
 
 <br>
 
 <div>
-  <img src="images/flask.png" style="max-width: 15%; border:0; box-shadow: none;" alt="flask logo">
+  <img src="images/flask.png" style="max-width: 10%; border:0; box-shadow: none;" alt="flask logo">
+</div>
+
+---
+
+### Client
+
+<div>
+  <img src="images/testdriven-web.png" style="max-width:100%; border:0; box-shadow: none;" alt="testdriven-web">
 </div>
 
 ---
@@ -239,11 +268,17 @@ https://github.com/realpython/flask-microservices-client
 
 #### Steps:
 
-1. Quick code review
-1. *Dockerfile*
-1. *docker-compose.yml*
-1. Build image, run container
-1. Test/Sanity Check
+1. Quick [code](https://github.com/realpython/flask-microservices-client
+) review
+1. Review *[Dockerfile](https://github.com/realpython/flask-microservices-client/blob/master/Dockerfile)* and *[docker-compose.yml](https://github.com/realpython/flask-microservices-main/blob/master/docker-compose.yml)*
+1. Build image, run container:
+    ```sh
+    # add env variable
+    $ export REACT_APP_USERS_SERVICE_URL=http://DOCKER_MACHINE_DEV_IP
+    # build and run:
+    $ docker-compose up -d --build web-service
+    ```
+1. Test/Sanity Check: navigate to [http://DOCKER_MACHINE_DEV_IP:9000](http://DOCKER_MACHINE_DEV_IP:9000) in your browser (you won't be able to register or log in until Nginx is set up)
 
 <br>
 
@@ -253,37 +288,100 @@ https://github.com/realpython/flask-microservices-client
 
 ---
 
-## Workflow
+### Workflow
 
-1. Live reload
-1. Debugging
-1. Linting
-1. Docker logs
+#### Users Service
+
+1. Docker logs - `docker-compose logs -f [container-name]`
+1. Live reload - make a change, watch it update!
+
+#### Web Service
+
+To take advantage of auto/hot/live reload, it is recommended to develop outside of the container:
+
+1. Navigate to the *flask-microservices-client* directory, set the env variable:
+  ```sh
+  $ export REACT_APP_USERS_SERVICE_URL=http://DOCKER_MACHINE_DEV_IP
+  ```
+1. Then run `npm start`.
+1. Once done, rebuild the image - `docker-compose up -d --build`
 
 <br>
 
 <div style="text-align:left;">
-  <img src="images/docker-logo.png" style="max-width: 30%; border:0; box-shadow: none;" alt="docker logo">
+  <img src="images/docker-logo.png" style="max-width: 10%; border:0; box-shadow: none;" alt="docker logo">
+</div>
+
+---
+
+### Nginx
+
+<div>
+  <img src="images/testdriven-nginx.png" style="max-width:100%; border:0; box-shadow: none;" alt="testdriven-nginx">
+</div>
+
+---
+
+### Nginx
+
+https://github.com/realpython/flask-microservices-main/tree/master/nginx
+
+#### Steps:
+
+1. Quick [code](https://github.com/realpython/flask-microservices-main/tree/master/nginx) review
+1. Review *[Dockerfile](https://github.com/realpython/flask-microservices-main/blob/master/nginx/Dockerfile)* and *[docker-compose.yml](https://github.com/realpython/flask-microservices-main/blob/master/docker-compose.yml)*
+1. Build image, run container: `docker-compose up -d --build nginx`
+1. Test/Sanity Check: navigate to [http://DOCKER_MACHINE_DEV_IP](http://DOCKER_MACHINE_DEV_IP)
+
+<br>
+
+<div>
+  <img src="images/nginx.png" style="max-width: 20%; border:0; box-shadow: none;" alt="nginx logo">
 </div>
 
 ---
 
 ### End-to-End Tests
 
-https://github.com/realpython/flask-microservices-client
+<div>
+  <img src="images/testdriven-e2e.png" style="max-width:100%; border:0; box-shadow: none;" alt="testdriven-e2e">
+</div>
+
+---
+
+### End-to-End Tests
+
+https://github.com/realpython/flask-microservices-main/tree/master/e2e
+
+#### Notes:
+
+1. These are not containerized
+1. Check out the TestCafe 101 @ http://mherman.org/testcafe-example
 
 #### Steps:
 
-1. Quick code review
-1. Shell script
+1. Quick [code](https://github.com/realpython/flask-microservices-main/tree/master/e2e) review
+1. Test:
+    ```sh
+    # add env variable
+    $ export TEST_URL=http://DOCKER_MACHINE_DEV_IP
+    # run tests:
+    $ testcafe chrome e2e
+    ```
 
 <br>
 
 <div>
-  <img src="images/testcafe-logo.png" style="max-width: 100%; border:0; box-shadow: none;" alt="testcafe logo">
+  <img src="images/testcafe-logo.png" style="max-width: 30%; border:0; box-shadow: none;" alt="testcafe logo">
 </div>
 
-TestCafe 101: http://mherman.org/testcafe-example
+---
+
+### Swagger
+
+<div>
+  <img src="images/testdriven-swagger.png" style="max-width:100%; border:0; box-shadow: none;" alt="testdriven-swagger">
+</div>
 
 ---
 
@@ -293,12 +391,16 @@ https://github.com/realpython/flask-microservices-swagger
 
 #### Steps:
 
-1. Quick code review
-1. *Dockerfile*
-1. *docker-compose.yml*
-1. Build image, run container
-1. Test/Sanity Check
+1. Quick [code](https://github.com/realpython/flask-microservices-swagger) review
+1. Review *[Dockerfile](https://github.com/realpython/flask-microservices-swagger/blob/master/Dockerfile)* and *[docker-compose.yml](https://github.com/realpython/flask-microservices-main/blob/master/docker-compose.yml)*
+1. Build image, run container: `docker-compose up -d --build swagger`
+1. Test/Sanity Check: navigate to [http://DOCKER_MACHINE_DEV_IP:8080](http://DOCKER_MACHINE_DEV_IP:8080)
 
+<br>
+
+<div>
+  <img src="images/swagger.png" style="max-width: 20%; border:0; box-shadow: none;" alt="swagger logo">
+</div>
 
 ---
 
@@ -308,16 +410,16 @@ What's next?
 
 --
 
-**Resources**:
+#### Resources:
 
 1. [Slides](http://mherman.org/presentations/microservices-flask-docker)
-1. [Testdrive.io](http://testdriven.io/) - full tutorial!
+1. ***[Testdriven.io](http://testdriven.io/) - full tutorial!***
 1. [How to Build 12 Factor Microservices on Docker](https://www.packtpub.com/books/content/how-to-build-12-factor-design-microservices-on-docker-part-1)
 1. [Docker Cheat Sheet](https://github.com/wsargent/docker-cheat-sheet)
 
 --
 
-**Other examples**:
+#### Other examples:
 
 1. [Developing and Testing Microservices With Docker](http://mherman.org/blog/2017/04/18/developing-and-testing-microservices-with-docker)
 1. [Developing Microservices - Node, React, and Docker](http://mherman.org/blog/2017/05/11/developing-microservices-node-react-docker)
