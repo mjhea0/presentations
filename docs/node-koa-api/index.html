@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Building a RESTful API with Koa and Postgres</title>
+    <meta charset="utf-8">
+    <style>
+      @import url(https://fonts.googleapis.com/css?family=Yanone+Kaffeesatz);
+      @import url(https://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic);
+      @import url(https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,400italic);
+
+      body { font-family: 'Droid Serif'; }
+      h1, h2, h3 {
+        font-family: 'Yanone Kaffeesatz';
+        font-weight: normal;
+      }
+      td {
+        padding-left: 5px;
+        padding-right: 5px;
+      }
+      .remark-code { font-family: 'Ubuntu Mono'; }
+      .remark-inline-code {
+        font-family: 'Ubuntu Mono';
+        padding: 2px 4px;
+        font-size: 90%;
+        color: #c7254e;
+        background-color: #f9f2f4;
+        border-radius: 0;
+       }
+    </style>
+  </head>
+  <body>
+    <textarea id="source">
+
+class: center, middle
+
+# Building a RESTful API with Koa
+`next generation web framework for node.js`
+<br><br><br><br><br>
+<small>Presented by *Michael Herman*</small>
+<br><br>
+<img src="images/koa-tree-logo.png" alt="koa tree logo" style="width:30px">
+
+---
+
+### Agenda
+
+--
+
+##### (1) Hello
+
+1. About Me
+1. Objectives
+
+--
+
+##### (2) Theory
+
+1. What is Koa?
+1. Test Driven Development
+1. What are we building?
+
+--
+
+##### (3) Practice
+
+1. Project Setup
+1. Hello, World!
+1. Routes Setup
+1. CRUD Routes - `GET`, `POST`, `PUT`, `DELETE`
+
+--
+
+##### (4) Goodbye
+
+1. Next Steps
+1. Questions
+
+---
+
+### About Michael
+
+```
+$ whoami
+michael.herman
+```
+--
+
+#### Day Job:
+
+[Galvanize](http://www.galvanize.com/) (since May 2015)...
+
+1. ~~Lead Instructor Full Stack~~
+1. ~~Curriculum Developer~~
+1. Senior Software Engineer
+
+--
+
+#### Also:
+
+1. Co-founder/author of [Real Python](https://realpython.com)
+1. 😍 - [tech writing](http://mherman.org), [open source](http://github.com/mjhea0), [financial models](http://www.starterfinancialmodel.com/), [radiohead](http://radiohead.com/), [chilling](images/me.jpg)
+
+---
+
+### Objectives
+
+**By the end of this tutorial, you will be able to:**
+
+--
+
+1. Set up a project with [Koa](http://koajs.com/) using *test driven development*
+
+--
+
+1. Set up the testing structure with [Mocha](https://mochajs.org/) and [Chai](http://chaijs.com/)
+
+--
+
+1. Create a *CRUD* app, following *RESTful* best practices
+
+--
+
+1. Write *integration tests*
+
+--
+
+1. Write tests, and then write *just enough* code to pass the tests
+
+--
+
+1. Create routes with [Koa Router](https://github.com/alexmingoia/koa-router)
+
+--
+
+1. Parse the request body with [koa-bodyparser](https://github.com/koajs/bodyparser)
+
+---
+
+### What is Koa?
+
+
+--
+
+Koa is a web framework for Node.js.
+
+<img src="images/node-logo.png" alt="node logo" style="width:200px">
+
+--
+
+
+- **Lightweight** - Although, it's developed by the same team that created Express, it’s much lighter than Express though, so it comes with very little out of the box. It’s really just a tiny wrapper on top of Node's HTTP module.
+
+--
+
+- **Async/Await** - It has native support for [async/await](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/async_function), which makes it easier and faster to develop an API since you don't have to deal with [callbacks](https://en.wikipedia.org/wiki/Callback_(computer_programming%29) and [callback hell](http://callbackhell.com/).
+
+--
+
+- **Express-like**: Since Koa has similar patterns to Express, it's relatively easy to pick up if you've worked at all with Express.
+
+--
+
+<br>For more on how Koa compares to Express, check out [Koa vs Express](https://github.com/koajs/koa/blob/master/docs/koa-vs-express.md).
+
+---
+
+### Test Driven Development
+
+--
+
+Test Driven Development (TDD) is an iterative development cycle that emphasizes writing automated tests before writing the actual code.
+
+--
+
+**Why?**
+
+--
+
+1. Helps break down problems into manageable pieces since you should have a better understanding of what you’re going to write
+1. Forces you to write cleaner code
+1. Prevents over coding
+
+--
+
+<br>
+<img src="images/red-green-refactor.png" alt="Red-Green-Refactor" style="width:275px">
+
+
+---
+
+### What are we building?
+
+1. We will be designing a RESTful API, using test driven development, for a single resource - `movies`.
+
+--
+
+1. The API itself will follow RESTful design principles, using the [basic HTTP verbs](http://www.restapitutorial.com/lessons/httpmethods.html) - GET, POST, PUT, and DELETE.
+
+--
+
+<br>
+
+| URL                 | HTTP Verb | Action                |
+|---------------------|-----------|-----------------------|
+| /api/v1/movies      | GET       | Return ALL movies     |
+| /api/v1/movies/:id  | GET       | Return a SINGLE movie |
+| /api/v1/movies      | POST      | Add a movie           |
+| /api/v1/movies/:id  | PUT       | Update a movie        |
+| /api/v1/movies/:id  | DELETE    | Delete a movie        |
+
+--
+
+<br>
+
+<div style="text-align:center;">
+  <img src="images/tech.png" alt="tools and tech" style="width:300px">
+</div>
+
+---
+
+### Project Setup
+
+--
+
+Clone down the base project:
+
+```sh
+$ git clone https://github.com/mjhea0/node-koa-api \
+  --branch v1 --single-branch
+$ cd node-koa-api
+```
+
+--
+
+Check out the [v1](https://github.com/mjhea0/node-koa-api/releases/tag/v1) tag to the master branch and install the dependencies:
+
+```sh
+$ git checkout tags/v1 -b master
+$ npm install
+```
+
+--
+
+Run two quick sanity checks to make sure all is well:
+
+```sh
+$ npm start
+It works!
+
+$ npm test
+Sample Test
+  ✓ should pass
+
+1 passing (8ms)
+```
+
+--
+
+Take a quick look at the project structure before moving on.
+
+---
+
+### Hello, World! (part 1)
+
+<h4 style="color:red">RED</h4>
+
+--
+
+Install Koa and [Chai HTTP](https://github.com/chaijs/chai-http):
+
+```sh
+$ npm install koa@2.3.0 --save
+$ npm install chai-http@3.0.0 --save-dev
+```
+
+--
+
+<br>
+
+Create a new file in the "test" directory called *routes.index.test.js*...
+
+---
+
+### Hello, World! (part 2)
+
+<h4 style="color:red">RED</h4>
+
+--
+
+Add the code to *routes.index.test.js*
+
+```javascript
+process.env.NODE_ENV = 'test';
+const chai = require('chai');
+const should = chai.should();
+const chaiHttp = require('chai-http');
+chai.use(chaiHttp);
+
+const server = require('../src/server/index');
+
+describe('routes : index', () => {
+  describe('GET /', () => {
+    it('should return json', () => {
+      chai.request(server)
+      .get('/')
+      .end((err, res) => {
+        res.status.should.eql(200);
+        res.type.should.eql('application/json');
+        res.body.status.should.equal('success');
+        res.body.messsage.should.eql('hello, world!');
+      });
+    });
+  });
+});
+```
+
+---
+
+### Hello, World! (part 3)
+
+<h4 style="color:red">RED</h4>
+
+--
+
+Run `$ npm test`. The tests should fail.
+
+---
+
+### Hello, World! (part 4)
+
+<h4 style="color:green">GREEN</h4>
+
+--
+
+Update *src/server/index.js* like so:
+
+```javascript
+const Koa = require('koa');
+
+const app = new Koa();
+const PORT = 1337;
+
+app.use(async (ctx) => {
+  ctx.body = {
+    status: 'success',
+    message: 'hello, world!'
+  };
+});
+
+const server = app.listen(PORT, () => {
+  console.log(`Server listening on port: ${PORT}`);
+});
+
+module.exports = server;
+```
+
+--
+
+Run the tests again. They should pass!
+
+---
+
+### Hello, World! (part 5)
+
+<h4 style="color:orange">REFACTOR</h4>
+
+--
+
+Unlike Express, Koa does not provide any routing middleware. There are a number of options available, but we'll use [koa-router](https://github.com/alexmingoia/koa-router) due to its simplicity.
+
+```sh
+$ npm install koa-router@7.2.1 --save
+```
+
+--
+
+Create a new folder called "routes" within "server", and then add an *index.js* file to it:
+
+```javascript
+const Router = require('koa-router');
+const router = new Router();
+
+router.get('/', async (ctx) => {
+  ctx.body = {
+    status: 'success',
+    message: 'hello, world!'
+  };
+})
+
+module.exports = router;
+```
+
+---
+
+### Hello, World! (part 6)
+
+<h4 style="color:orange">REFACTOR</h4>
+
+--
+
+Update *src/server/index.js*:
+
+```javascript
+const Koa = require('koa');
+const indexRoutes = require('./routes/index');
+
+const app = new Koa();
+const PORT = process.env.PORT || 1337;
+
+app.use(indexRoutes.routes());
+
+const server = app.listen(PORT, () => {
+  console.log(`Server listening on port: ${PORT}`);
+});
+
+module.exports = server;
+```
+
+Essentially, we moved the `/` route out of the main application file. Ensure the tests still pass before moving on.
+
+---
+
+### Routes Setup (part 1)
+
+--
+
+Add a new route file called *movies.js* to "routes":
+
+```javascript
+const Router = require('koa-router');
+const data = require('../data.json');
+
+const router = new Router();
+const BASE_URL = `/api/v1/movies`;
+
+module.exports = router;
+```
+
+--
+
+Then, wire this file up to the main application in *src/server/index.js*:
+
+```javascript
+const Koa = require('koa');
+const indexRoutes = require('./routes/index');
+const movieRoutes = require('./routes/movies');
+const app = new Koa();
+const PORT = process.env.PORT || 1337;
+
+app.use(indexRoutes.routes());
+app.use(movieRoutes.routes());
+
+const server = app.listen(PORT, () => {
+  console.log(`Server listening on port: ${PORT}`);
+});
+module.exports = server;
+```
+
+---
+
+### Routes Setup (part 2)
+
+--
+
+Add a file called *data.json* to "src/server":
+
+```json
+[
+  {
+		"name": "The Land Before Time",
+		"genre": "Fantasy",
+		"rating": 7,
+		"explicit": false
+	},
+	{
+		"name": "Jurassic Park",
+		"genre": "Science Fiction",
+		"rating": 9,
+		"explicit": true
+	},
+  {
+		"name": "Ice Age: Dawn of the Dinosaurs ",
+		"genre": "Action/Romance",
+		"rating": 5,
+		"explicit": false
+	}
+]
+```
+
+---
+
+### Routes Setup (part 3)
+
+--
+
+Finally, add a new test file to "test" called *routes.movies.test.js*:
+
+```javascript
+process.env.NODE_ENV = 'test';
+
+const chai = require('chai');
+const should = chai.should();
+const chaiHttp = require('chai-http');
+chai.use(chaiHttp);
+
+const server = require('../src/server/index');
+
+describe('routes : movies', () => {
+
+});
+```
+
+---
+
+### GET all movies (part 1)
+
+<h4 style="color:red">RED</h4>
+
+--
+
+Start with a test:
+
+```javascript
+describe('GET /api/v1/movies', () => {
+  it('should return all movies', () => {
+    chai.request(server)
+    .get('/api/v1/movies')
+    .end((err, res) => {
+      should.not.exist(err);
+      res.status.should.equal(200);
+      res.type.should.equal('application/json');
+      res.body.status.should.eql('success');
+      res.body.data.length.should.eql(3);
+      res.body.data[0].should.include.keys(
+        'id', 'name', 'genre', 'rating', 'explicit'
+      );
+    });
+  });
+});
+```
+
+---
+
+### GET all movies (part 2)
+
+<h4 style="color:green">GREEN</h4>
+
+--
+
+To get the test to pass, add the route handler to *src/server/routes/movies.js*:
+
+```javascript
+router.get(BASE_URL, async (ctx) => {
+  try {
+    ctx.body = {
+      status: 'success',
+      data: data
+    };
+  } catch (err) {
+    console.log(err)
+  }
+})
+```
+
+--
+
+Run the tests to ensure they pass.
+
+---
+
+### GET a single movie
+
+Your turn!
+
+--
+
+<br>
+<img src="images/red-green-refactor.png" alt="Red-Green-Refactor" style="width:300px">
+
+---
+
+### POST, PUT, and DELETE (part 1)
+
+--
+
+Before, we add the tests and routes, we need to add [koa-bodyparser](https://github.com/koajs/bodyparser), since Koa does not parse the request body by default.
+
+```sh
+$ npm install koa-bodyparser@4.2.0 --save
+```
+
+---
+
+### POST, PUT, and DELETE (part 2)
+
+--
+
+Add the requirement to *src/server/index.js*, and then make sure to mount the middleware to the app before the routes:
+
+```javascript
+const Koa = require('koa');
+const bodyParser = require('koa-bodyparser');
+
+const indexRoutes = require('./routes/index');
+const movieRoutes = require('./routes/movies');
+
+const app = new Koa();
+const PORT = process.env.PORT || 1337;
+
+app.use(bodyParser());
+app.use(indexRoutes.routes());
+app.use(movieRoutes.routes());
+
+const server = app.listen(PORT, () => {
+  console.log(`Server listening on port: ${PORT}`);
+});
+
+module.exports = server;
+```
+
+---
+
+### POST, PUT, and DELETE (part 3)
+
+Your turn!
+
+--
+
+<br>
+<img src="images/red-green-refactor.png" alt="Red-Green-Refactor" style="width:300px">
+
+---
+
+### That's it!
+
+What's next?
+
+--
+
+Add some links
+
+---
+
+### Questions?
+
+--
+
+Well...
+
+
+
+
+    </textarea>
+    <script src="https://remarkjs.com/downloads/remark-latest.min.js">
+    </script>
+    <script>
+      var slideshow = remark.create();
+    </script>
+  </body>
+</html>
