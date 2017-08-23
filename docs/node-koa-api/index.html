@@ -291,23 +291,25 @@ Add the code to *routes.index.test.js*
 
 ```javascript
 process.env.NODE_ENV = 'test';
+
 const chai = require('chai');
 const should = chai.should();
 const chaiHttp = require('chai-http');
-chai.use(chaiHttp);
 
+chai.use(chaiHttp);
 const server = require('../src/server/index');
 
 describe('routes : index', () => {
   describe('GET /', () => {
-    it('should return json', () => {
+    it('should return json', (done) => {
       chai.request(server)
       .get('/')
       .end((err, res) => {
         res.status.should.eql(200);
         res.type.should.eql('application/json');
-        res.body.status.should.equal('success');
-        res.body.messsage.should.eql('hello, world!');
+        res.body.status.should.eql('success');
+        res.body.message.should.eql('hello, world!');
+        done();
       });
     });
   });
@@ -522,7 +524,7 @@ Start with a test:
 
 ```javascript
 describe('GET /api/v1/movies', () => {
-  it('should return all movies', () => {
+  it('should return all movies', (done) => {
     chai.request(server)
     .get('/api/v1/movies')
     .end((err, res) => {
@@ -534,6 +536,7 @@ describe('GET /api/v1/movies', () => {
       res.body.data[0].should.include.keys(
         'id', 'name', 'genre', 'rating', 'explicit'
       );
+      done();
     });
   });
 });
@@ -640,8 +643,9 @@ Your turn!
 --
 
 1. Slides - http://mherman.org/presentations/node-koa-api
-1. Code example (with postgres) - coming soon!
-1. Blog post - coming soon!
+1. Code example (without postgres) - https://github.com/mjhea0/node-koa-api/tree/master/_live/node-koa-api
+1. Code example (with postgres) - https://github.com/mjhea0/node-koa-api
+1. Blog post - http://mherman.org/blog/2017/08/23/building-a-restful-api-with-koa-and-postgres
 
 --
 
