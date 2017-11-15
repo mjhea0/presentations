@@ -56,7 +56,7 @@ class: center, middle
 
 ##### (2) Containerization
 
-1. Docker compose and Machine
+1. Docker Compose and Machine
 1. EC2 Deployment
 
 --
@@ -112,6 +112,8 @@ Software Engineer at [ClickFox](https://www.clickfox.com/).
 
 By the end of this talk, you should be able to...
 
+--
+
 1. Explain what **container orchestration** is and why you may need to incorporate an orchestration tool into your deployment process
 
 --
@@ -125,6 +127,10 @@ By the end of this talk, you should be able to...
 --
 
 1. Integrate **ECR** into the deployment process
+
+--
+
+1. Send **container logs** to CloudWatch
 
 --
 
@@ -423,8 +429,8 @@ https://console.aws.amazon.com/ecs
 
 1. Once you update the Service, ECS will pick up on these changes and instantiate the Task Definitions, creating new Tasks that will spin up on the Cluster instances.
 1. ALB will run health checks on the new instances once they are up.
-1. If the health checks pass, traffic is forwarded appropriately to the new Tasks while the old Tasks are spun down.
-1. If the health checks fail, the new Tasks are spun down.
+    - If the health checks pass, traffic is forwarded appropriately to the new Tasks while the old Tasks are spun down.
+    - If the health checks fail, the new Tasks are spun down.
 
 --
 
