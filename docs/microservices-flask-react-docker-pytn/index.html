@@ -51,6 +51,8 @@ class: center, middle
 
 ### Agenda (part 1)
 
+⏱ ~ 1 hour
+
 --
 
 ##### (1) Intro
@@ -77,6 +79,8 @@ class: center, middle
 
 
 ### Agenda (part 2)
+
+⏱ ~ 1 hour
 
 --
 
@@ -135,19 +139,31 @@ Software Engineer at [ClickFox](https://www.clickfox.com/).
 
 ### Objectives
 
-By the end of this talk, you should be able to:
+By the end of this talk, you should be able to...
 
-1. Configure and run **microservices** locally with Docker and Docker Compose
-1. Utilize **volumes** to mount your code into a container
+--
+
+`Containerization`
+
+1. Configure and run **microservices** locally with Docker
+1. Utilize **volumes** to mount code into a container to enable **hot reload**
 1. Run unit and integration **tests** inside a Docker container
 1. Enable services running in different containers to **talk** to one other
 1. Secure your services via **JWT-based authentication**
 1. Configure **React** to work with Docker
-1. **Auto reload** Python/Flask code running inside a Docker Conatiner
-1. Test the entire set of services with **functional, end-to-end** tests`*`
-1. Configure **Swagger** to interact with a service`*`
+1. Test the entire set of services with **functional, end-to-end** tests
 
-`*`time permitting ⏱
+--
+
+`Orchestration`
+
+1. Explain what **container orchestration** is and why you may need to incorporate an orchestration tool into your deployment process
+1. Discuss the pros and cons of using Elastic Container Service (ECS) over other **orchestration tools** like Kubernetes, Mesos, and Docker Swarm
+1. Configure an **Application Load Balancer** along with **ECS** to run a set of microservices
+1. Integrate **ECR** into the deployment process
+1. Send **container logs** to CloudWatch
+1. Update a running container via a **zero-downtime deployment** strategy
+
 
 ---
 
