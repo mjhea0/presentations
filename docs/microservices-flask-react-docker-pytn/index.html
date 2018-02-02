@@ -167,6 +167,19 @@ By the end of this talk, you should be able to...
 
 ---
 
+## TestDriven.io
+
+Much of this tutorial comes from the following course I wrote at [Testdriven.io](http://testdriven.io/)...
+
+#### Microservices with Docker, Flask, and React
+
+<div text-align="center">
+  <img src="images/cover_small.png" style="max-width: 40%; border:2px solid; border-color:grey; box-shadow: none;" alt="microservice tech">
+</div>
+
+
+---
+
 ## Architecture
 
 | Name             | Repo | Container | Tech                 |
@@ -191,6 +204,35 @@ By the end of this talk, you should be able to...
 1. Implemented using different technologies
 
 ---
+
+
+## Project Overview
+
+https://github.com/mjhea0/microservice-ping-pong
+
+| Container   | Image     | Tech    |
+|-------------|-----------|---------|
+| node-john   | node-base | NodeJs  |
+| node-paul   | node-base | NodeJS  |
+| node-george | node-base | NodeJS  |
+| node-ringo  | node-base | NodeJS  |
+| client      | client    | ReactJS |
+| nginx       | nginx     | Nginx   |
+
+<div>
+  <img src="images/submarine.png" style="max-width: 5%; border:0; box-shadow: none; padding-top:30px" alt="microservice tech">
+</div>
+
+--
+
+Feel free to fire up the app locally:
+
+```sh
+$ git clone git@github.com:mjhea0/microservice-ping-pong.git
+$ docker build -t node-base ./services/node
+$ export REACT_APP_BASE_URL=http://DOCKER_MACHINE_IP
+$ docker-compose up -d --build
+```
 
 ### Why Microservices?
 
