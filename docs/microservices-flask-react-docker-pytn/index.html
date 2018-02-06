@@ -163,7 +163,6 @@ By the end of this talk, you should be able to...
 1. Integrate **ECR** into the deployment process
 1. Send **container logs** to CloudWatch
 
-
 ---
 
 ### TestDriven.io
@@ -564,6 +563,66 @@ $ testcafe chrome e2e
 class: center, middle
 
 ## Orchestration
+
+---
+
+### What is Container Orchestration?
+
+--
+
+As you move from deploying containers on a single machine to deploying them across a number of machines, you need an orchestration tool to manage the arrangement and coordination of the containers across the entire system.
+
+--
+
+This is where [ECS](https://aws.amazon.com/ecs/) fits in along with a number of other orchestration tools - like [Kubernetes](https://kubernetes.io/), [Mesos](http://mesos.apache.org/), and [Docker Swarm](https://docs.docker.com/engine/swarm/).
+
+--
+
+<br><br>
+
+Which one?
+
+<div>
+  <img src="images/kubernetes-vs-docker-swarm-vs-mesos.png" style="max-width: 40%; border:0; box-shadow: none;" alt="kubernetes vs docker swarm vs mesos">
+</div>
+
+---
+
+### Why ECS?
+
+--
+
+ECS is simpler to set up and easier to use and you have the full power of AWS behind it, so you can easily integrate it into other AWS services (which we will be doing shortly). In short, you get scheduling, service discovery, load balancing, and auto-scaling out-of-the-box. Plus, you can take full advantage of EC2’s multiple availability-zones.
+
+--
+
+If you’re already on AWS and have no desire to leave, then it makes sense to use AWS.
+
+<div>
+  <img src="images/aws-ecs.png" style="max-width: 6%; border:0; box-shadow: none;" alt="aws ecs">
+</div>
+
+--
+
+Keep in mind, that ECS is often lagging behind Kubernetes, in terms of features, though. If you’re looking for the most features and portability and you don’t mind installing and managing the tool, then Kubernetes, Docker Swarm, or Mesos may be right for you.
+
+--
+
+One last thing to take note of is that since ECS is closed-source, there isn’t a true way to run an environment locally in order to achieve development-to-production parity.
+
+<small>Awesome comparison resource -> https://blog.kublr.com/choosing-the-right-containerization-and-cluster-management-tool-fdfcec5700df</small>
+
+---
+
+## Orchestration Feature Wish-list
+
+Most orchestration tools come with a core set of features. You can find those features below along with the associated AWS service...
+
+<div>
+  <img src="images/features.png" style="max-width: 60%; border:0; box-shadow: none;" alt="orchestration features">
+</div>
+
+<small>We'll either cover the features with a ✔️ directly or you'll see them in action from the demo.</small>
 
 ---
 
