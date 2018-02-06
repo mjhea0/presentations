@@ -94,7 +94,7 @@ class: center, middle
 1. Elastic Container Registry (ECR)
 1. Elastic Container Service (ECS)
 1. Setting up RDS
-1. Workflow
+1. Zero-downtime Deploy Demo
 
 --
 
@@ -172,7 +172,12 @@ Much of this tutorial comes from the following course I wrote at [Testdriven.io]
 <h4><em>Microservices with Docker, Flask, and React</em></h4>
 
 <div text-align="center">
-  <img src="images/cover_small.png" style="max-width: 40%; border:2px solid; border-color:grey; box-shadow: none;" alt="microservice tech">
+  <img src="images/cover_small.png" style="max-width: 30%; border:2px solid; border-color:grey; box-shadow: none;" alt="microservice tech">
+</div>
+
+
+<div class="center">
+  <img src="images/mobile_image.png" style="max-width: 15%; padding-top:30px; box-shadow: none;" alt="elastic load balancing and ecs">
 </div>
 
 ---
@@ -598,10 +603,6 @@ ECS is simpler to set up and easier to use and you have the full power of AWS be
 
 If you’re already on AWS and have no desire to leave, then it makes sense to use AWS.
 
-<div>
-  <img src="images/aws-ecs.png" style="max-width: 6%; border:0; box-shadow: none;" alt="aws ecs">
-</div>
-
 --
 
 Keep in mind, that ECS is often lagging behind Kubernetes, in terms of features, though. If you’re looking for the most features and portability and you don’t mind installing and managing the tool, then Kubernetes, Docker Swarm, or Mesos may be right for you.
@@ -610,21 +611,167 @@ Keep in mind, that ECS is often lagging behind Kubernetes, in terms of features,
 
 One last thing to take note of is that since ECS is closed-source, there isn’t a true way to run an environment locally in order to achieve development-to-production parity.
 
-<small>Awesome comparison resource -> https://blog.kublr.com/choosing-the-right-containerization-and-cluster-management-tool-fdfcec5700df</small>
+<br>
+
+<small><em>Awesome comparison resource -> https://blog.kublr.com/choosing-the-right-containerization-and-cluster-management-tool-fdfcec5700df</em></small>
 
 ---
 
-## Orchestration Feature Wish-list
+### Orchestration Feature Wish-list
 
 Most orchestration tools come with a core set of features. You can find those features below along with the associated AWS service...
 
 <div>
-  <img src="images/features.png" style="max-width: 60%; border:0; box-shadow: none;" alt="orchestration features">
+  <img src="images/features.png" style="max-width: 67%; border:0; box-shadow: none;" alt="orchestration features">
 </div>
 
-<small>We'll either cover the features with a ✔️ directly or you'll see them in action from the demo.</small>
+<small><em>We'll either cover the features with a ✔️ directly or you'll see them in action from the demo.</em></small>
 
 ---
+
+### Elastic Load Balancing (part 1)
+
+The Elastic Load Balancer distributes incoming application traffic and scales resources as needed to meet traffic needs.
+
+--
+
+It's one of (if not) the most important parts of your applications since it needs to always be up, routing traffic to healthy back-ends, and ready to scale at a moment’s notice.
+
+--
+
+##### (1) Application Load Balancer
+
+There are currently three types of Elastic Load Balancers to choose from. We’ll be using the Application Load Balancer since it provides support for path-based routing and dynamic port-mapping and it also enables zero-downtime deployments.
+
+--
+
+##### (2) Target Groups and (3) Listeners
+
+Target Groups are attached to the Application Load Balancer and are used to route traffic to the containers found in the ECS service.
+
+Listeners are added to the load balancer, which are then forwarded to a specific Target Group.
+
+---
+
+### Elastic Load Balancing (part 2)
+
+The Application Load Balancer is one of those AWS services that makes ECS so powerful. In fact, before it’s release, ECS was not a viable orchestration solution.
+
+<br>
+
+<div>
+  <img src="images/05_elastic-load-balancing.png" style="max-width: 70%; border:0; box-shadow: none;" alt="elastic load balancing">
+</div>
+
+https://console.aws.amazon.com/ec2
+
+---
+
+### ECR
+
+Before you can start spinning up containers, you need to set up [EC2 Container Registry](https://aws.amazon.com/ecr/) (ECR), a private image registry. Once setup, you can then build, tag, and push images.
+
+https://console.aws.amazon.com/ecs
+
+--
+
+#### Why only three images?
+
+--
+
+Well, we'll use the Application Load Balancer instead of Nginx in our stack so we won't need that image or container.
+
+--
+
+#### Tagging
+
+When tagging your images, you should think about version control (using the SHA1 to tie the image back to a specific commit) as well as the environment (development, staging, production) the image should belong to.
+
+`/$PROJECT/$ENVIRONMENT:$SHA1`
+
+---
+
+### ECS (part 1)
+
+The [Elastic Container Service](https://aws.amazon.com/ecs/) (ECS) has four main components:
+
+1. Task Definitions
+1. Tasks
+1. Services
+1. Clusters
+
+--
+
+`Task Definitions` => `Tasks` => `Services` => `Clusters`
+
+![ecs](images/ecs.png)
+
+---
+
+### ECS (part 2)
+
+--
+
+#### Task Definitions (1)
+
+Task Definitions define which containers make up the overall application and how much resources are allocated to each container. You can think of them as blueprints.
+
+--
+
+#### (2) Tasks and (3) Services
+
+Services instantiate the containers from the Task Definitions and run them on EC2 boxes within an ECS Cluster. Such instances are called Tasks.
+
+--
+
+#### (4) Cluster
+
+An ECS Cluster is just a group of EC2 container instances managed by ECS.
+
+---
+
+### ECS (part 3)
+
+<div>
+  <img src="images/05_elastic-load-balancing-ecs.png" style="max-width: 70%; border:0; box-shadow: none;" alt="elastic load balancing and ecs">
+</div>
+
+https://console.aws.amazon.com/ecs
+
+---
+
+### RDS
+
+pass
+
+---
+
+### Zero-downtime Deploy Demo
+
+--
+
+#### Steps
+
+1. Make a quick change to the app locally.
+1. Build, tag, and push the new images.
+1. Add a new revision to the task definition.
+1. Update the service.
+
+--
+
+#### What happens next?
+
+1. Once you update the Service, ECS will pick up on these changes and instantiate the Task Definitions, creating new Tasks that will spin up on the Cluster instances.
+1. ALB will run health checks on the new instances once they are up.
+    - If the health checks pass, traffic is forwarded appropriately to the new Tasks while the old Tasks are spun down.
+    - If the health checks fail, the new Tasks are spun down.
+
+--
+
+The health checks are the last line of defense after your unit, integration, and functional tests.
+
+---
+
 
 ### That's it!
 
@@ -632,36 +779,30 @@ What's next?
 
 --
 
-#### Resources:
+#### Check your understanding
 
-1. [Slides](http://mherman.org/presentations/microservices-flask-docker)
-1. ***[Testdriven.io](http://testdriven.io/) - full tutorial!*** ❤️
+1. Add the Swagger service
+1. Turn back to the feature wish-list. Implement anything not covered.
+
+--
+
+#### Resources
+
+1. Slides - http://mherman.org/presentations/pytn-2018
+1. Repo - https://github.com/testdrivenio/testdriven-app-2.2/tree/part4
+1. ***[Testdriven.io](http://testdriven.io/) - full course!*** ❤️
 1. [How to Build 12 Factor Microservices on Docker](https://www.packtpub.com/books/content/how-to-build-12-factor-design-microservices-on-docker-part-1)
 1. [Docker Cheat Sheet](https://github.com/wsargent/docker-cheat-sheet)
 
---
-
-#### Other examples:
-
-1. [Developing and Testing Microservices With Docker](http://mherman.org/blog/2017/04/18/developing-and-testing-microservices-with-docker)
-1. [Developing Microservices - Node, React, and Docker](http://mherman.org/blog/2017/05/11/developing-microservices-node-react-docker)
-1. [Developing React with Docker](http://mherman.org/node-workshop/slides/react-docker)
+<div>
+  <img src="images/mobile_image.png" style="max-width: 15%; border:0; box-shadow: none;" alt="elastic load balancing and ecs">
+</div>
 
 --
 
-#### Self-promotion:
+#### Questions?
 
-1. Want more? Check out my Workshop at [Develop Denver](https://developdenver.org/schedule) on August 11th, 2017 - *Developing and Testing Microservices - Node, React, and Docker*
-1. 50% off [Real Python](https://realpython.com) - *50BOLDPY*
-
----
-
-### Questions?
-
---
-
-Well...
-
+✌️
 
 
 
