@@ -306,7 +306,7 @@ https://github.com/testdrivenio/testdriven-app-2.2/tree/part4/services/users/pro
 1. Test/Sanity Check:
 
     ```sh
-    docker exec -ti users-db psql -U postgres -W
+    $ docker exec -ti users-db psql -U postgres -W
     ```
 
 <div>
@@ -333,7 +333,7 @@ https://github.com/testdrivenio/testdriven-app-2.2/tree/master/services/users
 1. Build image, run container:
 
     ```sh
-    docker-compose -f docker-compose-dev.yml up -d --build users
+    $ docker-compose -f docker-compose-dev.yml up -d --build users
     ```
 
 1. Test/Sanity Check:
@@ -347,8 +347,10 @@ https://github.com/testdrivenio/testdriven-app-2.2/tree/master/services/users
     $ docker-compose -f docker-compose-dev.yml run users python manage.py test
     ```
 
+    Navigate to http://localhost:5000 in your browser.
+
 <div>
-  <img src="images/flask.png" style="max-width: 10%; border:0; box-shadow: none;" alt="flask logo">
+  <img src="images/flask.png" style="max-width: 5%; border:0; box-shadow: none;" alt="flask logo">
 </div>
 
 ---
@@ -378,12 +380,14 @@ https://github.com/testdrivenio/testdriven-app-2.2/tree/master/services/client
     $ docker-compose -f docker-compose-dev.yml up -d --build client
     ```
 
-1. Test/Sanity Check: navigate to [http://localhost:3007](http://localhost:3007) in your browser
+1. Test/Sanity Check:
+
+    Navigate to [http://localhost:3007](http://localhost:3007) in your browser
 
 <br>
 
 <div>
-  <img src="images/react-logo.svg" style="max-width: 15%; border:0; box-shadow: none;" alt="react logo">
+  <img src="images/react-logo.svg" style="max-width: 12%; border:0; box-shadow: none;" alt="react logo">
 </div>
 
 ---
@@ -484,12 +488,15 @@ https://github.com/testdrivenio/testdriven-app-2.2/tree/part4/e2e
     $ docker-compose -f docker-compose-prod.yml up -d --build
     # add env variable
     $ export TEST_URL=http://localhost
-    # run tests:
+    # create db
+    $ docker-compose -f docker-compose-prod.yml \
+      run users python manage.py recreate_db
+    # run tests
     $ testcafe chrome e2e
     ```
 
 <div>
-  <img src="images/testcafe-logo.png" style="max-width: 25%; padding-top:25px; box-shadow: none;" alt="testcafe logo">
+  <img src="images/testcafe-logo.png" style="max-width: 15%; padding-top:0px; box-shadow: none;" alt="testcafe logo">
 </div>
 
 
