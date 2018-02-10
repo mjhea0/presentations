@@ -178,20 +178,27 @@ Much of this tutorial comes from the following course I wrote at [Testdriven.io]
     </div>
   </div>
   <div style="float: left; width: 55%;">
-    <h4><em class="center">Microservices with Docker, Flask, and React</em></h4>
-    <p>Learn how to build, test, and deploy microservices powered by Docker, Flask, and React!</p>
+    <h4 style="margin-top: 0;"><em>Microservices with Docker, Flask, and React</em></h4>
+    <p>Along with learning how to build the underlying code bases from each service, you'll also be introduced to more advanced topics like:</p>
+    <ul>
+      <li>AWS Lambda + API Gateway</li>
+      <li>React PropTypes</ii>
+      <li>Redux</li>
+      <li>Blue/Green Deploys</li>
+      <li>CI/CD</li>
+    </ul>
   </div>
 </div>
 
 <div class="center">
-  <img src="images/mobile_image.png" style="max-width: 25%; padding-top:30px; box-shadow: none;" alt="testdriven.io">
+  <img src="images/mobile_image.png" style="max-width: 15%; padding-top:30px; box-shadow: none;" alt="testdriven.io">
 </div>
 
 ---
 
 ### Architecture
 
-https://github.com/testdrivenio/testdriven-app-2.2/tree/part4
+https://github.com/testdrivenio/testdriven-app-2.2/tree/pytn
 
 --
 
@@ -225,8 +232,8 @@ Fire up the app locally:
 
 ```sh
 $ git clone https://github.com/testdrivenio/testdriven-app-2.2 \
-  --branch part4 --single-branch
-$ cd testdriven-app-2.2 && git checkout tags/part4 -b master
+  --branch pytn --single-branch
+$ cd testdriven-app-2.2 && git checkout tags/pytn -b master
 $ export REACT_APP_USERS_SERVICE_URL=http://localhost
 $ docker-compose -f docker-compose-dev.yml up -d --build
 ```
@@ -292,11 +299,11 @@ class: center, middle
 
 ### Users DB
 
-https://github.com/testdrivenio/testdriven-app-2.2/tree/part4/services/users/project/db
+https://github.com/testdrivenio/testdriven-app-2.2/tree/pytn/services/users/project/db
 
 #### Steps:
 
-1. Review *[Dockerfile](https://github.com/testdrivenio/testdriven-app-2.2/blob/part4/services/users/project/db/Dockerfile)* and *[docker-compose-dev.yml](https://github.com/testdrivenio/testdriven-app-2.2/blob/part4/docker-compose-dev.yml)*
+1. Review *[Dockerfile](https://github.com/testdrivenio/testdriven-app-2.2/blob/pytn/services/users/project/db/Dockerfile)* and *[docker-compose-dev.yml](https://github.com/testdrivenio/testdriven-app-2.2/blob/pytn/docker-compose-dev.yml)*
 1. Build image, run container:
 
     ```sh
@@ -329,7 +336,7 @@ https://github.com/testdrivenio/testdriven-app-2.2/tree/master/services/users
 
 #### Steps:
 
-1. Review the [code](https://github.com/testdrivenio/testdriven-app-2.2/tree/master/services/users), *[Dockerfile-dev](https://github.com/testdrivenio/testdriven-app-2.2/blob/master/services/users/Dockerfile-dev)*, and *[docker-compose-dev.yml](https://github.com/testdrivenio/testdriven-app-2.2/blob/part4/docker-compose-dev.yml)*
+1. Review the [code](https://github.com/testdrivenio/testdriven-app-2.2/tree/master/services/users), *[Dockerfile-dev](https://github.com/testdrivenio/testdriven-app-2.2/blob/master/services/users/Dockerfile-dev)*, and *[docker-compose-dev.yml](https://github.com/testdrivenio/testdriven-app-2.2/blob/pytn/docker-compose-dev.yml)*
 1. Build image, run container:
 
     ```sh
@@ -369,7 +376,7 @@ https://github.com/testdrivenio/testdriven-app-2.2/tree/master/services/client
 
 #### Steps:
 
-1. Review the [code](https://github.com/testdrivenio/testdriven-app-2.2/tree/master/services/client), *[Dockerfile-dev](https://github.com/testdrivenio/testdriven-app-2.2/blob/master/services/client/Dockerfile-dev)*, *[Dockerfile-prod](https://github.com/testdrivenio/testdriven-app-2.2/blob/master/services/client/Dockerfile-prod)*, and *[docker-compose-dev.yml](https://github.com/testdrivenio/testdriven-app-2.2/blob/part4/docker-compose-dev.yml)*
+1. Review the [code](https://github.com/testdrivenio/testdriven-app-2.2/tree/master/services/client), *[Dockerfile-dev](https://github.com/testdrivenio/testdriven-app-2.2/blob/master/services/client/Dockerfile-dev)*, *[Dockerfile-prod](https://github.com/testdrivenio/testdriven-app-2.2/blob/master/services/client/Dockerfile-prod)*, and *[docker-compose-dev.yml](https://github.com/testdrivenio/testdriven-app-2.2/blob/pytn/docker-compose-dev.yml)*
 
 1. Build image, run container:
 
@@ -439,11 +446,11 @@ For more helpful commands, review https://testdriven.io/part-one-workflow
 
 ### Nginx
 
-https://github.com/testdrivenio/testdriven-app-2.2/tree/part4/services/nginx
+https://github.com/testdrivenio/testdriven-app-2.2/tree/pytn/services/nginx
 
 #### Steps:
 
-1. Review the [code](https://github.com/testdrivenio/testdriven-app-2.2/tree/part4/services/nginx), *[Dockerfile-dev](https://github.com/testdrivenio/testdriven-app-2.2/blob/part4/services/nginx/Dockerfile-dev)*, and *[docker-compose-dev.yml](https://github.com/testdrivenio/testdriven-app-2.2/blob/part4/docker-compose-dev.yml)*
+1. Review the [code](https://github.com/testdrivenio/testdriven-app-2.2/tree/pytn/services/nginx), *[Dockerfile-dev](https://github.com/testdrivenio/testdriven-app-2.2/blob/pytn/services/nginx/Dockerfile-dev)*, and *[docker-compose-dev.yml](https://github.com/testdrivenio/testdriven-app-2.2/blob/pytn/docker-compose-dev.yml)*
 
 1. Build image, run container:
 
@@ -471,7 +478,7 @@ https://github.com/testdrivenio/testdriven-app-2.2/tree/part4/services/nginx
 
 ### End-to-End Tests
 
-https://github.com/testdrivenio/testdriven-app-2.2/tree/part4/e2e
+https://github.com/testdrivenio/testdriven-app-2.2/tree/pytn/e2e
 
 #### Notes:
 
@@ -480,7 +487,7 @@ https://github.com/testdrivenio/testdriven-app-2.2/tree/part4/e2e
 
 #### Steps:
 
-1. Review the [code](https://github.com/testdrivenio/testdriven-app-2.2/tree/part4/e2e) and *[docker-compose-prod.yml](https://github.com/testdrivenio/testdriven-app-2.2/blob/part4/docker-compose-prod.yml)*
+1. Review the [code](https://github.com/testdrivenio/testdriven-app-2.2/tree/pytn/e2e) and *[docker-compose-prod.yml](https://github.com/testdrivenio/testdriven-app-2.2/blob/pytn/docker-compose-prod.yml)*
 
 1. Update the containers, then test:
 
@@ -796,20 +803,20 @@ What's next?
 #### Check your understanding
 
 1. Add the Swagger service
-1. Turn back to the feature wish-list. Implement anything not covered.
+1. Turn back to the Orchestration Feature Wish-list. Implement anything not covered.
 
 --
 
 #### Resources
 
 1. Slides - http://mherman.org/presentations/pytn-2018
-1. Repo - https://github.com/testdrivenio/testdriven-app-2.2/tree/part4
+1. Repo - https://github.com/testdrivenio/testdriven-app-2.2/tree/pytn
 1. ***[Testdriven.io](http://testdriven.io/) - full course!*** ❤️
 1. [How to Build 12 Factor Microservices on Docker](https://www.packtpub.com/books/content/how-to-build-12-factor-design-microservices-on-docker-part-1)
 1. [Docker Cheat Sheet](https://github.com/wsargent/docker-cheat-sheet)
 
 <div>
-  <img src="images/mobile_image.png" style="max-width: 15%; border:0; box-shadow: none;" alt="elastic load balancing and ecs">
+  <img src="images/mobile_image.png" style="max-width: 10%; border:0; box-shadow: none;" alt="testdriven.io">
 </div>
 
 --
