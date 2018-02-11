@@ -617,7 +617,7 @@ Which one?
 
 --
 
-ECS is simpler to set up and easier to use and you have the full power of AWS behind it, so you can easily integrate it into other AWS services (which we will be doing shortly). In short, you get scheduling, service discovery, load balancing, and auto-scaling out-of-the-box. Plus, you can take full advantage of EC2’s multiple availability-zones.
+ECS is simpler to set up and easier to use and you have the full power of AWS behind it, so you can easily integrate it into other AWS services (which we will be doing shortly). **In short, you get *scheduling*, *service discovery*, *load balancing*, and *auto-scaling* out-of-the-box. Plus, you can take full advantage of EC2’s multiple *availability-zones*.**
 
 --
 
@@ -629,7 +629,7 @@ Keep in mind, that ECS is often lagging behind Kubernetes, in terms of features,
 
 --
 
-One last thing to take note of is that since ECS is closed-source, there isn’t a true way to run an environment locally in order to achieve development-to-production parity.
+One last thing to take note of is that since ECS is closed-source, there isn’t a true way to run an environment locally in order to achieve development-to-production parity. ([LocalStack](https://github.com/localstack/localstack)?)
 
 <br>
 
@@ -677,10 +677,8 @@ Listeners are added to the load balancer, which are then forwarded to a specific
 
 The Application Load Balancer is one of those AWS services that makes ECS so powerful. In fact, before it’s release, ECS was not a viable orchestration solution.
 
-<br>
-
 <div>
-  <img src="images/05_elastic-load-balancing.png" style="max-width: 70%; border:0; box-shadow: none;" alt="elastic load balancing">
+  <img src="images/05_elastic-load-balancing.png" style="max-width: 50%; border:0; box-shadow: none;" alt="elastic load balancing">
 </div>
 
 https://console.aws.amazon.com/ec2
@@ -691,15 +689,19 @@ https://console.aws.amazon.com/ec2
 
 Before you can start spinning up containers, you need to set up [EC2 Container Registry](https://aws.amazon.com/ecr/) (ECR), a private image registry. Once setup, you can then build, tag, and push images.
 
-https://console.aws.amazon.com/ecs
+--
+
+#### Images
+
+Set up the following images at https://console.aws.amazon.com/ecs:
+
+1. `pytn-users`
+1. `pytn-users_db`
+1. `pytn-client`
 
 --
 
-#### Why only three images?
-
---
-
-Well, we'll use the Application Load Balancer instead of Nginx in our stack so we won't need that image or container.
+<small><em>Why did we leave out Nginx?</em></small>
 
 --
 
