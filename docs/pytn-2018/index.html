@@ -529,14 +529,14 @@ $ eval $(docker-machine env pytn)
 
 --
 
-Grab the IP address associated with the new EC2 instance and use it to set the `REACT_APP_BASE_URL` environment variable:
+Grab the IP address associated with the new EC2 instance and use it to set the `REACT_APP_USERS_SERVICE_URL` environment variable:
 
 ```sh
 $ docker-machine ip pytn
-$ export REACT_APP_BASE_URL=http://DOCKER_MACHINE_IP
+$ export REACT_APP_USERS_SERVICE_URL=http://DOCKER_MACHINE_IP
 ```
 
-<small><em><strong>NOTE:</strong> The `REACT_APP_BASE_URL` environment variable must be set at the build-time, so it is available *before* we kick off Create React App's production build process.</em></small>
+<small><em><strong>NOTE:</strong> The `REACT_APP_USERS_SERVICE_URL` environment variable must be set at the build-time, so it is available *before* we kick off Create React App's production build process.</em></small>
 
 ---
 
