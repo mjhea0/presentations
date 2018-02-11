@@ -93,7 +93,6 @@ class: center, middle
 1. Elastic Load Balancing (ELB)
 1. Elastic Container Registry (ECR)
 1. Elastic Container Service (ECS)
-1. Setting up RDS
 1. Zero-downtime Deploy Demo
 
 --
@@ -233,7 +232,7 @@ Fire up the app locally:
 ```sh
 $ git clone https://github.com/testdrivenio/testdriven-app-2.2 \
   --branch pytn --single-branch
-$ cd testdriven-app-2.2 && git checkout tags/pytn -b master
+$ cd testdriven-app-2.2
 $ export REACT_APP_USERS_SERVICE_URL=http://localhost
 $ docker-compose -f docker-compose-dev.yml up -d --build
 ```
@@ -761,12 +760,6 @@ https://console.aws.amazon.com/ecs
 
 ---
 
-### RDS
-
-pass
-
----
-
 ### Zero-downtime Deploy Demo
 
 --
@@ -800,14 +793,15 @@ What's next?
 
 --
 
-#### Check your understanding
+##### Check your understanding
 
 1. Add the Swagger service
-1. Turn back to the Orchestration Feature Wish-list. Implement anything not covered.
+1. Configure Postgres via [RDS](https://aws.amazon.com/rds/)
+1. Add the remaining features from the [Orchestration Feature Wish-list](http://mherman.org/presentations/pytn-2018/index.html#59).
 
 --
 
-#### Resources
+##### Resources
 
 1. Slides - http://mherman.org/presentations/pytn-2018
 1. Repo - https://github.com/testdrivenio/testdriven-app-2.2/tree/pytn
@@ -816,12 +810,12 @@ What's next?
 1. [Docker Cheat Sheet](https://github.com/wsargent/docker-cheat-sheet)
 
 <div>
-  <img src="images/mobile_image.png" style="max-width: 10%; border:0; box-shadow: none;" alt="testdriven.io">
+  <img src="images/mobile_image.png" style="max-width: 11%; border:0; box-shadow: none;" alt="testdriven.io">
 </div>
 
 --
 
-#### Questions?
+##### Questions?
 
 ✌️
 
