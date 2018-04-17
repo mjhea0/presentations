@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Going Serverless with OpenFaaS, Kubernetes, and Python</title>
+    <meta charset="utf-8">
+    <style>
+      @import url(https://fonts.googleapis.com/css?family=Yanone+Kaffeesatz);
+      @import url(https://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic);
+      @import url(https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,400italic);
+
+      body { font-family: 'Droid Serif'; }
+      h1, h2, h3 {
+        font-family: 'Yanone Kaffeesatz';
+        font-weight: normal;
+      }
+      td {
+        padding-left: 5px;
+        padding-right: 5px;
+      }
+      .remark-code { font-family: 'Ubuntu Mono'; }
+      .remark-inline-code {
+        font-family: 'Ubuntu Mono';
+        padding: 2px 4px;
+        font-size: 90%;
+        color: #c7254e;
+        background-color: #f9f2f4;
+        border-radius: 0;
+       }
+    </style>
+  </head>
+  <body>
+    <textarea id="source">
+
+class: center, middle
+
+# Going Serverless with OpenFaaS,<br>Kubernetes, and Python
+
+<div style="text-align:center;">
+  <img src="images/openfaas.png" style="max-width: 25%; border:0; box-shadow: none;" alt="openfaas">
+</div>
+
+<br>
+
+<div>
+  <span style="vertical-align:60%;">Presented by <em>Michael Herman</em> at</span>&nbsp;
+  <img src="images/pycon2018.png" style="max-width: 15%; border:0; box-shadow: none;" alt="PyCon 2018 logo">
+</div>
+
+
+---
+
+### Agenda (part 1)
+
+⏱ ~ 1 hour
+
+--
+
+##### (1) Intro
+
+1. About Me
+1. Objectives
+1. Architecture
+1. Serverless 101
+1. Kuberetes 101
+1. Project Setup
+
+--
+
+##### (2) Containers and Services
+
+1. Python/Flask
+1. Postgres
+1. Nginx
+1. OpenFaaS
+1. Workflow
+
+---
+
+
+### Agenda (part 2)
+
+⏱ ~ 2 hours
+
+--
+
+##### (3) Deployment
+
+1. Kubernetes
+1. Digital Ocean Setup
+1. Deploying Each Service
+1. Workflow
+
+--
+
+##### (4) Goodbye
+
+1. Next Steps
+1. Questions
+
+---
+
+### About Michael
+
+```
+$ whoami
+michael.herman
+```
+
+--
+
+#### Day Job:
+
+Software Engineer at [ClickFox](https://www.clickfox.com/).
+&nbsp;
+<img src="images/clickfox.png" style="max-width: 4%; border:0; box-shadow: none;" alt="clickfox logo">
+
+--
+
+#### Docker:
+
+1. Avid Docker user since 2014.
+1. Last year I architected and set up [On-Demand Environments With Docker and AWS ECS](http://mherman.org/blog/2017/09/18/on-demand-test-environments-with-docker-and-aws-ecs/).
+
+--
+
+#### Also:
+
+1. Co-founder/author of [Real Python](https://realpython.com)
+1. 😍 - [tech writing/education](http://mherman.org), [open source](http://github.com/mjhea0), [financial models](http://www.starterfinancialmodel.com/), [radiohead](http://radiohead.com/)
+
+<img src="images/me.png" style="max-width: 10%; border:0; box-shadow: none; padding-top:10px" alt="me">
+
+
+    </textarea>
+    <script src="https://remarkjs.com/downloads/remark-latest.min.js">
+    </script>
+    <script>
+      var slideshow = remark.create();
+    </script>
+  </body>
+</html>
