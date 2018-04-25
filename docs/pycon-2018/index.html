@@ -13,6 +13,18 @@
         font-family: 'Yanone Kaffeesatz';
         font-weight: normal;
       }
+      table {
+        width: 50%;
+        border-collapse: collapse;
+      }
+
+      table, th, td {
+        border: 1px solid black;
+      }
+      th, td {
+        padding: 10px;
+        text-align: left;
+      }
       td {
         padding-left: 5px;
         padding-right: 5px;
@@ -74,8 +86,7 @@ class: center, middle
 
 ##### (3) OpenFaaS
 
-1. foo
-1. bar
+1. Eval
 
 ---
 
@@ -201,11 +212,16 @@ Much of this tutorial comes from the following course I wrote at [Testdriven.io]
 | Web DB    | `web-db`    | Postgres            |
 | Nginx     | `nginx`     | Nginx               |
 
+<br>
+
+--
 
 **OpenFaas Back-end:**
 
-1. foo
-1. bar
+| Name        | Container   | Tech                |
+|-------------|-------------|---------------------|
+| API Gateway | `gateway`   | Golang              |
+| Eval        | `eval`      | Python              |
 
 ---
 
@@ -304,7 +320,7 @@ Fire up the app locally:
 $ git clone https://github.com/testdrivenio/flask-openfaas \
   --branch pycon --single-branch
 $ cd flask-openfaas
-$ docker-compose up -d --build
+$ docker-compose -f docker-compose-web.yml up -d --build
 ```
 
 <small><em><strong>NOTE:</strong> Using Docker Machine? Replace `localhost` above with `DOCKER_MACHINE_IP`.</em></small>
@@ -372,11 +388,11 @@ https://github.com/testdrivenio/flask-openfaas/tree/pycon/services/db
 
 #### Steps:
 
-1. Review *[Dockerfile](https://github.com/testdrivenio/flask-openfaas/blob/pycon/services/db/Dockerfile)* and *[docker-compose.yml](https://github.com/testdrivenio/flask-openfaas/blob/pycon/docker-compose.yml)*
+1. Review *[Dockerfile](https://github.com/testdrivenio/flask-openfaas/blob/pycon/services/db/Dockerfile)* and *[docker-compose-web.yml](https://github.com/testdrivenio/flask-openfaas/blob/pycon/docker-compose-web.yml)*
 1. Build image, run container:
 
     ```sh
-    $ docker-compose up -d --build users-db
+    $ docker-compose -f docker-compose-web.yml up -d --build users-db
     ```
 
 1. Test/Sanity Check:
@@ -405,21 +421,23 @@ https://github.com/testdrivenio/flask-openfaas/tree/master/services/web
 
 #### Steps:
 
-1. Review the [code](https://github.com/testdrivenio/flask-openfaas/tree/master/services/web), *[Dockerfile](https://github.com/testdrivenio/flask-openfaas/blob/master/services/web/Dockerfile)*, and *[docker-compose.yml](https://github.com/testdrivenio/flask-openfaas/blob/master/docker-compose.yml)*
+1. Review the [code](https://github.com/testdrivenio/flask-openfaas/tree/master/services/web), *[Dockerfile](https://github.com/testdrivenio/flask-openfaas/blob/master/services/web/Dockerfile)*, and *[docker-compose-web.yml](https://github.com/testdrivenio/flask-openfaas/blob/master/docker-compose-web.yml)*
 1. Build image, run container:
 
     ```sh
-    $ docker-compose -f docker-compose.yml up -d --build users
+    $ docker-compose -f docker-compose-web.yml up -d --build users
     ```
 
 1. Test/Sanity Check:
 
     ```sh
     # create and seed the db
-    $ docker-compose run web python manage.py create_db
-    $ docker-compose run web python manage.py create_data
+    $ docker-compose -f docker-compose-web.yml \
+      run web python manage.py create_db
+    $ docker-compose -f docker-compose-web.yml \
+      run web python manage.py create_data
     # run unit and integration tests
-    $ docker-compose run web python manage.py test
+    $ docker-compose -f docker-compose-web.yml run web python manage.py test
     ```
 
     Navigate to [http://localhost:5002](http://localhost:5002) in your browser.
@@ -444,12 +462,12 @@ https://github.com/testdrivenio/flask-openfaas/tree/pycon/services/nginx
 
 #### Steps:
 
-1. Review the [code](https://github.com/testdrivenio/flask-openfaas/tree/pycon/services/nginx), *[Dockerfile](https://github.com/testdrivenio/flask-openfaas/blob/pycon/services/nginx/Dockerfile)*, and *[docker-compose.yml](https://github.com/testdrivenio/flask-openfaas/blob/master/docker-compose.yml)*
+1. Review the [code](https://github.com/testdrivenio/flask-openfaas/tree/pycon/services/nginx), *[Dockerfile](https://github.com/testdrivenio/flask-openfaas/blob/pycon/services/nginx/Dockerfile)*, and *[docker-compose-web.yml](https://github.com/testdrivenio/flask-openfaas/blob/master/docker-compose-web.yml)*
 
 1. Build image, run container:
 
     ```sh
-    $ docker-compose up -d --build nginx
+    $ docker-compose -f docker-compose-web.yml up -d --build nginx
     ```
 
 1. Test/Sanity Check: navigate to [http://localhost](http://localhost)
@@ -462,94 +480,87 @@ https://github.com/testdrivenio/flask-openfaas/tree/pycon/services/nginx
 
 ---
 
-### End-to-End Tests
+class: center, middle
+
+## OpenFaaS
+
+---
+
+### Eval
 
 <div>
-  <img src="images/testdriven-e2e.png" style="max-width:100%; border:0; box-shadow: none;" alt="testdriven-e2e">
+  <img src="images/tech_eval.png" style="max-width:100%; border:0; box-shadow: none;" alt="tech">
 </div>
 
 ---
 
-### Docker Machine
+### Eval
 
---
+https://github.com/testdrivenio/flask-openfaas/tree/pycon/services/eval
 
-Assuming you already have an AWS account [setup](http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/get-set-up-for-amazon-ec2.html) along with [IAM](https://aws.amazon.com/iam/) and your AWS credentials are stored in an *~/.aws/credentials* file, create a new host on an EC2 instance:
+#### Steps:
 
-```sh
-$ docker-machine create --driver amazonec2 pytn
-```
+1. Review *[Dockerfile](https://github.com/testdrivenio/flask-openfaas/blob/pycon/services/eval/Dockerfile)* and *[docker-compose-web.yml](https://github.com/testdrivenio/flask-openfaas/blob/pycon/docker-compose-web.yml)*
 
---
+1. Create a new Docker Machine on [Digital Ocean](https://m.do.co/c/d8f211a4b4c2), set it as the active host, and point the Docker client at it:
 
-Once done, set it as the active host and point the Docker client at it:
+  ```sh
+  $ docker-machine create \
+      --driver digitalocean \
+      --digitalocean-access-token ADD_YOUR_KEY \
+      eval;
+  $ docker-machine env eval
+  $ eval $(docker-machine env eval)
+  ```
 
-```sh
-$ docker-machine env pytn
-$ eval $(docker-machine env pytn)
-```
+1. Build image:
 
---
+    ```sh
+    $ docker build -t python-eval ./services/eval
+    ```
 
-Grab the IP address associated with the new EC2 instance and use it to set the `REACT_APP_USERS_SERVICE_URL` environment variable:
-
-```sh
-$ docker-machine ip pytn
-$ export REACT_APP_USERS_SERVICE_URL=http://DOCKER_MACHINE_IP
-```
-
-<small><em><strong>NOTE:</strong> The `REACT_APP_USERS_SERVICE_URL` environment variable must be set at the build-time, so it is available *before* we kick off Create React App's production build process.</em></small>
+<div>
+  <img src="images/python.png" style="max-width: 30%; border:0; box-shadow: none; padding-top:10px;" alt="python">
+</div>
 
 ---
 
-### EC2 Deployment
+### Eval (continued...)
 
---
+https://github.com/testdrivenio/flask-openfaas/tree/pycon/services/eval
 
-Set the secret key:
+#### Steps:
 
-```sh
-$ export SECRET_KEY=my_precious
-```
 
---
+1. Initialize Swarm mode:
 
-Build the images, spin up the containers:
+    ```sh
+    $ docker-machine ssh eval -- docker swarm init
+    ```
 
-```sh
-$ docker-compose -f docker-compose-prod.yml up -d --build
-```
+1. Deploy:
 
---
+    ```sh
+    $ docker stack deploy func --compose-file docker-compose-faas.yml --prune
+    ```
 
-Create and seed the database:
+1. Grab the IP:
 
-```sh
-$ docker-compose -f docker-compose-prod.yml \
-  run users python manage.py recreate_db
-$ docker-compose -f docker-compose-prod.yml run users python manage.py seed_db
-```
+    ```sh
+    $ docker-machine ip eval
+    ```
 
---
-
-Update the `TEST_URL` environment variable and then run the e2e tests:
-
-```sh
-$ testcafe chrome e2e
-```
+1. Test in the browser - http://DOCKER_MACHINE_IP:8080
 
 <div>
-  <img src="images/aws.png" style="max-width: 12%; padding-top:20px; box-shadow: none;" alt="aws logo">
+  <img src="images/docker-swarm.png" style="max-width: 25%; border:0; box-shadow: none; padding-top:10px;" alt="docker swarm">
 </div>
-
-
-<small>For more, review https://docs.docker.com/machine/examples/aws/.</small>
 
 ---
 
 class: center, middle
 
-## Orchestration
+## Deployment
 
 ---
 
@@ -759,6 +770,7 @@ What's next?
 
 ##### Check your understanding
 
+1. https://blog.alexellis.io/lock-down-openfaas/
 1. Add the Swagger service
 1. Configure Postgres via [RDS](https://aws.amazon.com/rds/)
 1. Add the remaining features from the [Orchestration Feature Wish-list](http://mherman.org/presentations/pytn-2018/index.html#59).
