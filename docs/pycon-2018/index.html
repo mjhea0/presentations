@@ -86,6 +86,7 @@ class: center, middle
 
 ##### (3) OpenFaaS
 
+1. Health Check
 1. Eval
 
 ---
@@ -100,14 +101,20 @@ class: center, middle
 ##### (4) Deployment
 
 1. Container Orchestration
-1. Kubernetes
 1. Digital Ocean Setup
+1. Kubernetes
 1. Deploying Each Service
 1. Workflow
 
 --
 
-##### (5) Goodbye
+##### (5) Challenges
+
+1. Production Dockerfiles
+
+--
+
+##### (6) Goodbye
 
 1. Next Steps
 1. Questions
@@ -218,10 +225,11 @@ Much of this tutorial comes from the following course I wrote at [Testdriven.io]
 
 **OpenFaas Back-end:**
 
-| Name        | Container   | Tech                |
-|-------------|-------------|---------------------|
-| API Gateway | `gateway`   | Golang              |
-| Eval        | `eval`      | Python              |
+| Name         | Container   | Tech          |
+|--------------|-------------|---------------|
+| API Gateway  | `gateway`   | Golang        |
+| Code Eval    | `eval`      | Python        |
+| Health Check | `ping`      | Python        |
 
 ---
 
@@ -417,11 +425,11 @@ https://github.com/testdrivenio/flask-openfaas/tree/pycon/services/db
 
 ### Web
 
-https://github.com/testdrivenio/flask-openfaas/tree/master/services/web
+https://github.com/testdrivenio/flask-openfaas/tree/pycon/services/web
 
 #### Steps:
 
-1. Review the [code](https://github.com/testdrivenio/flask-openfaas/tree/master/services/web), *[Dockerfile](https://github.com/testdrivenio/flask-openfaas/blob/master/services/web/Dockerfile)*, and *[docker-compose-web.yml](https://github.com/testdrivenio/flask-openfaas/blob/master/docker-compose-web.yml)*
+1. Review the [code](https://github.com/testdrivenio/flask-openfaas/tree/pycon/services/web), *[Dockerfile](https://github.com/testdrivenio/flask-openfaas/blob/pycon/services/web/Dockerfile)*, and *[docker-compose-web.yml](https://github.com/testdrivenio/flask-openfaas/blob/pycon/docker-compose-web.yml)*
 1. Build image, run container:
 
     ```sh
@@ -462,7 +470,7 @@ https://github.com/testdrivenio/flask-openfaas/tree/pycon/services/nginx
 
 #### Steps:
 
-1. Review the [code](https://github.com/testdrivenio/flask-openfaas/tree/pycon/services/nginx), *[Dockerfile](https://github.com/testdrivenio/flask-openfaas/blob/pycon/services/nginx/Dockerfile)*, and *[docker-compose-web.yml](https://github.com/testdrivenio/flask-openfaas/blob/master/docker-compose-web.yml)*
+1. Review the [code](https://github.com/testdrivenio/flask-openfaas/tree/pycon/services/nginx), *[Dockerfile](https://github.com/testdrivenio/flask-openfaas/blob/pycon/services/nginx/Dockerfile)*, and *[docker-compose-web.yml](https://github.com/testdrivenio/flask-openfaas/blob/pycon/docker-compose-web.yml)*
 
 1. Build image, run container:
 
@@ -486,6 +494,45 @@ class: center, middle
 
 ---
 
+### Health Check
+
+<div>
+  <img src="images/tech_ping.png" style="max-width:100%; border:0; box-shadow: none;" alt="tech">
+</div>
+
+---
+
+### Health Check
+
+https://github.com/testdrivenio/flask-openfaas/tree/pycon/services/ping
+
+#### Steps:
+
+1. Review *[Dockerfile](https://github.com/testdrivenio/flask-openfaas/blob/pycon/services/ping/Dockerfile)* and *[docker-compose-faas.yml](https://github.com/testdrivenio/flask-openfaas/blob/pycon/docker-compose-faas.yml)*
+
+1. Build the image:
+
+    ```sh
+    $ docker build -t python-ping ./services/ping
+    ```
+
+1. Test/Sanity Check:
+
+    ```sh
+    $ docker run -i python-ping ls
+    handler.py
+    requirements.txt
+
+    $ docker run -i python-eval python3 handler.py
+    pong
+    ```
+
+<div>
+  <img src="images/python.png" style="max-width: 35%; border:0; box-shadow: none; padding-top:15px;" alt="python">
+</div>
+
+---
+
 ### Eval
 
 <div>
@@ -500,7 +547,78 @@ https://github.com/testdrivenio/flask-openfaas/tree/pycon/services/eval
 
 #### Steps:
 
-1. Review *[Dockerfile](https://github.com/testdrivenio/flask-openfaas/blob/pycon/services/eval/Dockerfile)* and *[docker-compose-web.yml](https://github.com/testdrivenio/flask-openfaas/blob/pycon/docker-compose-web.yml)*
+1. Review *[Dockerfile](https://github.com/testdrivenio/flask-openfaas/blob/pycon/services/eval/Dockerfile)* and *[docker-compose-faas.yml](https://github.com/testdrivenio/flask-openfaas/blob/pycon/docker-compose-faas.yml)*
+
+1. Build the image:
+
+    ```sh
+    $ docker build -t python-eval ./services/eval
+    ```
+
+1. Test/Sanity Check:
+
+    ```sh
+    $ docker run -i python-eval ls
+    handler.py
+    requirements.txt
+    tmp
+
+    $ docker run -i python-ping python3 handler.py
+    .
+    Ran 1 test in 0.000s
+    ```
+
+<div>
+  <img src="images/git.png" style="max-width: 15%; border:0; box-shadow: none; padding-top:10px;" alt="git">
+</div>
+
+---
+
+class: center, middle
+
+## Deployment
+
+---
+
+### What is Container Orchestration?
+
+--
+
+As you move from deploying containers on a single machine to deploying them across a number of machines, you need an orchestration tool to manage (and automate) the arrangement, coordination, and availability of the containers across the entire system.
+
+--
+
+This is where [Kubernetes](https://kubernetes.io/) and [Docker Swarm](https://docs.docker.com/engine/swarm/) fit in along with a number of other orchestration tools - like [Elastic Container Service](https://aws.amazon.com/ecs/) (ECS), [Apache Mesos](http://mesos.apache.org/), and [Nomad](https://www.nomadproject.io/).
+
+--
+
+<br>
+
+**Which one?**
+
+<div>
+  <img src="images/kubernetes-vs-docker-swarm-vs-mesos.png" style="max-width: 30%; border:0; box-shadow: none;" alt="kubernetes vs docker swarm vs mesos">
+</div>
+
+--
+
+1. *Kubernetes* - large community, flexible, most features, complex setup
+1. *Docker Swarm* - easier to set up, limited by the Docker API
+1. *ECS* - easiest to set up, integrated with AWS
+
+--
+
+<small><em>Awesome comparison resource -> https://blog.kublr.com/choosing-the-right-containerization-and-cluster-management-tool-fdfcec5700df</em></small>
+
+---
+
+### Eval
+
+https://github.com/testdrivenio/flask-openfaas/tree/pycon/services/eval
+
+#### Steps:
+
+1. Review *[Dockerfile](https://github.com/testdrivenio/flask-openfaas/blob/pycon/services/eval/Dockerfile)* and *[docker-compose-faas.yml](https://github.com/testdrivenio/flask-openfaas/blob/pycon/docker-compose-faas.yml)*
 
 1. Create a new Docker Machine on [Digital Ocean](https://m.do.co/c/d8f211a4b4c2), set it as the active host, and point the Docker client at it:
 
@@ -558,209 +676,6 @@ https://github.com/testdrivenio/flask-openfaas/tree/pycon/services/eval
 
 ---
 
-class: center, middle
-
-## Deployment
-
----
-
-### What is Container Orchestration?
-
---
-
-As you move from deploying containers on a single machine to deploying them across a number of machines, you need an orchestration tool to manage the arrangement and coordination of the containers across the entire system.
-
---
-
-This is where [ECS](https://aws.amazon.com/ecs/) fits in along with a number of other orchestration tools - like [Kubernetes](https://kubernetes.io/), [Mesos](http://mesos.apache.org/), and [Docker Swarm](https://docs.docker.com/engine/swarm/).
-
---
-
-<br><br>
-
-Which one?
-
-<div>
-  <img src="images/kubernetes-vs-docker-swarm-vs-mesos.png" style="max-width: 40%; border:0; box-shadow: none;" alt="kubernetes vs docker swarm vs mesos">
-</div>
-
----
-
-### Why ECS?
-
---
-
-ECS is simpler to set up and easier to use and you have the full power of AWS behind it, so you can easily integrate it into other AWS services (which we will be doing shortly). **In short, you get *scheduling*, *service discovery*, *load balancing*, and *auto-scaling* out-of-the-box. Plus, you can take full advantage of EC2’s multiple *availability-zones*.**
-
---
-
-If you’re already on AWS and have no desire to leave, then it makes sense to use AWS.
-
---
-
-Keep in mind, that ECS is often lagging behind Kubernetes, in terms of features, though. If you’re looking for the most features and portability and you don’t mind installing and managing the tool, then Kubernetes, Docker Swarm, or Mesos may be right for you.
-
---
-
-One last thing to take note of is that since ECS is closed-source, there isn’t a true way to run an environment locally in order to achieve development-to-production parity. ([LocalStack](https://github.com/localstack/localstack)?)
-
-<br>
-
-<small><em>Awesome comparison resource -> https://blog.kublr.com/choosing-the-right-containerization-and-cluster-management-tool-fdfcec5700df</em></small>
-
----
-
-### Orchestration Feature Wish-list
-
-Most orchestration tools come with a core set of features. You can find those features below along with the associated AWS service...
-
-<div>
-  <img src="images/features.png" style="max-width: 67%; border:0; box-shadow: none;" alt="orchestration features">
-</div>
-
-<small><em>We'll either cover the features with a ✔️ directly or you'll see them in action from the demo.</em></small>
-
----
-
-### Elastic Load Balancing (part 1)
-
-The Elastic Load Balancer distributes incoming application traffic and scales resources as needed to meet traffic needs.
-
---
-
-It's one of (if not) the most important parts of your applications since it needs to always be up, routing traffic to healthy back-ends, and ready to scale at a moment’s notice.
-
---
-
-##### (1) Application Load Balancer
-
-There are currently three types of Elastic Load Balancers to choose from. We’ll be using the Application Load Balancer since it provides support for path-based routing and dynamic port-mapping and it also enables zero-downtime deployments.
-
---
-
-##### (2) Target Groups and (3) Listeners
-
-Target Groups are attached to the Application Load Balancer and are used to route traffic to the containers found in the ECS service.
-
-Listeners are added to the load balancer, which are then forwarded to a specific Target Group.
-
----
-
-### Elastic Load Balancing (part 2)
-
-The Application Load Balancer is one of those AWS services that makes ECS so powerful. In fact, before it’s release, ECS was not a viable orchestration solution.
-
-<div>
-  <img src="images/05_elastic-load-balancing.png" style="max-width: 50%; border:0; box-shadow: none;" alt="elastic load balancing">
-</div>
-
-https://console.aws.amazon.com/ec2
-
----
-
-### ECR
-
-Before you can start spinning up containers, you need to set up [EC2 Container Registry](https://aws.amazon.com/ecr/) (ECR), a private image registry. Once setup, you can then build, tag, and push images.
-
---
-
-#### Images
-
-Set up the following images at https://console.aws.amazon.com/ecs:
-
-1. `pytn-users`
-1. `pytn-users_db`
-1. `pytn-client`
-
---
-
-<small><em>Why did we leave out Nginx?</em></small>
-
---
-
-#### Tagging
-
-When tagging your images, you should think about version control (using the SHA1 to tie the image back to a specific commit) as well as the environment (development, staging, production) the image should belong to.
-
-`/$PROJECT/$ENVIRONMENT:$SHA1`
-
----
-
-### ECS (part 1)
-
-The [Elastic Container Service](https://aws.amazon.com/ecs/) (ECS) has four main components:
-
-1. Task Definitions
-1. Tasks
-1. Services
-1. Clusters
-
---
-
-`Task Definitions` => `Tasks` => `Services` => `Clusters`
-
-![ecs](images/ecs.png)
-
----
-
-### ECS (part 2)
-
---
-
-#### Task Definitions (1)
-
-Task Definitions define which containers make up the overall application and how much resources are allocated to each container. You can think of them as blueprints.
-
---
-
-#### (2) Tasks and (3) Services
-
-Services instantiate the containers from the Task Definitions and run them on EC2 boxes within an ECS Cluster. Such instances are called Tasks.
-
---
-
-#### (4) Cluster
-
-An ECS Cluster is just a group of EC2 container instances managed by ECS.
-
----
-
-### ECS (part 3)
-
-<div>
-  <img src="images/05_elastic-load-balancing-ecs.png" style="max-width: 70%; border:0; box-shadow: none;" alt="elastic load balancing and ecs">
-</div>
-
-https://console.aws.amazon.com/ecs
-
----
-
-### Zero-downtime Deploy Demo
-
---
-
-#### Steps
-
-1. Make a quick change to the app locally.
-1. Build, tag, and push the new images.
-1. Add a new revision to the task definition.
-1. Update the service.
-
---
-
-#### What happens next?
-
-1. Once you update the Service, ECS will pick up on these changes and instantiate the Task Definitions, creating new Tasks that will spin up on the Cluster instances.
-1. ALB will run health checks on the new instances once they are up.
-    - If the health checks pass, traffic is forwarded appropriately to the new Tasks while the old Tasks are spun down.
-    - If the health checks fail, the new Tasks are spun down.
-
---
-
-The health checks are the last line of defense after your unit, integration, and functional tests.
-
----
-
 
 ### That's it!
 
@@ -771,9 +686,6 @@ What's next?
 ##### Check your understanding
 
 1. https://blog.alexellis.io/lock-down-openfaas/
-1. Add the Swagger service
-1. Configure Postgres via [RDS](https://aws.amazon.com/rds/)
-1. Add the remaining features from the [Orchestration Feature Wish-list](http://mherman.org/presentations/pytn-2018/index.html#59).
 
 --
 
