@@ -102,14 +102,16 @@ class: center, middle
 
 1. Container Orchestration
 1. Digital Ocean Setup
+1. Docker Swarm Mode
 1. Kubernetes
-1. Deploying Each Service
-1. Workflow
 
 --
 
 ##### (5) Challenges
 
+1. Deploy Web App
+1. Deploy OpenFaaS Stack
+1. Connect the Web App to OpenFaaS
 1. Production Dockerfiles
 
 --
@@ -523,7 +525,7 @@ https://github.com/testdrivenio/flask-openfaas/tree/pycon/services/ping
     handler.py
     requirements.txt
 
-    $ docker run -i python-eval python3 handler.py
+    $ docker run -i python-ping python3 handler.py
     pong
     ```
 
@@ -541,35 +543,66 @@ https://github.com/testdrivenio/flask-openfaas/tree/pycon/services/ping
 
 ---
 
-### Eval
+### Eval (v1)
 
 https://github.com/testdrivenio/flask-openfaas/tree/pycon/services/eval
 
 #### Steps:
 
-1. Review *[Dockerfile](https://github.com/testdrivenio/flask-openfaas/blob/pycon/services/eval/Dockerfile)* and *[docker-compose-faas.yml](https://github.com/testdrivenio/flask-openfaas/blob/pycon/docker-compose-faas.yml)*
+1. Review *[Dockerfile01](https://github.com/testdrivenio/flask-openfaas/blob/pycon/services/eval/Dockerfile01)* and *[docker-compose-faas.yml](https://github.com/testdrivenio/flask-openfaas/blob/pycon/docker-compose-faas.yml)*
 
 1. Build the image:
 
     ```sh
-    $ docker build -t python-eval ./services/eval
+    $ docker build -t python-eval:v1 \
+        -f ./services/eval/Dockerfile01 ./services/eval
     ```
 
 1. Test/Sanity Check:
 
     ```sh
-    $ docker run -i python-eval ls
+    $ docker run -i python-eval:v1 ls
     handler.py
     requirements.txt
     tmp
 
-    $ docker run -i python-ping python3 handler.py
+    $ docker run -i python-eval:v1 python3 handler.py
     .
     Ran 1 test in 0.000s
     ```
 
 <div>
-  <img src="images/git.png" style="max-width: 15%; border:0; box-shadow: none; padding-top:10px;" alt="git">
+  <img src="images/git.png" style="max-width: 15%; border:0; box-shadow: none; padding-top:5px;" alt="git">
+</div>
+
+---
+
+### Eval (v2)
+
+https://github.com/testdrivenio/flask-openfaas/tree/pycon/services/eval
+
+#### Steps:
+
+1. Review *[Dockerfile02](https://github.com/testdrivenio/flask-openfaas/blob/pycon/services/eval/Dockerfile02)* and *[docker-compose-faas.yml](https://github.com/testdrivenio/flask-openfaas/blob/pycon/docker-compose-faas.yml)*
+
+1. Build the image:
+
+    ```sh
+    $ docker build -t python-eval:v2 \
+        -f ./services/eval/Dockerfile02 ./services/eval
+    ```
+
+1. Test/Sanity Check:
+
+    ```sh
+    $ docker run -i python-eval:v2 ls
+    handler.py
+    requirements.txt
+    tmp
+    ```
+
+<div>
+  <img src="images/git.png" style="max-width: 15%; border:0; box-shadow: none; padding-top:20px;" alt="git">
 </div>
 
 ---
@@ -588,17 +621,13 @@ As you move from deploying containers on a single machine to deploying them acro
 
 --
 
-This is where [Kubernetes](https://kubernetes.io/) and [Docker Swarm](https://docs.docker.com/engine/swarm/) fit in along with a number of other orchestration tools - like [Elastic Container Service](https://aws.amazon.com/ecs/) (ECS), [Apache Mesos](http://mesos.apache.org/), and [Nomad](https://www.nomadproject.io/).
+This is where [Kubernetes](https://kubernetes.io/) and [Docker Swarm](https://docs.docker.com/engine/swarm/) fit in along with a number of other orchestration tools - like [ECS](https://aws.amazon.com/ecs/), [Mesos](http://mesos.apache.org/), and [Nomad](https://www.nomadproject.io/).
 
 --
 
 <br>
 
 **Which one?**
-
-<div>
-  <img src="images/kubernetes-vs-docker-swarm-vs-mesos.png" style="max-width: 30%; border:0; box-shadow: none;" alt="kubernetes vs docker swarm vs mesos">
-</div>
 
 --
 
@@ -608,52 +637,100 @@ This is where [Kubernetes](https://kubernetes.io/) and [Docker Swarm](https://do
 
 --
 
+<br>
+
 <small><em>Awesome comparison resource -> https://blog.kublr.com/choosing-the-right-containerization-and-cluster-management-tool-fdfcec5700df</em></small>
 
 ---
 
-### Eval
+### Orchestration Feature Wish-list
 
-https://github.com/testdrivenio/flask-openfaas/tree/pycon/services/eval
+<table style="width:100%;">
+<thead>
+<tr>
+<th>Feature</th>
+<th>Info</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Health checks</td>
+<td>Verify when a task is ready to accept traffic</td>
+</tr>
+<tr>
+<td>Dynamic port-mapping</td>
+<td>Ports are assigned dynamically when a new container is spun up</td>
+</tr>
+<tr>
+<td>Zero-downtime deployments</td>
+<td>Deployments do not disrupt end users</td>
+</tr>
+<tr>
+<td>Service discovery</td>
+<td>Automatic detection of new containers and services</td>
+</tr>
+<tr>
+<td>Auto scaling</td>
+<td>Automatically scalling resources up or down based on the load</td>
+</tr>
+<tr>
+<td>Provisioning</td>
+<td>New containers shoudl select hosts based on resources and configuration</td>
+</tr>
+</tbody>
+</table>
 
-#### Steps:
-
-1. Review *[Dockerfile](https://github.com/testdrivenio/flask-openfaas/blob/pycon/services/eval/Dockerfile)* and *[docker-compose-faas.yml](https://github.com/testdrivenio/flask-openfaas/blob/pycon/docker-compose-faas.yml)*
-
-1. Create a new Docker Machine on [Digital Ocean](https://m.do.co/c/d8f211a4b4c2), set it as the active host, and point the Docker client at it:
-
-  ```sh
-  $ docker-machine create \
-      --driver digitalocean \
-      --digitalocean-access-token ADD_YOUR_KEY \
-      eval;
-  $ docker-machine env eval
-  $ eval $(docker-machine env eval)
-  ```
-
-1. Build image:
-
-    ```sh
-    $ docker build -t python-eval ./services/eval
-    ```
-
-<div>
-  <img src="images/python.png" style="max-width: 30%; border:0; box-shadow: none; padding-top:10px;" alt="python">
+<div style="text-align:center;">
+  <h3>🐳</h3>
 </div>
 
 ---
 
-### Eval (continued...)
+### Digital Ocean Setup
 
-https://github.com/testdrivenio/flask-openfaas/tree/pycon/services/eval
+1. Don't have an account? Use https://m.do.co/c/d8f211a4b4c2 to get $10 in Digital Ocean credit! 😊
+
+1. Generate a [Personal Access Token](https://www.digitalocean.com/community/tutorials/how-to-use-the-digitalocean-api-v2)
+
+1. Add the token to your environment:
+
+    ```sh
+    $ export DIGITAL_OCEAN_ACCESS_TOKEN=YOUR_TOKEN
+    ```
+
+1. Create a new Docker Machine and point the Docker client at it:
+
+    ```sh
+    $ docker-machine create --driver digitalocean \
+        --digitalocean-access-token $DIGITAL_OCEAN_ACCESS_TOKEN openfaas;
+    $ docker-machine env openfaas
+    $ eval $(docker-machine env openfaas)
+    ```
+
+<div>
+  <img src="images/do.png" style="max-width: 25%; border:0; box-shadow: none; padding-top:15px; padding-left:20px;" alt="digital ocean">
+</div>
+
+---
+
+### Docker Swarm Mode
+
+Docker [Swarm mode](https://docs.docker.com/engine/swarm/) provides support for container orchestration.
 
 #### Steps:
-
 
 1. Initialize Swarm mode:
 
     ```sh
-    $ docker-machine ssh eval -- docker swarm init
+    $ docker-machine ssh openfaas -- docker swarm init \
+        --advertise-addr $(docker-machine ip openfaas)
+    ```
+
+1. Build image:
+
+    ```sh
+    $ docker build -t python-eval:latest \
+        -f ./services/eval/Dockerfile01 ./services/eval
     ```
 
 1. Deploy:
@@ -662,20 +739,245 @@ https://github.com/testdrivenio/flask-openfaas/tree/pycon/services/eval
     $ docker stack deploy func --compose-file docker-compose-faas.yml --prune
     ```
 
-1. Grab the IP:
-
-    ```sh
-    $ docker-machine ip eval
-    ```
-
-1. Test in the browser - http://DOCKER_MACHINE_IP:8080
-
 <div>
-  <img src="images/docker-swarm.png" style="max-width: 25%; border:0; box-shadow: none; padding-top:10px;" alt="docker swarm">
+  <img src="images/docker-swarm.png" style="max-width: 20%; border:0; box-shadow: none; padding-top:10px;" alt="docker swarm">
 </div>
 
 ---
 
+### Docker Swarm Mode (continued...)
+
+1. Grab the IP:
+
+    ```sh
+    $ docker-machine ip openfaas
+    ```
+
+1. Test in the browser - http://DOCKER_MACHINE_IP:8080:
+
+    <div>
+      <img src="images/example1.gif" style="max-width: 90%; border:0; box-shadow: none; padding-top:10px;" alt="example">
+    </div>
+
+---
+
+### Docker Swarm Mode (continued...)
+
+
+
+1. Build again:
+
+    ```sh
+    docker build -t python-eval:latest \
+    -f ./services/eval/Dockerfile02 ./services/eval
+    ```
+
+1. Re-deploy:
+
+    ```sh
+    $ docker stack rm func
+    $ docker stack deploy func --compose-file docker-compose-faas.yml --prune
+    ```
+
+1. Test:
+
+    ```sh
+    curl -X POST \
+    $(echo http://$(docker-machine ip openfaas):8080)/function/func_eval -d \
+    '{"namespace": "testdrivenio", "repo_name": "pycon-sample"}'
+
+    Ran 1 test in 0.000s
+    OK
+    ```
+
+1. Remove the Machine:
+
+    ```sh
+    $ docker-machine rm openfaas
+    $ eval $(docker-machine env -u)
+    ```
+
+---
+
+### Kubernetes
+
+### Steps
+
+1. Create a new *Ubuntu 16.04.3 x64* droplet on [Digital Ocean](https://m.do.co/c/d8f211a4b4c2).
+
+1. SSH into the box and then run following commands to install Docker along with [kubeadm](https://kubernetes.io/docs/setup/independent/create-cluster-kubeadm/), [kubelet](https://kubernetes.io/docs/reference/generated/kubelet/) and [kubernetes-cni](https://kubernetes.io/docs/concepts/cluster-administration/network-plugins/#cni):
+
+    ```sh
+    $ apt-get update && apt-get install -y apt-transport-https
+    $ curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | \
+        apt-key add -
+    $ echo "deb http://apt.kubernetes.io/ kubernetes-xenial main" \
+        > /etc/apt/sources.list.d/kubernetes.list
+    $ apt-get update && apt-get install -qy docker.io
+    $ apt-get update && apt-get install -y kubelet kubeadm kubernetes-cni
+    ```
+
+1. Create a new user:
+
+    ```sh
+    $ adduser michael
+    $ usermod -aG sudo michael
+    $ su - michael
+    ```
+
+---
+
+### Kubernetes (continued...)
+
+1. Deploy Kubernetes:
+
+    ```sh
+    $ sudo kubeadm init
+    ```
+
+1. Then run:
+
+    ```sh
+    $ mkdir -p $HOME/.kube
+    $ sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+    $ sudo chown $(id -u):$(id -g) $HOME/.kube/config
+    ```
+
+1. Install overlay network:
+
+    ```sh
+    $ kubectl apply -f \
+        "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')"
+    ```
+
+1. Allow containers to be placed on the master:
+
+    ```sh
+    $ kubectl taint nodes --all node-role.kubernetes.io/master-
+    ```
+
+?
+
+---
+
+class: center, middle
+
+## Challenges
+
+---
+
+### Deploy Web App
+
+<div>
+  <img src="images/tech_web-app.png" style="max-width:100%; border:0; box-shadow: none;" alt="tech">
+</div>
+
+---
+
+### Deploy Web App
+
+#### Steps:
+
+1. Spin up a new Docker Machine backend on Digital Ocean:
+
+    ```sh
+    $ docker-machine create --driver digitalocean \
+      --digitalocean-access-token $DIGITAL_OCEAN_ACCESS_TOKEN web;
+    ```
+
+1. Point the Docker client at it:
+
+    ```sh
+    $ docker-machine env web
+    $ eval $(docker-machine env web)
+    ```
+
+1. Build the images and spin up the containers:
+
+    ```sh
+    $ docker-compose -f docker-compose-web-prod.yml up -d --build
+    ```
+
+1. Get the IP:
+
+    ```sh
+    $ docker-machine ip web
+    ```
+
+    Ensure you can view the app in the browser.
+
+---
+
+### Deploy Web App (continued...)
+
+#### Steps:
+
+1. Create the database:
+
+    ```sh
+    $ docker-compose -f docker-compose-web-prod.yml \
+      run web python manage.py create_db
+
+    $ docker-compose -f docker-compose-web-prod.yml \
+      run web python manage.py create_admin
+
+    $ docker-compose -f docker-compose-web-prod.yml \
+      run web python manage.py create_data
+    ```
+
+1. Make sure the tests pass:
+
+    ```sh
+    $ docker-compose -f docker-compose-web-prod.yml \
+      run web python manage.py test
+    ```
+
+---
+
+### Deploy OpenFaaS
+
+<div>
+  <img src="images/tech_openfaas.png" style="max-width:100%; border:0; box-shadow: none;" alt="tech">
+</div>
+
+---
+
+### Deploy OpenFaaS
+
+--
+
+Your turn!
+
+<br><br>
+
+--
+
+<div class="grid">
+  <div style="float: left; width: 60%;">
+    <h4 style="margin-top: 0;">Steps:</h4>
+    <ol>
+      <li>Create a new Docker Machine on Digital Ocean and point the Docker client at it</li>
+      <li>Initialize Docker Swarm mode</li>
+      <li>Build the Docker image</li>
+      <li>Deploy</li>
+      <li>Test!</li>
+    </ol>
+    <div style="padding-top:30px;">
+      <p>Questions?</p>
+    </div>
+  </div>
+  <div style="float: left; width: 40%;">
+    <div text-align="center">
+      <img src="images/openfaas2.png" style="max-width: 70%; border:0; box-shadow: none;" alt="openfaas">
+    </div>
+  </div>
+</div>
+
+---
+
+### Connect the Web App to OpenFaaS
+
+---
 
 ### That's it!
 
