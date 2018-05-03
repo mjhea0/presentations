@@ -14,7 +14,7 @@
         font-weight: normal;
       }
       table {
-        width: 50%;
+        width: 60%;
         border-collapse: collapse;
       }
 
@@ -22,7 +22,7 @@
         border: 1px solid black;
       }
       th, td {
-        padding: 10px;
+        padding: 5px;
         text-align: left;
       }
       td {
@@ -63,28 +63,46 @@ class: center, middle
 
 ### Agenda (part 1)
 
-⏱ ~ 1 hour
+⏱ ~ 30 minutes
 
 --
 
 ##### (1) Intro
 
 1. About Me
-1. Objectives
-1. Serverless, FaaS, and OpenFaaS
+1. Objectives (WIP)
+1. What are we building?
 1. Architecture
 1. Project Setup
 1. Why Microservices?
 
 --
 
-##### (2) Web App
+#### (2) Theory
+
+1. IaaS and PaaS
+1. Serverless and FaaS
+1. OpenFaaS
+
+---
+
+### Agenda (part 2)
+
+⏱ ~ 30 minutes
+
+--
+
+##### (3) Web App
 
 1. Python/Flask
 1. Postgres
 1. Nginx
+1. Redis
+1. Worker
 
-##### (3) OpenFaaS
+--
+
+##### (4) OpenFaaS
 
 1. Health Check
 1. Eval
@@ -92,34 +110,39 @@ class: center, middle
 ---
 
 
-### Agenda (part 2)
+### Agenda (part 3)
 
 ⏱ ~ 2 hours
 
 --
 
-##### (4) Deployment
+##### (5) Deployment
 
 1. Container Orchestration
 1. Digital Ocean Setup
-1. Docker Swarm Mode
-1. Kubernetes
 
 --
 
-##### (5) Challenges
+##### (6) Challenges
 
 1. Deploy Web App
 1. Deploy OpenFaaS Stack
-1. Connect the Web App to OpenFaaS
+    - Docker Swarm mode
+    - Kubernetes
 1. Production Dockerfiles
 
 --
 
-##### (6) Goodbye
+##### (7) Goodbye
 
 1. Next Steps
 1. Questions
+
+---
+
+class: center, middle
+
+## Intro
 
 ---
 
@@ -209,17 +232,33 @@ Much of this tutorial comes from the following course I wrote at [Testdriven.io]
 
 ---
 
+### What are we building?
+
+--
+
+**OpenCI** - *"a serverless continuous integration system built with OpenFaaS"*
+
+--
+
+<div>
+  <img src="images/tech.png" style="max-width:90%; border:0; box-shadow: none; padding-top:20px;" alt="tech">
+</div>
+
+---
+
 ### Architecture
 
 --
 
 **Web App:**
 
-| Name      | Container   | Tech                |
-|-----------|-------------|---------------------|
-| Web       | `web`       | Flask, gunicorn     |
-| Web DB    | `web-db`    | Postgres            |
-| Nginx     | `nginx`     | Nginx               |
+| Name      | Container    | Tech                    |
+|-----------|--------------|-------------------------|
+| Web       | `web`        | Python, Flask, gunicorn |
+| Web DB    | `web-db`     | Postgres                |
+| Redis     | `web-redis`  | Redis                   |
+| Worker    | `web-worker` | Python                  |
+| Nginx     | `web-nginx`  | Nginx                   |
 
 <br>
 
@@ -232,91 +271,6 @@ Much of this tutorial comes from the following course I wrote at [Testdriven.io]
 | API Gateway  | `gateway`   | Golang        |
 | Code Eval    | `eval`      | Python        |
 | Health Check | `ping`      | Python        |
-
----
-
-### Serverless, FaaS, and OpenFaaS
-
---
-
-**Serverless**:
-
-Serverless is a cloud computing execution model that abstracts away much of the complexity associated with server management (implementing, provisioning, tweaking, scaling) from developers. Pricing models are generally based on actual resources consumed.
-
---
-
-**Functions as a Service (FaaS)**:
-
-FaaS is a serverless model that enables developers to run modular, stateless pieces of code in response to events (like HTTP requests).
-
---
-
-<div>
-  <img src="images/mono-micro-functions.png" style="max-width: 55%; padding-top:10px; padding-bottom:0; box-shadow: none;" alt="monolith vs microservice vs faas">
-</div>
-
-<p style="margin-top:0;"><small>(<a href="http://lukeangel.co/cross-platform/docker-servless-faas-functions-as-a-service/">Source</a>)</small></p>
-
----
-
-### Serverless, FaaS, and OpenFaaS (continued...)
-
-**Question: How does FaaS differ from the PaaS model?**
-
---
-
-1. *PaaS* - Applications typically run on the server at all times.
-1. *FaaS* - Functions run as needed. When needed, the functions take a few milliseconds to start and then they are shut down after execution.
-
---
-
-**Examples of FaaS:**
-
-1. [AWS Lambda](https://aws.amazon.com/lambda/)
-1. [Google Cloud Functions](https://cloud.google.com/functions/)
-1. [Microsoft Azure Functions](https://azure.microsoft.com/en-us/services/functions/)
-
-<div>
-  <img src="images/azure_functions.jpg" style="max-width: 20%; padding-top:10px; padding-bottom:0; box-shadow: none;" alt="microsoft azure functions">
-</div>
-
---
-
-**FaaS Advantages**:
-
-1. *Increased velocity* (infrastructure is managed by someone else)
-1. *Scalability, availabiliity, and fault tolerance comes out of the box*
-1. *Decreased costs* (no idle resources)
-
----
-
-### Serverless, FaaS, and OpenFaaS (continued...)
-
---
-
-**FaaS Disadvantages**:
-
-1. *Decreased transparency* (infrastructure is managed by someone else)
-1. *Debugging* (remote debugging sucks)
-1. *Confusion* (lots of moving pieces)
-1. *Restrictions* (i.e., AWS Lambda functions only support certain languages and functions can only run for 5 minutes)
-1. *Vendor lock-in*
-
---
-
-**OpenFaaS**:
-
-[OpenFaaS](https://www.openfaas.com/) is a framework for building serverless functions on top of containers. It helps to mitigate many of the above disadvantages. You can run serverless functions:
-
-1. In whatever language you want
-1. For however long you need
-1. Wherever you want
-
-<div>
-  <img src="images/openfaas_full_logo.png" style="max-width: 25%; border:0; box-shadow: none;" alt="openfaas">
-</div>
-
-https://blog.alexellis.io/introducing-functions-as-a-service/
 
 ---
 
@@ -380,6 +334,148 @@ You need - *Strong communication + docs, mature devops, lots of planning*
 
 class: center, middle
 
+## Theory
+
+---
+
+### IaaS and PaaS
+
+--
+
+**Infrastructure-as-a-Service (IaaS)**:
+
+IaaS models provide the base infrastructure (compute resources, networking, cloud storage) that end users then have to provision and manage on their own. *Examples*: DigitalOcean, Rackspace, parts of AWS
+
+--
+
+**Platform-as-a-Service (PaaS)**
+
+PaaS models provide a platform for end users to manage applications without the overhead of having to set up and maintain the underlying infrastructure. *Examples*: Heroku, Elastic Beanstalk
+
+--
+
+<p style="margin-bottom:0">
+  <a href="images/iaas-paas.png">
+    <img src="images/iaas-paas.png" style="max-width: 50%;padding-bottom:0" alt="iaas vs paas">
+  </a>
+</p>
+
+<p style="margin-top:0;"><small>(<a href="http://robertgreiner.com/2014/03/windows-azure-iaas-paas-saas-overview/">Source</a>)</small></p>
+
+---
+
+### Serverless and FaaS
+
+--
+
+**Serverless**:
+
+Serverless is a cloud computing execution model that abstracts away much of the complexity associated with server management (implementing, provisioning, tweaking, scaling) from developers. Pricing models are generally based on actual resources consumed.
+
+--
+
+**Functions as a Service (FaaS)**:
+
+FaaS is a serverless model that enables developers to run modular, stateless pieces of code in response to events (like HTTP requests).
+
+--
+
+<div class="grid">
+  <div style="float: left; width: 45%;">
+    <div text-align="center">
+      <div>
+        <img src="images/mono-micro-functions.png" style="max-width: 90%; padding-top:10px; padding-bottom:0; box-shadow: none;" alt="monolith vs microservice vs faas">
+      </div>
+      <p style="margin-top:0;"><small>(<a href="http://lukeangel.co/cross-platform/docker-servless-faas-functions-as-a-service/">Source</a>)</small></p>
+    </div>
+  </div>
+  <div style="float: left; width: 55%;">
+    <p><em>What's it good for?</em></p>
+    <ul>
+      <li>Handling HTTP requests</li>
+      <li>Processing tasks from a queue</li>
+      <li>Running cron-like jobs</li>
+    </ul>
+  </div>
+</div>
+
+---
+
+### Serverless and FaaS (continued...)
+
+**Question: How does FaaS differ from the PaaS model?**
+
+--
+
+1. *PaaS* - Applications typically run on the server at all times.
+1. *FaaS* - Functions run as needed. When needed, the functions take a few milliseconds to start and then they are shut down after execution.
+
+--
+
+**Examples of FaaS:**
+
+1. [AWS Lambda](https://aws.amazon.com/lambda/)
+1. [Google Cloud Functions](https://cloud.google.com/functions/)
+1. [Microsoft Azure Functions](https://azure.microsoft.com/en-us/services/functions/)
+
+<div>
+  <img src="images/azure_functions.jpg" style="max-width: 20%; padding-top:10px; padding-bottom:0; box-shadow: none;" alt="microsoft azure functions">
+</div>
+
+--
+
+**FaaS Advantages**:
+
+1. *Increased velocity* (infrastructure is managed by someone else)
+1. *Scalability, availabiliity, and fault tolerance comes out of the box*
+1. *Decreased costs* (no idle resources)
+
+---
+
+### Serverless and FaaS (continued...)
+
+--
+
+**FaaS Disadvantages**:
+
+1. *Decreased transparency* (infrastructure is managed by someone else)
+1. *Debugging* (remote debugging sucks)
+1. *Confusion* (lots of moving pieces)
+1. *Restrictions* (i.e., AWS Lambda functions only support certain languages and functions can only run for 5 minutes)
+1. *Vendor lock-in*
+
+---
+
+### OpenFaaS
+
+--
+
+[OpenFaaS](https://www.openfaas.com/) is a framework for building serverless functions on top of containers. It helps to mitigate many of the disadvantages with FaaS. You can run serverless functions:
+
+1. In whatever language you want
+1. For however long you need
+1. Wherever you want
+
+<div>
+  <img src="images/openfaas_full_logo.png" style="max-width: 35%; border:0; box-shadow: none; padding-top:10px;padding-bottom:20px;" alt="openfaas">
+</div>
+
+https://blog.alexellis.io/introducing-functions-as-a-service/
+
+--
+
+<br>
+
+**Bottom-line:**
+
+1. Think about how much control you need to have when choosing your cloud model.
+1. What are you team's strengths and weaknesses?
+1. What do you want to focus your time and resources on?
+
+---
+
+class: center, middle
+
 ## Web App
 
 ---
@@ -399,10 +495,10 @@ https://github.com/testdrivenio/flask-openfaas/tree/pycon/services/db
 #### Steps:
 
 1. Review *[Dockerfile](https://github.com/testdrivenio/flask-openfaas/blob/pycon/services/db/Dockerfile)* and *[docker-compose-web.yml](https://github.com/testdrivenio/flask-openfaas/blob/pycon/docker-compose-web.yml)*
-1. Build image, run container:
+1. Build the image and run the container:
 
     ```sh
-    $ docker-compose -f docker-compose-web.yml up -d --build users-db
+    $ docker-compose -f docker-compose-web.yml up -d --build web-db
     ```
 
 1. Test/Sanity Check:
@@ -432,10 +528,10 @@ https://github.com/testdrivenio/flask-openfaas/tree/pycon/services/web
 #### Steps:
 
 1. Review the [code](https://github.com/testdrivenio/flask-openfaas/tree/pycon/services/web), *[Dockerfile](https://github.com/testdrivenio/flask-openfaas/blob/pycon/services/web/Dockerfile)*, and *[docker-compose-web.yml](https://github.com/testdrivenio/flask-openfaas/blob/pycon/docker-compose-web.yml)*
-1. Build image, run container:
+1. Build the image and run the container:
 
     ```sh
-    $ docker-compose -f docker-compose-web.yml up -d --build users
+    $ docker-compose -f docker-compose-web.yml up -d --build web
     ```
 
 1. Test/Sanity Check:
@@ -461,7 +557,7 @@ https://github.com/testdrivenio/flask-openfaas/tree/pycon/services/web
 ### Nginx
 
 <div>
-  <img src="images/tech_nginx.png" style="max-width:100%; border:0; box-shadow: none;" alt="tech">
+  <img src="images/tech_web-nginx.png" style="max-width:100%; border:0; box-shadow: none;" alt="tech">
 </div>
 
 ---
@@ -474,10 +570,10 @@ https://github.com/testdrivenio/flask-openfaas/tree/pycon/services/nginx
 
 1. Review the [code](https://github.com/testdrivenio/flask-openfaas/tree/pycon/services/nginx), *[Dockerfile](https://github.com/testdrivenio/flask-openfaas/blob/pycon/services/nginx/Dockerfile)*, and *[docker-compose-web.yml](https://github.com/testdrivenio/flask-openfaas/blob/pycon/docker-compose-web.yml)*
 
-1. Build image, run container:
+1. Build the image and run the container:
 
     ```sh
-    $ docker-compose -f docker-compose-web.yml up -d --build nginx
+    $ docker-compose -f docker-compose-web.yml up -d --build web-nginx
     ```
 
 1. Test/Sanity Check: navigate to [http://localhost](http://localhost)
@@ -485,7 +581,63 @@ https://github.com/testdrivenio/flask-openfaas/tree/pycon/services/nginx
 <br>
 
 <div>
-  <img src="images/nginx.png" style="max-width: 20%; border:0; box-shadow: none;" alt="nginx logo">
+  <img src="images/nginx.png" style="max-width: 15%; border:0; box-shadow: none;" alt="nginx logo">
+</div>
+
+---
+
+### Redis
+
+<div>
+  <img src="images/tech_web-redis.png" style="max-width:100%; border:0; box-shadow: none;" alt="tech">
+</div>
+
+---
+
+### Redis
+
+#### Steps:
+
+1. Review the  *[docker-compose-web.yml](https://github.com/testdrivenio/flask-openfaas/blob/pycon/docker-compose-web.yml)*
+
+1. Build the image and run the container:
+
+    ```sh
+    $ docker-compose -f docker-compose-web.yml up -d --build web-redis
+    ```
+
+<br>
+
+<div>
+  <img src="images/redis.png" style="max-width: 25%; border:0; box-shadow: none;" alt="redis">
+</div>
+
+---
+
+### Worker
+
+<div>
+  <img src="images/tech_web-worker.png" style="max-width:100%; border:0; box-shadow: none;" alt="tech">
+</div>
+
+---
+
+### Worker
+
+#### Steps:
+
+1. Review the  *[docker-compose-web.yml](https://github.com/testdrivenio/flask-openfaas/blob/pycon/docker-compose-web.yml)*
+
+1. Build the image and run the container:
+
+    ```sh
+    $ docker-compose -f docker-compose-web.yml up -d --build web-worker
+    ```
+
+<br>
+
+<div>
+  <img src="images/python.png" style="max-width: 40%; border:0; box-shadow: none;" alt="python">
 </div>
 
 ---
@@ -499,7 +651,7 @@ class: center, middle
 ### Health Check
 
 <div>
-  <img src="images/tech_ping.png" style="max-width:100%; border:0; box-shadow: none;" alt="tech">
+  <img src="images/tech_openfaas-ping.png" style="max-width:100%; border:0; box-shadow: none;" alt="tech">
 </div>
 
 ---
@@ -538,7 +690,7 @@ https://github.com/testdrivenio/flask-openfaas/tree/pycon/services/ping
 ### Eval
 
 <div>
-  <img src="images/tech_eval.png" style="max-width:100%; border:0; box-shadow: none;" alt="tech">
+  <img src="images/tech_openfaas-eval.png" style="max-width:100%; border:0; box-shadow: none;" alt="tech">
 </div>
 
 ---
@@ -698,165 +850,11 @@ This is where [Kubernetes](https://kubernetes.io/) and [Docker Swarm](https://do
     $ export DIGITAL_OCEAN_ACCESS_TOKEN=YOUR_TOKEN
     ```
 
-1. Create a new Docker Machine and point the Docker client at it:
-
-    ```sh
-    $ docker-machine create --driver digitalocean \
-        --digitalocean-access-token $DIGITAL_OCEAN_ACCESS_TOKEN openfaas;
-    $ docker-machine env openfaas
-    $ eval $(docker-machine env openfaas)
-    ```
+<br>
 
 <div>
   <img src="images/do.png" style="max-width: 25%; border:0; box-shadow: none; padding-top:15px; padding-left:20px;" alt="digital ocean">
 </div>
-
----
-
-### Docker Swarm Mode
-
-Docker [Swarm mode](https://docs.docker.com/engine/swarm/) provides support for container orchestration.
-
-#### Steps:
-
-1. Initialize Swarm mode:
-
-    ```sh
-    $ docker-machine ssh openfaas -- docker swarm init \
-        --advertise-addr $(docker-machine ip openfaas)
-    ```
-
-1. Build image:
-
-    ```sh
-    $ docker build -t python-eval:latest \
-        -f ./services/eval/Dockerfile01 ./services/eval
-    ```
-
-1. Deploy:
-
-    ```sh
-    $ docker stack deploy func --compose-file docker-compose-faas.yml --prune
-    ```
-
-<div>
-  <img src="images/docker-swarm.png" style="max-width: 20%; border:0; box-shadow: none; padding-top:10px;" alt="docker swarm">
-</div>
-
----
-
-### Docker Swarm Mode (continued...)
-
-1. Grab the IP:
-
-    ```sh
-    $ docker-machine ip openfaas
-    ```
-
-1. Test in the browser - http://DOCKER_MACHINE_IP:8080:
-
-    <div>
-      <img src="images/example1.gif" style="max-width: 90%; border:0; box-shadow: none; padding-top:10px;" alt="example">
-    </div>
-
----
-
-### Docker Swarm Mode (continued...)
-
-
-
-1. Build again:
-
-    ```sh
-    docker build -t python-eval:latest \
-    -f ./services/eval/Dockerfile02 ./services/eval
-    ```
-
-1. Re-deploy:
-
-    ```sh
-    $ docker stack rm func
-    $ docker stack deploy func --compose-file docker-compose-faas.yml --prune
-    ```
-
-1. Test:
-
-    ```sh
-    curl -X POST \
-    $(echo http://$(docker-machine ip openfaas):8080)/function/func_eval -d \
-    '{"namespace": "testdrivenio", "repo_name": "pycon-sample"}'
-
-    Ran 1 test in 0.000s
-    OK
-    ```
-
-1. Remove the Machine:
-
-    ```sh
-    $ docker-machine rm openfaas
-    $ eval $(docker-machine env -u)
-    ```
-
----
-
-### Kubernetes
-
-### Steps
-
-1. Create a new *Ubuntu 16.04.3 x64* droplet on [Digital Ocean](https://m.do.co/c/d8f211a4b4c2).
-
-1. SSH into the box and then run following commands to install Docker along with [kubeadm](https://kubernetes.io/docs/setup/independent/create-cluster-kubeadm/), [kubelet](https://kubernetes.io/docs/reference/generated/kubelet/) and [kubernetes-cni](https://kubernetes.io/docs/concepts/cluster-administration/network-plugins/#cni):
-
-    ```sh
-    $ apt-get update && apt-get install -y apt-transport-https
-    $ curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | \
-        apt-key add -
-    $ echo "deb http://apt.kubernetes.io/ kubernetes-xenial main" \
-        > /etc/apt/sources.list.d/kubernetes.list
-    $ apt-get update && apt-get install -qy docker.io
-    $ apt-get update && apt-get install -y kubelet kubeadm kubernetes-cni
-    ```
-
-1. Create a new user:
-
-    ```sh
-    $ adduser michael
-    $ usermod -aG sudo michael
-    $ su - michael
-    ```
-
----
-
-### Kubernetes (continued...)
-
-1. Deploy Kubernetes:
-
-    ```sh
-    $ sudo kubeadm init
-    ```
-
-1. Then run:
-
-    ```sh
-    $ mkdir -p $HOME/.kube
-    $ sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
-    $ sudo chown $(id -u):$(id -g) $HOME/.kube/config
-    ```
-
-1. Install overlay network:
-
-    ```sh
-    $ kubectl apply -f \
-        "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')"
-    ```
-
-1. Allow containers to be placed on the master:
-
-    ```sh
-    $ kubectl taint nodes --all node-role.kubernetes.io/master-
-    ```
-
-?
 
 ---
 
@@ -942,40 +940,177 @@ class: center, middle
 
 ---
 
-### Deploy OpenFaaS
+### Docker Swarm Mode
 
---
+Docker [Swarm mode](https://docs.docker.com/engine/swarm/) provides support for container orchestration.
 
-Your turn!
+#### Steps:
 
-<br><br>
+1. Create a new Docker Machine and point the Docker client at it:
 
---
+    ```sh
+    $ docker-machine create --driver digitalocean \
+        --digitalocean-access-token $DIGITAL_OCEAN_ACCESS_TOKEN openfaas;
+    $ docker-machine env openfaas
+    $ eval $(docker-machine env openfaas)
+    ```
 
-<div class="grid">
-  <div style="float: left; width: 60%;">
-    <h4 style="margin-top: 0;">Steps:</h4>
-    <ol>
-      <li>Create a new Docker Machine on Digital Ocean and point the Docker client at it</li>
-      <li>Initialize Docker Swarm mode</li>
-      <li>Build the Docker image</li>
-      <li>Deploy</li>
-      <li>Test!</li>
-    </ol>
-    <div style="padding-top:30px;">
-      <p>Questions?</p>
-    </div>
-  </div>
-  <div style="float: left; width: 40%;">
-    <div text-align="center">
-      <img src="images/openfaas2.png" style="max-width: 70%; border:0; box-shadow: none;" alt="openfaas">
-    </div>
-  </div>
+1. Initialize Swarm mode:
+
+    ```sh
+    $ docker-machine ssh openfaas -- docker swarm init \
+        --advertise-addr $(docker-machine ip openfaas)
+    ```
+
+<div>
+  <img src="images/docker-swarm.png" style="max-width: 20%; border:0; box-shadow: none; padding-top:40px;" alt="docker swarm">
 </div>
 
 ---
 
-### Connect the Web App to OpenFaaS
+### Docker Swarm Mode (continued...)
+
+#### Steps:
+
+1. Build the image:
+
+    ```sh
+    $ docker build -t python-eval:latest \
+        -f ./services/eval/Dockerfile01 ./services/eval
+    ```
+
+1. Deploy:
+
+    ```sh
+    $ docker stack deploy func --compose-file docker-compose-faas.yml --prune
+    ```
+
+1. Grab the IP:
+
+    ```sh
+    $ docker-machine ip openfaas
+    ```
+
+---
+
+### Docker Swarm Mode (continued...)
+
+#### Steps:
+
+1. Test in the browser - http://DOCKER_MACHINE_IP:8080:
+
+    <div>
+      <img src="images/example1.gif" style="max-width: 90%; border:0; box-shadow: none; padding-top:10px;" alt="example">
+    </div>
+
+---
+
+### Docker Swarm Mode (continued...)
+
+#### Steps:
+
+1. Build again:
+
+    ```sh
+    docker build -t python-eval:latest \
+    -f ./services/eval/Dockerfile02 ./services/eval
+    ```
+
+1. Re-deploy:
+
+    ```sh
+    $ docker stack rm func
+    $ docker stack deploy func --compose-file docker-compose-faas.yml --prune
+    ```
+
+1. Test:
+
+    ```sh
+    curl -X POST \
+    $(echo http://$(docker-machine ip openfaas):8080)/function/func_eval -d \
+    '{"namespace": "testdrivenio", "repo_name": "pycon-sample"}'
+
+    Ran 1 test in 0.000s
+    OK
+    ```
+
+---
+
+### Docker Swarm Mode (continued...)
+
+#### Steps:
+
+1. Update the `OPENFAAS_URL` environment variable in *docker-compose-web-prod.yml* and update the web app
+
+1. Test!
+
+1. Remove the Machine:
+
+    ```sh
+    $ docker-machine rm openfaas
+    $ eval $(docker-machine env -u)
+    ```
+
+---
+
+### Kubernetes
+
+### Steps
+
+1. Create a new *Ubuntu 16.04.3 x64* droplet on [Digital Ocean](https://m.do.co/c/d8f211a4b4c2).
+
+1. SSH into the box and then run following commands to install Docker along with [kubeadm](https://kubernetes.io/docs/setup/independent/create-cluster-kubeadm/), [kubelet](https://kubernetes.io/docs/reference/generated/kubelet/) and [kubernetes-cni](https://kubernetes.io/docs/concepts/cluster-administration/network-plugins/#cni):
+
+    ```sh
+    $ apt-get update && apt-get install -y apt-transport-https
+    $ curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | \
+        apt-key add -
+    $ echo "deb http://apt.kubernetes.io/ kubernetes-xenial main" \
+        > /etc/apt/sources.list.d/kubernetes.list
+    $ apt-get update && apt-get install -qy docker.io
+    $ apt-get update && apt-get install -y kubelet kubeadm kubernetes-cni
+    ```
+
+1. Create a new user:
+
+    ```sh
+    $ adduser michael
+    $ usermod -aG sudo michael
+    $ su - michael
+    ```
+
+---
+
+### Kubernetes (continued...)
+
+1. Deploy Kubernetes:
+
+    ```sh
+    $ sudo kubeadm init
+    ```
+
+1. Then run:
+
+    ```sh
+    $ mkdir -p $HOME/.kube
+    $ sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+    $ sudo chown $(id -u):$(id -g) $HOME/.kube/config
+    ```
+
+1. Install overlay network:
+
+    ```sh
+    $ kubectl apply -f \
+        "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')"
+    ```
+
+1. Allow containers to be placed on the master:
+
+    ```sh
+    $ kubectl taint nodes --all node-role.kubernetes.io/master-
+    ```
+
+?
 
 ---
 
