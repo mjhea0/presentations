@@ -1,0 +1,103 @@
+# markdown-spellcheck spelling configuration file
+# Format - lines beginning # are comments
+# global dictionary is at the start, file overrides afterwards
+# one word per line, to define a file override use ' - filename'
+# where filename is relative to this configuration file
+center
+Serverless
+OpenFaaS
+Microservices
+Nginx
+Redis
+ClickFox
+architected
+radiohead
+TestDriven.io
+Testdriven.io
+gunicorn
+OpenFaas
+microservices
+devops
+DigitalOcean
+Rackspace
+Heroku
+autoscaling
+serverless
+Dockerfile
+yml
+backend
+Webhook
+requirements.txt
+Kubernetes
+IaaS
+PaaS
+FaaS
+Postgres
+Golang
+microservice
+Mesos
+kubeadm
+kubelet
+kubernetes-cni
+Dockerizing
+dockerignore
+VirtualBox
+chokidar
+Ember.js
+Node.js
+AngularJS
+stylesheet
+css
+CloudWatch
+NodeJs
+NodeJS
+ReactJS
+nginx
+aws
+defense
+postgres
+JWT-based
+e2e
+TestCafe
+mgmt
+api
+_MACHINE
+_DEV
+_IP
+env
+Koa
+Chai
+koa-bodyparser
+Node.js.
+Async
+async
+v1
+movies
+movie
+src
+index.js
+koa-router
+movies.js
+data.json
+LocalStack
+ - docs/pycon-2018/index.html
+docker-compose-faas
+v1
+Dockerfile01
+v2
+Eval
+DBs
+Dockerfile02
+ - docs/docker-react/index.html
+150.7MB
+137.7kB
+ - docs/front-end-face-off/index.html
+Coberly
+Walkthroughs
+Specialties
+ - docs/microservice-ping-pong/index.html
+node-george
+node-ringo
+ - docs/node-koa-api/index.html
+routes.index.test.js
+routes.movies.test.js
