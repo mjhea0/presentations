@@ -130,8 +130,8 @@ class: center, middle
 ##### (6) Challenges (WIP)
 
 1. Webhook
+1. Build History
 1. Monitoring
-1. Scaling
 1. More
 
 --
@@ -372,7 +372,7 @@ PaaS models provide a platform for end users to manage applications without the 
 
 Serverless is a cloud computing execution model that abstracts away much of the complexity associated with server management (implementing, provisioning, tweaking, scaling) from developers. Pricing models are generally based on actual resources consumed.
 
-*On-demand* (boots in milliseconds), *elastic* (autoscaling), *pay-as-you-go* (spin down when not used)!
+*On-demand* (boots in milliseconds), *elastic* (auto-scaling), *pay-as-you-go* (spin down when not used)!
 
 --
 
@@ -681,16 +681,16 @@ class: center, middle
 
 ### Health Check
 
-https://github.com/testdrivenio/openci/tree/pycon/services/ping
+https://github.com/testdrivenio/openci/tree/pycon/services/functions/ping
 
 #### Steps:
 
-1. Review *[Dockerfile](https://github.com/testdrivenio/openci/blob/pycon/services/ping/Dockerfile)* and *[docker-compose-faas.yml](https://github.com/testdrivenio/openci/blob/pycon/docker-compose-faas.yml)*
+1. Review *[Dockerfile](https://github.com/testdrivenio/openci/blob/pycon/services/functions/ping/Dockerfile)* and *[docker-compose-faas.yml](https://github.com/testdrivenio/openci/blob/pycon/docker-compose-faas.yml)*
 
 1. Build the image:
 
     ```sh
-    $ docker build -t python-ping ./services/ping
+    $ docker build -t python-ping ./services/functions/ping
     ```
 
 1. Test/Sanity Check:
@@ -720,17 +720,17 @@ https://github.com/testdrivenio/openci/tree/pycon/services/ping
 
 ### Eval (v1)
 
-https://github.com/testdrivenio/openci/tree/pycon/services/eval
+https://github.com/testdrivenio/openci/tree/pycon/services/functions/eval
 
 #### Steps:
 
-1. Review *[Dockerfile01](https://github.com/testdrivenio/openci/blob/pycon/services/eval/Dockerfile01)* and *[docker-compose-faas.yml](https://github.com/testdrivenio/openci/blob/pycon/docker-compose-faas.yml)*
+1. Review *[Dockerfile01](https://github.com/testdrivenio/openci/blob/pycon/services/functions/eval/Dockerfile01)* and *[docker-compose-faas.yml](https://github.com/testdrivenio/openci/blob/pycon/docker-compose-faas.yml)*
 
 1. Build the image:
 
     ```sh
     $ docker build -t python-eval:v1 \
-        -f ./services/eval/Dockerfile01 ./services/eval
+        -f ./services/functions/eval/Dockerfile01 ./services/functions/eval
     ```
 
 1. Test/Sanity Check:
@@ -754,11 +754,11 @@ https://github.com/testdrivenio/openci/tree/pycon/services/eval
 
 ### Eval (v2)
 
-https://github.com/testdrivenio/openci/tree/pycon/services/eval
+https://github.com/testdrivenio/openci/tree/pycon/services/functions/eval
 
 #### Steps:
 
-1. Review *[Dockerfile02](https://github.com/testdrivenio/openci/blob/pycon/services/eval/Dockerfile02)* and *[docker-compose-faas.yml](https://github.com/testdrivenio/openci/blob/pycon/docker-compose-faas.yml)*
+1. Review *[Dockerfile02](https://github.com/testdrivenio/openci/blob/pycon/services/functions/eval/Dockerfile02)* and *[docker-compose-faas.yml](https://github.com/testdrivenio/openci/blob/pycon/docker-compose-faas.yml)*
 
   ([Watchdog](https://github.com/openfaas/faas/tree/master/watchdog) is a tiny HTTP server, bundled with each function, that receives the HTTP request from the API Gateway, triggers the function, and handles `stdin` and `stdout`)
 
@@ -766,7 +766,7 @@ https://github.com/testdrivenio/openci/tree/pycon/services/eval
 
     ```sh
     $ docker build -t python-eval:v2 \
-        -f ./services/eval/Dockerfile02 ./services/eval
+        -f ./services/functions/eval/Dockerfile02 ./services/functions/eval
     ```
 
 1. Test/Sanity Check:
@@ -844,7 +844,7 @@ This is where [Kubernetes](https://kubernetes.io/) and [Docker Swarm](https://do
 </tr>
 <tr>
 <td>Auto scaling</td>
-<td>Automatically scaling resources up or down based on the load</td>
+<td>Automatically scale resources up or down based on the load</td>
 </tr>
 <tr>
 <td>Provisioning</td>
@@ -853,11 +853,13 @@ This is where [Kubernetes](https://kubernetes.io/) and [Docker Swarm](https://do
 </tbody>
 </table>
 
-What else?
+--
 
-<div style="text-align:center;">
-  <h3>🐳</h3>
-</div>
+**What else?**
+
+--
+
+Load balancing, Logging across components, monitoring...
 
 ---
 
@@ -994,7 +996,7 @@ Docker [Swarm mode](https://docs.docker.com/engine/swarm/) provides support for 
 
     ```sh
     $ docker build -t python-eval:latest \
-        -f ./services/eval/Dockerfile01 ./services/eval
+        -f ./services/functions/eval/Dockerfile01 ./services/functions/eval
     ```
 
 1. Deploy:
@@ -1012,7 +1014,7 @@ Docker [Swarm mode](https://docs.docker.com/engine/swarm/) provides support for 
 1. Test:
 
     ```sh
-    $ curl http://159.89.177.130:8080/function/ping
+    $ curl $(echo http://$(docker-machine ip openfaas):8080)/function/ping
       pong
     ```
 
@@ -1038,7 +1040,7 @@ Docker [Swarm mode](https://docs.docker.com/engine/swarm/) provides support for 
 
     ```sh
     docker build -t python-eval:latest \
-    -f ./services/eval/Dockerfile02 ./services/eval
+    -f ./services/functions/eval/Dockerfile02 ./services/functions/eval
     ```
 
 1. Re-deploy:
@@ -1231,6 +1233,34 @@ Add a [webhook](https://developer.github.com/webhooks/) to GitHub so that OpenCI
 
 ---
 
+### Build History
+
+Save and show the build history on the web app.
+
+--
+
+<div class="grid">
+  <div style="float: left; width: 65%;">
+    <div>
+      <img src="images/build_history.png" style="max-width:90%; border:0; box-shadow: none; padding-top:20px;" alt="webhook">
+    </div>
+  </div>
+  <div style="float: left; width: 35%;">
+    <br>
+    <h4 style="margin-top: 0;">Steps:</h4>
+    <ul>
+      <li>Add model</li>
+      <li>Add a View history button to the UI</li>
+      <li>Update <em>create_data</em> script in <em>services/web/manage.py</em></li>
+      <li>Add route handler</li>
+      <li>Create a new template</li>
+      <li>Update the <em>get_status()</em> and <em>update_project()</em> views</li>
+    </ul>
+  </div>
+</div>
+
+---
+
 ### Monitoring
 
 Create a dashboard from the Prometheus metrics with [Grafana](https://grafana.com/).
@@ -1250,14 +1280,17 @@ Create a dashboard from the Prometheus metrics with [Grafana](https://grafana.co
 1. Deploy [OpenFaaS Grafana](https://github.com/stefanprodan/faas-grafana):
 
     ```sh
-    $ docker service create -d \
-    --name=func_grafana \
-    --publish=3000:3000 \
-    --network=func_functions \
-    stefanprodan/faas-grafana:4.6.3
+    $ docker service create -d --name=func_grafana \
+    --publish=3000:3000 --network=func_functions stefanprodan/faas-grafana:4.6.3
     ```
 
 1. Navigate to [http://YOUR_IP:3000/dashboard/db/openfaas](http://YOUR_IP:3000/dashboard/db/openfaas) to view Grafana and [http://YOUR_IP:9090/graph](http://YOUR_IP:9090/graph) to view Prometheus
+
+1. Run the following to see some action on Grafana:
+
+    ```sh
+    $ while [ true ]; do curl $(echo http://$(docker-machine ip openfaas):8080)/function/ping; done;
+    ```
 
 ---
 
@@ -1266,7 +1299,9 @@ Create a dashboard from the Prometheus metrics with [Grafana](https://grafana.co
 1. *Handling Dependencies* - Can the `eval` function currently handle any dependency in the *requirements.txt* file? How about any library from the Python standard library?
 1. *Private repos* - Add environment variables so that the `eval` function can clone down private repos.
 1. *Language agnostic* - Refactor the `eval` function so that it can handle any language, not just Python.
-1. *Production Dockerfiles* - Using [multistage](https://docs.docker.com/develop/develop-images/multistage-build/), optimize the Dockerfiles for production.
+1. *Production Dockerfiles* - Using [multistage](https://docs.docker.com/develop/develop-images/multistage-build/) builds, optimize the Dockerfiles for production.
+1. *Scaling* - Implement [auto-scaling](https://docs.openfaas.com/architecture/autoscaling/).
+1. *Branches* - Add the ability to support different branches.
 
 ---
 
