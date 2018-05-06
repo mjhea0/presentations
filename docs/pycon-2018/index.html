@@ -129,7 +129,7 @@ class: center, middle
 
 ##### (6) Challenges (WIP)
 
-1. Git Hook
+1. Webhook
 1. Monitoring
 1. Scaling
 1. More
@@ -241,6 +241,8 @@ Much of this tutorial comes from the following course I wrote at [Testdriven.io]
     </ul>
   </div>
 </div>
+
+https://github.com/testdrivenio/openci
 
 ---
 
@@ -1196,29 +1198,66 @@ class: center, middle
 
 ---
 
-### Git Hook
+### Webhook
 
-Code along!
+Add a [webhook](https://developer.github.com/webhooks/) to GitHub so that OpenCI is triggered on `push` events.
 
-#### Steps:
+--
 
-1. Deploy OpenFaaS
-1. Create a new function
-1. Add the function to *docker-compose-faas.yml*
-1. Set up the GitHub Webhook in the project repo
-1. Test
-1. Update the function
-1. Test again
-1. Deploy the web app stack
-1. Add route handler
-1. Update the function
-1. Final test
+<div class="grid">
+  <div style="float: left; width: 50%;">
+    <div>
+      <img src="images/webhook.png" style="max-width:85%; border:0; box-shadow: none; padding-top:20px;" alt="webhook">
+    </div>
+  </div>
+  <div style="float: left; width: 50%;">
+    <br>
+    <h4 style="margin-top: 0;">Steps:</h4>
+    <ul>
+      <li>Deploy OpenFaaS</li>
+      <li>Create a new function (good use case for an <a href="https://github.com/openfaas/faas/blob/master/guide/asynchronous.md">async</a> function?)</li>
+      <li>Add the function to <em>docker-compose-faas.yml</em></li>
+      <li>Set up the GitHub Webhook in the project repo</li>
+      <li>Test</li>
+      <li>Update the function</li>
+      <li>Test again</li>
+      <li>Deploy the web app stack</li>
+      <li>Add route handler</li>
+      <li>Update the function</li>
+      <li>Final test</li>
+    </ul>
+  </div>
+</div>
 
 ---
 
 ### Monitoring
 
-WIP
+Create a dashboard from the Prometheus metrics with [Grafana](https://grafana.com/).
+
+--
+
+#### Steps
+
+1. Re-deploy:
+
+    ```sh
+    $ docker stack rm func
+    $ docker stack deploy func \
+      --compose-file docker-compose-faas-full.yml --prune
+    ```
+
+1. Deploy [OpenFaaS Grafana](https://github.com/stefanprodan/faas-grafana):
+
+    ```sh
+    $ docker service create -d \
+    --name=func_grafana \
+    --publish=3000:3000 \
+    --network=func_functions \
+    stefanprodan/faas-grafana:4.6.3
+    ```
+
+1. Navigate to [http://YOUR_IP:3000/dashboard/db/openfaas](http://YOUR_IP:3000/dashboard/db/openfaas) to view Grafana and [http://YOUR_IP:9090/graph](http://YOUR_IP:9090/graph) to view Prometheus
 
 ---
 
