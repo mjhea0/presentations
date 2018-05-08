@@ -70,7 +70,7 @@ class: center, middle
 ##### (1) Intro
 
 1. About Me
-1. Objectives (WIP)
+1. Objectives
 1. What are we building?
 1. Architecture
 1. Project Setup
@@ -127,7 +127,7 @@ class: center, middle
 
 --
 
-##### (6) Challenges (WIP)
+##### (6) Challenges
 
 1. Webhook
 1. Build History
@@ -138,8 +138,8 @@ class: center, middle
 
 ##### (7) Goodbye
 
-1. Next Steps (WIP)
-1. Questions (WIP)
+1. Next Steps
+1. Questions
 
 ---
 
@@ -186,7 +186,36 @@ Software Engineer at [ClickFox](https://www.clickfox.com/).
 
 By the end of this talk, you should be able to...
 
-1. WIP
+1. Configure and run **microservices** locally with Docker
+
+--
+
+1. Integrate **Redis Queue** into a Flask app and create tasks
+
+--
+
+1. Run tasks in the background with a separate **worker** process
+
+--
+
+1. Run unit and integration **tests** inside a Docker container
+
+--
+
+1. Deploy **Flask**, **Postgres**, and **Redis** to Digital Ocean via Docker Compose and Machine
+
+--
+
+1. Explain what **container orchestration** is and why you may need to incorporate an orchestration tool into your deployment process
+
+--
+
+1. Deploy **OpenFaaS** to Digital Ocean using both **Docker Swarm Mode** and **Kubernetes**
+
+--
+
+1. Monitor your OpenFaaS functions with **Prometheus** and **Grafana**
+
 
 ---
 
@@ -283,7 +312,7 @@ Fire up the app locally:
 ```sh
 $ git clone https://github.com/testdrivenio/openci \
   --branch pycon --single-branch
-$ cd
+$ cd openci
 $ docker-compose -f docker-compose-web.yml up -d --build
 ```
 
@@ -372,7 +401,7 @@ PaaS models provide a platform for end users to manage applications without the 
 
 Serverless is a cloud computing execution model that abstracts away much of the complexity associated with server management (implementing, provisioning, tweaking, scaling) from developers. Pricing models are generally based on actual resources consumed.
 
-*On-demand* (boots in milliseconds), *elastic* (auto-scaling), *pay-as-you-go* (spin down when not used)!
+*On-demand* (boots in milliseconds), *elastic* (auto-scaling), *pay-as-you-go* (spin down when not used!)
 
 --
 
@@ -666,7 +695,7 @@ class: center, middle
 1. Provides a nice UI
 
 <div>
-  <img src="images/example1.gif" style="max-width: 90%; border:0; box-shadow: none; padding-top:10px;" alt="example">
+  <img src="images/example1.gif" style="max-width: 80%; border:0; box-shadow: none; padding-top:10px;" alt="example">
 </div>
 
 ---
@@ -949,6 +978,12 @@ Load balancing, Logging across components, monitoring...
       run web python manage.py test
     ```
 
+1. Need to debug? Start with the logs:
+
+    ```sh
+    $ docker-compose -f docker-compose-web-prod.yml logs
+    ```
+
 ---
 
 ### Deploy OpenFaaS
@@ -992,11 +1027,13 @@ Docker [Swarm mode](https://docs.docker.com/engine/swarm/) provides support for 
 
 #### Steps:
 
-1. Build the image:
+1. Build the images:
 
     ```sh
     $ docker build -t python-eval:latest \
         -f ./services/functions/eval/Dockerfile01 ./services/functions/eval
+
+    $ docker build -t python-ping ./services/functions/ping
     ```
 
 1. Deploy:
@@ -1039,7 +1076,7 @@ Docker [Swarm mode](https://docs.docker.com/engine/swarm/) provides support for 
 1. Build again:
 
     ```sh
-    docker build -t python-eval:latest \
+    $ docker build -t python-eval:latest \
     -f ./services/functions/eval/Dockerfile02 ./services/functions/eval
     ```
 
@@ -1053,12 +1090,13 @@ Docker [Swarm mode](https://docs.docker.com/engine/swarm/) provides support for 
 1. Test:
 
     ```sh
-    curl -X POST \
-    $(echo http://$(docker-machine ip openfaas):8080)/function/func_eval -d \
-    '{"namespace": "testdrivenio", "repo_name": "pycon-sample"}'
+    $ curl -X POST \
+      $(echo http://$(docker-machine ip openfaas):8080)/function/func_eval -d \
+      '{"namespace": "testdrivenio", "repo_name": "pycon-sample"}'
 
-    Ran 1 test in 0.000s
-    OK
+    '{"namespace": "testdrivenio", "repo_name": "pycon-sample"}'
+    {"status": true, "data": ".\n-----------------------------------------------------------\n
+    Ran 1 test in 0.000s\n\nOK\n\n"}
     ```
 
 ---
@@ -1067,16 +1105,15 @@ Docker [Swarm mode](https://docs.docker.com/engine/swarm/) provides support for 
 
 #### Steps:
 
-1. Update the `OPENFAAS_URL` environment variable in *docker-compose-web-prod.yml* and update the web app
+1. Update the `OPENFAAS_URL` environment variable in *docker-compose-web-prod.yml* and update the web app.
 
 1. Test!
 
-1. Remove the Machine:
+<br>
 
-    ```sh
-    $ docker-machine rm openfaas
-    $ eval $(docker-machine env -u)
-    ```
+#### Need to debug OpenFaaS?
+
+Start [here](http://docs.openfaas.com/deployment/troubleshooting/).
 
 ---
 
@@ -1311,7 +1348,25 @@ What's next?
 
 --
 
-WIP
+##### Check your understanding
+
+1. [Secure](https://blog.alexellis.io/lock-down-openfaas/) the OpenFaaS functions
+1. Review the [OpenFaaS Workshop](https://github.com/openfaas/workshop)
+1. Go through the remaining challenges
+
+--
+
+##### Resources
+
+1. Slides - http://mherman.org/presentations/pycon-2018
+1. Repo - https://github.com/testdrivenio/openci
+1. ***[Testdriven.io](http://testdriven.io/) - full course!*** ❤️
+1. [How to Build 12 Factor Microservices on Docker](https://www.packtpub.com/books/content/how-to-build-12-factor-design-microservices-on-docker-part-1)
+1. [Docker Cheat Sheet](https://github.com/wsargent/docker-cheat-sheet)
+
+<div>
+  <img src="images/mobile_image.png" style="max-width: 11%; border:0; box-shadow: none;" alt="testdriven.io">
+</div>
 
 --
 
