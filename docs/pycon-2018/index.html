@@ -123,7 +123,7 @@ class: center, middle
 1. Deploy Web App
 1. Deploy OpenFaaS Stack
     - Docker Swarm mode
-    - Kubernetes (WIP)
+    - Kubernetes
 
 --
 
@@ -1123,7 +1123,7 @@ Start [here](http://docs.openfaas.com/deployment/troubleshooting/).
 
 1. Create a new *Ubuntu 16.04.4 x64* droplet on [Digital Ocean](https://m.do.co/c/d8f211a4b4c2).
 
-1. SSH into the box and then run following commands to install Docker along with [kubeadm](https://kubernetes.io/docs/setup/independent/create-cluster-kubeadm/) (bootstraps a Kubernetes cluster), [kubelet](https://kubernetes.io/docs/reference/generated/kubelet/) (configures containers to run on a host) and [kubernetes-cni](https://kubernetes.io/docs/concepts/cluster-administration/network-plugins/#cni) (handles the networking):
+1. SSH into the box and then run the following commands to install Docker along with [kubeadm](https://kubernetes.io/docs/setup/independent/create-cluster-kubeadm/) (bootstraps a Kubernetes cluster), [kubelet](https://kubernetes.io/docs/reference/generated/kubelet/) (configures containers to run on a host) and [kubernetes-cni](https://kubernetes.io/docs/concepts/cluster-administration/network-plugins/#cni) (handles the networking):
 
     ```sh
     $ apt-get update && apt-get install -y apt-transport-https
@@ -1190,24 +1190,19 @@ Start [here](http://docs.openfaas.com/deployment/troubleshooting/).
     $ kubectl apply -f ./namespaces.yml,./yaml
     ```
 
-1. Clone down the project:
-
-    ```sh
-    $ cd ~
-    $ git clone https://github.com/testdrivenio/openci \
-      --branch pycon
-    ```
-
 1. Install the [CLI](https://github.com/openfaas/faas-cli):
 
     ```sh
+    $ cd ~
     $ curl -sL https://cli.openfaas.com | sudo sh
     ```
 
-1. Build the images:
+1. Clone down the project:
 
     ```sh
-    $ sudo faas-cli build -f template.yml
+    $ git clone https://github.com/testdrivenio/openci \
+      --branch pycon
+    $ cd openci
     ```
 
 ---
@@ -1216,14 +1211,38 @@ Start [here](http://docs.openfaas.com/deployment/troubleshooting/).
 
 #### Steps:
 
+1. Build the images:
+
+    ```sh
+    $ sudo faas-cli build -f template.yml
+    ```
+
+1. Log in to Docker Hub:
+
+    ```sh
+    $ sudo docker login
+    ```
+
+1. Push the images to Docker Hub:
+
+    ```sh
+    $ sudo faas-cli push -f template.yml
+    ```
+
 1. Deploy:
 
     ```sh
     $ sudo faas-cli deploy -f template.yml \
-      --gateway=http://<YOUR_IP>:31112
+      --gateway=http://45.55.137.69:31112
     ```
 
-1. Update the `OPENFAAS_URL` environment variable in *docker-compose-web-prod.yml* and update the web app
+1. Update the `OPENFAAS_URL` environment variable in *docker-compose-web-prod.yml* and update the web app.
+
+---
+
+### Kubernetes (continued...)
+
+#### Steps:
 
 1. Test!
 
