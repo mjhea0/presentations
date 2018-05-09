@@ -80,6 +80,13 @@ koa-router
 movies.js
 data.json
 LocalStack
+herokuapp.com
+Grafana
+webhook
+OpenCI
+db
+openfaas
+Dockerfiles
  - docs/pycon-2018/index.html
 docker-compose-faas
 v1
@@ -95,9 +102,12 @@ Dockerfile02
 Coberly
 Walkthroughs
 Specialties
+barkwire-api
  - docs/microservice-ping-pong/index.html
 node-george
 node-ringo
+node-john
+node-paul
  - docs/node-koa-api/index.html
 routes.index.test.js
 routes.movies.test.js
