@@ -74,8 +74,8 @@ class: center, middle
 
 ##### (2) Best Practices
 
-1. Keep Docker images slim with Alpine (wip)
-1. Version Docker images (wip)
+1. Keep Docker Images Slim with Alpine
+1. Version Docker Images
 1. Avoid unnecessary caching with multi-stage builds (wip)
 1. Minimize the number of layers (wip)
 1. Order Dockerfile statements (wip)
@@ -167,11 +167,11 @@ By the end of this talk, you should be able to...
 
 --
 
-1. foo
+1. Use **Alpine Linux** based images as a starting point for your Dockerfiles
 
 --
 
-1. bar
+1. Version Docker images
 
 --
 
@@ -185,11 +185,93 @@ class: center, middle
 
 ---
 
-### Keep Docker images slim with Alpine
+### Keep Docker Images Slim with Alpine (1)
+
+Use [Alpine Linux](https://hub.docker.com/_/alpine/) based images since they come only with the packages you need. Resulting images will be smaller.
+
+--
+
+#### What are the benefits?
+
+--
+
+1. Decreased hosting costs since less disk space is used
+1. Quicker build, download, and run times
+1. More secure (since there are less packages and libraries)
+
+--
+
+#### Web Development Example
+
+```sh
+FROM python:3.6-alpine
+
+WORKDIR /app
+
+COPY requirements.txt /
+RUN pip install -r /requirements.txt
+
+COPY . /app
+```
+
+1. Size before: 702MB
+1. Size after: 102MB
 
 ---
 
-### Version Docker images
+### Keep Docker Images Slim with Alpine (2)
+
+--
+
+#### Data Science Example
+
+```sh
+FROM python:3.6-alpine
+
+RUN apk --no-cache add --virtual build-dependencies \
+                build-base \
+                python3-dev \
+        && pip3 install \
+                jupyter \
+                pandas
+
+WORKDIR /notebooks
+```
+
+1. Size before: 929MB
+1. Size after: 634MB
+
+<br>
+
+<img src="images/alpine.jpg" style="max-width: 10%; border:0; box-shadow: none; padding-left:10px;" alt="alpine linux">
+
+---
+
+### Version Docker Images
+
+If you rely on just using the `latest` tag, you'll have know real way of knowing which image version is actually running in a specific environment.
+
+--
+
+### How?
+
+--
+
+1. timestamps
+1. image ids
+1. Git commit hashes
+
+--
+
+### Example
+
+You could use both the git commit SHA1 hash (to associate the image back to a specific commit to help with debugging) along with and the environment name:
+
+`/$PROJECT/$ENVIRONMENT:$SHA1`
+
+```sh
+$ docker build -t web/prod:a072c4e5d94b5a769225f621f08af3d4bf820a07 .
+```
 
 ---
 
