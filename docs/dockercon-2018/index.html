@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Docker for Python Developers</title>
+    <meta charset="utf-8">
+    <style>
+      @import url(https://fonts.googleapis.com/css?family=Yanone+Kaffeesatz);
+      @import url(https://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic);
+      @import url(https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,400italic);
+
+      body { font-family: 'Droid Serif'; }
+      h1, h2, h3 {
+        font-family: 'Yanone Kaffeesatz';
+        font-weight: normal;
+      }
+      table {
+        width: 60%;
+        border-collapse: collapse;
+      }
+
+      table, th, td {
+        border: 1px solid black;
+      }
+      th, td {
+        padding: 5px;
+        text-align: left;
+      }
+      td {
+        padding-left: 5px;
+        padding-right: 5px;
+      }
+      .remark-code { font-family: 'Ubuntu Mono'; }
+      .remark-inline-code {
+        font-family: 'Ubuntu Mono';
+        padding: 2px 4px;
+        font-size: 90%;
+        color: #c7254e;
+        background-color: #f9f2f4;
+        border-radius: 0;
+       }
+    </style>
+  </head>
+  <body>
+    <textarea id="source">
+
+class: center, middle
+
+# Docker for Python Developers
+
+[Fitter](https://www.youtube.com/watch?v=hs64rB0cLNw). [Happier](https://www.youtube.com/watch?v=My10FLH5DT0). [More productive](https://www.youtube.com/watch?v=9ORllD7fA6I).
+
+<img src="images/docker.png" alt="docker logo" style="width:20%;">
+
+<br>
+
+<div>
+  <span style="vertical-align:60%;">Presented by <em>Michael Herman</em> at</span>&nbsp;
+  <img src="images/dockercon.png" style="max-width: 10%; border:0; box-shadow: none;" alt="DockerCon 2018">
+</div>
+
+
+---
+
+### Agenda
+
+--
+
+##### (1) Intro
+
+1. About Me
+1. Objectives (wip)
+
+--
+
+##### (2) Best Practices
+
+1. Keep Docker images slim with Alpine (wip)
+1. Version Docker images (wip)
+1. Avoid unnecessary caching with multi-stage builds (wip)
+1. Minimize the number of layers (wip)
+1. Order Dockerfile statements (wip)
+1. Create a non-root user (wip)
+1. Use Docker Compose (wip)
+
+--
+
+##### (3) Goodbye
+
+1. Next Steps (wip)
+1. Questions (wip)
+
+---
+
+class: center, middle
+
+## Intro
+
+---
+
+### About Michael
+
+```
+$ whoami
+michael.herman
+```
+
+--
+
+#### Day Job:
+
+Software Engineer at [ClickFox](https://www.clickfox.com/).
+&nbsp;
+<img src="images/clickfox.png" style="max-width: 4%; border:0; box-shadow: none;" alt="clickfox logo">
+
+--
+
+#### Docker:
+
+1. Avid Docker user since 2014.
+1. Last year I architected and set up [On-Demand Environments With Docker and AWS ECS](http://mherman.org/blog/2017/09/18/on-demand-test-environments-with-docker-and-aws-ecs/).
+
+--
+
+#### Also:
+
+1. Co-founder/author of [Real Python](https://realpython.com)
+1. 😍 - [tech writing/education](http://mherman.org), [open source](http://github.com/mjhea0), [financial models](http://www.starterfinancialmodel.com/), [radiohead](http://radiohead.com/)
+
+<img src="images/me.png" style="max-width: 10%; border:0; box-shadow: none; padding-top:10px" alt="me">
+
+---
+
+### TestDriven.io
+
+Started [Testdriven.io](http://testdriven.io/) late 2017...
+
+<br>
+
+<div class="grid">
+  <div style="float: left; width: 45%;">
+    <div text-align="center">
+      <img src="images/cover_small.png" style="max-width: 80%; border:2px solid; border-color:grey; box-shadow: none;" alt="microservice tech">
+    </div>
+  </div>
+  <div style="float: left; width: 55%;">
+    <h4 style="margin-top: 0;"><em>Microservices with Docker, Flask, and React</em></h4>
+    <p>Learn how to build, test, and deploy microservices powered by Docker, Flask, and React!</p>
+    <ul>
+      <li>Test-driven Development (TDD)</li>
+      <li>AWS ECS, RDS, and Lambda</li>
+      <li>React</li>
+      <li>Blue/Green Deploys</li>
+      <li>CI/CD</li>
+    </ul>
+  </div>
+</div>
+
+<div class="center">
+  <img src="images/mobile_image.png" style="max-width: 15%; padding-top:30px; box-shadow: none;" alt="testdriven.io">
+</div>
+
+---
+
+### Objectives
+
+By the end of this talk, you should be able to...
+
+--
+
+1. foo
+
+--
+
+1. bar
+
+--
+
+1. foobar
+
+---
+
+class: center, middle
+
+## Best Practices
+
+---
+
+### Keep Docker images slim with Alpine
+
+---
+
+### Version Docker images
+
+---
+
+### Avoid unnecessary caching with multi-stage builds
+
+---
+
+### Minimize the number of layers
+
+---
+
+### Order Dockerfile statements
+
+---
+
+### Create a non-root user
+
+---
+
+### Use Docker Compose
+
+---
+
+### That's it!
+
+What's next?
+
+--
+
+##### Check your understanding
+
+1. [Secure](https://blog.alexellis.io/lock-down-openfaas/) the OpenFaaS functions
+
+--
+
+##### Resources
+
+1. Slides - http://mherman.org/presentations/pycon-2018
+1. Repo - https://github.com/testdrivenio/openci
+1. ***[Testdriven.io](http://testdriven.io/) - full course!*** ❤️
+1. [How to Build 12 Factor Microservices on Docker](https://www.packtpub.com/books/content/how-to-build-12-factor-design-microservices-on-docker-part-1)
+1. [Docker Cheat Sheet](https://github.com/wsargent/docker-cheat-sheet)
+1. https://docs.docker.com/develop/develop-images/dockerfile_best-practices/
+1. https://docs.docker.com/develop/dev-best-practices/
+
+
+<div>
+  <img src="images/mobile_image.png" style="max-width: 11%; border:0; box-shadow: none;" alt="testdriven.io">
+</div>
+
+--
+
+##### Questions?
+
+✌️
+
+
+    </textarea>
+    <script src="https://remarkjs.com/downloads/remark-latest.min.js">
+    </script>
+    <script>
+      var slideshow = remark.create();
+    </script>
+  </body>
+</html>
