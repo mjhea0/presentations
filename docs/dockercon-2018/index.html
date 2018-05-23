@@ -75,12 +75,13 @@ class: center, middle
 ##### (2) Best Practices
 
 1. Keep Docker Images Slim with Alpine
+1. Use Multi-stage Builds (wip)
 1. Version Docker Images
-1. Avoid unnecessary caching with multi-stage builds (wip)
 1. Minimize the number of layers (wip)
 1. Order Dockerfile statements (wip)
 1. Create a non-root user (wip)
 1. Use Docker Compose (wip)
+1. Keep secrets safe (wip)
 
 --
 
@@ -171,11 +172,11 @@ By the end of this talk, you should be able to...
 
 --
 
-1. Version Docker images
+1. Create lean, production-ready images using multi-stage builds
 
 --
 
-1. foobar
+1. Version Docker images
 
 ---
 
@@ -209,7 +210,7 @@ FROM python:3.6-alpine
 WORKDIR /app
 
 COPY requirements.txt /
-RUN pip install -r /requirements.txt
+RUN pip install -r /requirements.txt  # flask and gunicorn
 
 COPY . /app
 ```
@@ -275,7 +276,40 @@ $ docker build -t web/prod:a072c4e5d94b5a769225f621f08af3d4bf820a07 .
 
 ---
 
-### Avoid unnecessary caching with multi-stage builds
+### Use Multi-stage Builds (1)
+
+Take advantage of [multi-stage builds](https://docs.docker.com/develop/develop-images/multistage-build/) to create a temp image used for building artifacts that will be copied over to the production image. The temp build image is discarded along with the original files, folders, and dependencies associated with the image.
+
+This produces a lean, production-ready image.
+
+--
+
+One use case is to use a non-Alpine base to install dependnecies that require compilation. The wheel files can then be copied over to the final image.
+
+--
+
+#### Web Development Example
+
+```sh
+FROM python:3.6 as base
+COPY requirements.txt /
+RUN pip install -r requirements.txt  # flask, gunicorn, pycrypto
+
+FROM python:3.6-alpine
+COPY --from=base /root/.cache /root/.cache
+COPY --from=base requirements.txt .
+RUN pip install -r requirements.txt && rm -rf /root/.cache
+WORKDIR /app
+COPY . /app
+```
+
+Size before: 705MB, Size after: 104MB
+
+---
+
+### Use Multi-stage Builds (2)
+
+#### Data Science Example
 
 ---
 
