@@ -77,8 +77,8 @@ class: center, middle
 1. Keep Docker Images Slim with Alpine
 1. Use Multi-stage Builds
 1. Version Docker Images
+1. Order Dockerfile Commands (wip)
 1. Minimize the Number of Layers (wip)
-1. Order Dockerfile statements (wip)
 1. Create a non-root user (wip)
 1. Use Docker Compose (wip)
 1. Keep secrets safe (wip)
@@ -287,7 +287,7 @@ Size before: 705MB, Size after: 103MB
 FROM python:3.6 as base
 RUN pip wheel --no-cache-dir --no-deps --wheel-dir /wheels jupyter pandas
 
-FROM python:3.6-slim
+FROM python:3.6-slim # Alpine is not compatible with manylinux wheels
 COPY --from=base /wheels /wheels
 RUN pip install --no-cache /wheels/*
 WORKDIR /notebooks
@@ -342,7 +342,22 @@ $ docker build -t web/prod:a072c4e5d94b5a769225f621f08af3d4bf820a07 .
 
 ---
 
+### Order Dockerfile Commands
+
+Avoid invalidating the cache:
+
+start your Dockerfile with commands that should not change often
+put commands that can often invalidate the cache (like COPY .) as late as possible
+only add the needed files (use a .dockerignore file)
+
+---
+
 ### Minimize the Number of Layers
+
+Reducing the number of layers is less of a goal itself. Rather what you need to focus on is reducing build time and also reducing image size.
+
+put related commands in the same RUN instruction
+remove files in the same RUN command that created them
 
 ---
 
