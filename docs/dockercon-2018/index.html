@@ -76,12 +76,13 @@ class: center, middle
 
 1. Keep Docker Images Slim with Alpine
 1. Use Multi-stage Builds
+1. Order Dockerfile Commands
+1. Minimize the Number of Layers
 1. Version Docker Images
-1. Order Dockerfile Commands (wip)
-1. Minimize the Number of Layers (wip)
 1. Create a non-root user (wip)
 1. Use Docker Compose (wip)
 1. Keep secrets safe (wip)
+1. Clean up after yourself (wip)
 
 --
 
@@ -178,6 +179,14 @@ By the end of this talk, you should be able to...
 
 1. **Version Docker images** with Docker tags
 
+--
+
+1. **Order the statements in your Dockerfile properly** to avoid invalidating the cache
+
+--
+
+1. **Reduce the number of layers** by logically combing `RUN` steps
+
 ---
 
 class: center, middle
@@ -199,6 +208,7 @@ Use [Alpine Linux](https://hub.docker.com/_/alpine/) based images since they com
 1. Decreased hosting costs since less disk space is used
 1. Quicker build, download, and run times
 1. More secure (since there are less packages and libraries)
+1. Faster deployments
 
 --
 
@@ -244,19 +254,25 @@ WORKDIR /notebooks
 
 <br>
 
-<img src="images/alpine.jpg" style="max-width: 10%; border:0; box-shadow: none; padding-left:10px;" alt="alpine linux">
+<img src="images/alpine.jpg" style="max-width: 8%; border:0; box-shadow: none; padding-left:10px;" alt="alpine linux">
+
+--
+
+  <div style="text-align:center;">
+    <small>!!! Want to inspect an image? Check out <a href="https://microbadger.com">MicroBadger</a> !!!</small>
+  </div>
 
 ---
 
 ### Use Multi-stage Builds (1)
 
-Take advantage of [multi-stage builds](https://docs.docker.com/develop/develop-images/multistage-build/) to create a temp image used for building artifacts that will be copied over to the production image. The temp build image is discarded along with the original files, folders, and dependencies associated with the image.
+Take advantage of [multi-stage builds](https://docs.docker.com/develop/develop-images/multistage-build/) to create a temp image used for building an artifact that will be copied over to the production image. The temp build image is discarded along with the original files, folders, and dependencies associated with the image.
 
 This produces a lean, production-ready image.
 
 --
 
-One use case is to use a non-Alpine base to install dependnecies that require compilation. The wheel files can then be copied over to the final image.
+One use case is to use a non-Alpine base to install dependencies that require compilation. The wheel files can then be copied over to the final image.
 
 --
 
@@ -314,6 +330,70 @@ COPY . /app
 
 ---
 
+### Order Dockerfile Commands
+
+Docker caches the steps in a Dockerfile to speed up subsequent builds. When a change is made to a step, all steps following it will be redone.
+
+#### Avoid invalidating the cache by
+
+1. Starting your Dockerfile with commands that are less likely to change
+1. Putting commands that are more likely to invalidate change (like `COPY .`) as late as possible
+1. Adding only the necessary files (use a *.dockerignore* file!)
+
+--
+
+#### Example
+
+--
+
+```sh
+FROM python:3.6-alpine
+
+WORKDIR /app
+COPY sample.py /app # What happens when a change is made to sample.py?
+
+COPY requirements.txt /
+RUN pip install -r /requirements.txt  # flask and gunicorn
+```
+
+--
+
+Move the `COPY sample.py /app` statement to the bottom!
+
+---
+
+### Minimize the Number of Layers
+
+Combine `RUN` steps that are related to prevent caching (since each `RUN` step will create a new layer) and using unnecessary disc space.
+
+--
+
+#### Things to note
+
+1. `RUN`, `COPY`, and `ADD` steps will create layers.
+1. Each layer contains the differences from the previous layer.
+1. Layers increase the size of the final image.
+
+--
+
+#### Tips
+
+1. Put related commands (`apt-get` `update`/`upgrade`/`install`) in the same `RUN` step.
+1. Remove files in the same `RUN` step that created them.
+1. Avoid using `apt-get upgrade` since it upgrades all packages to the latest version ... why?
+
+--
+
+*"If something’s going to change, it’s going to have to be the rest of the universe."*
+
+--
+
+<br>
+
+Finally... **Use multi-stage builds as much as possible!**
+
+---
+
 ### Version Docker Images
 
 If you rely on just using the `latest` tag, you'll have know real way of knowing which image version is actually running in a specific environment.
@@ -342,30 +422,9 @@ $ docker build -t web/prod:a072c4e5d94b5a769225f621f08af3d4bf820a07 .
 
 ---
 
-### Order Dockerfile Commands
-
-Avoid invalidating the cache:
-
-start your Dockerfile with commands that should not change often
-put commands that can often invalidate the cache (like COPY .) as late as possible
-only add the needed files (use a .dockerignore file)
-
----
-
-### Minimize the Number of Layers
-
-Reducing the number of layers is less of a goal itself. Rather what you need to focus on is reducing build time and also reducing image size.
-
-put related commands in the same RUN instruction
-remove files in the same RUN command that created them
-
----
-
-### Order Dockerfile statements
-
----
-
 ### Create a non-root user
+
+https://developer.atlassian.com/blog/2016/06/common-dockerfile-mistakes/
 
 ---
 

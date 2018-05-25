@@ -87,6 +87,7 @@ OpenCI
 db
 openfaas
 Dockerfiles
+artifact
  - docs/pycon-2018/index.html
 docker-compose-faas
 v1
@@ -111,3 +112,5 @@ node-paul
  - docs/node-koa-api/index.html
 routes.index.test.js
 routes.movies.test.js
+ - docs/dockercon-2018/index.html
+wip
