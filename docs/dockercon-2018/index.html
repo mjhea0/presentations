@@ -79,10 +79,10 @@ class: center, middle
 1. Order Dockerfile Commands
 1. Minimize the Number of Layers
 1. Version Docker Images
-1. Create a non-root user (wip)
+1. Create a Non-root User (wip)
 1. Use Docker Compose (wip)
 1. Keep secrets safe (wip)
-1. Clean up after yourself (wip)
+1. Clean up (docker images, containers) after yourself (wip)
 
 --
 
@@ -186,6 +186,10 @@ By the end of this talk, you should be able to...
 --
 
 1. **Reduce the number of layers** by logically combing `RUN` steps
+
+--
+
+1.  Run container processes as a **non-root user**
 
 ---
 
@@ -422,13 +426,39 @@ $ docker build -t web/prod:a072c4e5d94b5a769225f621f08af3d4bf820a07 .
 
 ---
 
-### Create a non-root user
+### Create a Non-root User
 
-https://developer.atlassian.com/blog/2016/06/common-dockerfile-mistakes/
+By default, Docker runs container processes as root inside of a container. This is a bad practice since attackers can gain root access to the Docker host if they manage to break out of the container.
+
+*If you're root in the container, you'll be root on the host.*
+
+--
+
+#### Examples
+
+1. Web Development
+1. Data Science
+
+--
+
+#### Verify
+
+```sh
+$ docker run -p 5000:5000 -i sample id
+uid=100(app) gid=101(app) groups=101(app)
+
+$ docker run -p 8888:8888 -i ds id
+uid=100(app) gid=101(app) groups=101(app)
+```
+
+Now, each containers' user, group, and groups are non-root users.
 
 ---
 
-### Use Docker Compose
+### Secrets
+
+https://developer.atlassian.com/blog/2016/06/common-dockerfile-mistakes/
+https://medium.com/cuc4/docker-secret-management-best-practices-507ca21b5535
 
 ---
 
