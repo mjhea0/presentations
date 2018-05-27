@@ -79,7 +79,8 @@ class: center, middle
 1. Order Dockerfile Commands
 1. Minimize the Number of Layers
 1. Version Docker Images
-1. Create a Non-root User (wip)
+1. Create a Non-root User
+1. Do not Store Sensitive Information in a Docker Image
 1. Use Docker Compose (wip)
 1. Keep secrets safe (wip)
 1. Clean up (docker images, containers) after yourself (wip)
@@ -263,7 +264,7 @@ WORKDIR /notebooks
 --
 
   <div style="text-align:center;">
-    <small>!!! Want to inspect an image? Check out <a href="https://microbadger.com">MicroBadger</a> !!!</small>
+    <small>!!! Want to inspect an image? Check out <a href="https://microbadger.com">MicroBadger.</a> !!!</small>
   </div>
 
 ---
@@ -455,10 +456,41 @@ Now, each containers' user, group, and groups are non-root users.
 
 ---
 
-### Secrets
+### Do not Store Sensitive Information in a Docker Image
 
-https://developer.atlassian.com/blog/2016/06/common-dockerfile-mistakes/
-https://medium.com/cuc4/docker-secret-management-best-practices-507ca21b5535
+#### Secrets?
+
+--
+
+Database credentials, SSH keys, usernames and passwords, API tokens, etc.
+
+--
+
+#### Secret Management
+
+--
+
+1. Never store (at build-time) secrets or other sensitive information in a Docker image. WHY?
+
+--
+
+1. It's much better to pass them in (at run-time) via environment variables, but they will be visible in all child processes - i.e., linked containers - and logs. It's also difficult to update them.
+
+--
+
+1. Passing secrets in (at run-time) using a shared volume is an even better solution, but they should be encrypted since they are saved to disc.
+
+--
+
+1. Encrypt with secrets with [Vault](https://www.vaultproject.io/) or [KMS](https://aws.amazon.com/kms/).
+
+<img src="images/docker_secrets.png" alt="docker secrets logo" style="width:15%;">
+
+<div style="text-align:center">
+  <small>!!! Using <a href="https://docs.docker.com/engine/swarm/">Docker Swarm</a>? Check out <a href="https://docs.docker.com/engine/swarm/secrets/">Docker Secrets</a>. !!!</small>
+</div>
+
+These are best practices of any language. Examples are in Python show, for web developers and data scientists
 
 ---
 
