@@ -58,6 +58,15 @@ class: center, middle
   <img src="images/dockercon.png" style="max-width: 10%; border:0; box-shadow: none;" alt="DockerCon 2018">
 </div>
 
+---
+
+### Note
+
+These practices, from this presentation, can be used for any language. Examples are in Python, though - designed specifically for web developers and data scientists.
+
+<br>
+
+<img src="images/python.png" style="max-width: 30%; border:0; box-shadow: none;" alt="python logo">
 
 ---
 
@@ -74,20 +83,22 @@ class: center, middle
 
 ##### (2) Best Practices
 
-1. Keep Docker Images Slim with Alpine
-1. Use Multi-stage Builds
-1. Order Dockerfile Commands
-1. Minimize the Number of Layers
-1. Version Docker Images
-1. Create a Non-root User
-1. Do not Store Sensitive Information in a Docker Image
-1. Use Docker Compose (wip)
-1. Keep secrets safe (wip)
-1. Clean up (docker images, containers) after yourself (wip)
+1. Keep images slim with Alpine
+1. Use multi-stage builds
+1. Order Dockerfile commands
+1. Minimize the number of layers
+1. Version Docker images
+1. Create a non-root user
+1. Do not store secrets in an image
+1. Remove unused images, containers, and volumes (wip)
 
 --
 
-##### (3) Goodbye
+##### (3) Docker Compose (wip)
+
+--
+
+##### (4) Goodbye
 
 1. Next Steps (wip)
 1. Questions (wip)
@@ -192,6 +203,14 @@ By the end of this talk, you should be able to...
 
 1.  Run container processes as a **non-root user**
 
+--
+
+1. Explain the best practices for **managing secrets** at both buid and run-times
+
+--
+
+1. **Remove unused containers, images, and volumes** on a daily basis with a cron job
+
 ---
 
 class: center, middle
@@ -200,7 +219,7 @@ class: center, middle
 
 ---
 
-### Keep Docker Images Slim with Alpine (1)
+### Keep images slim with Alpine (1)
 
 Use [Alpine Linux](https://hub.docker.com/_/alpine/) based images since they come only with the packages you need. Resulting images will be smaller.
 
@@ -217,7 +236,7 @@ Use [Alpine Linux](https://hub.docker.com/_/alpine/) based images since they com
 
 --
 
-#### Web Development Example
+#### Web development example
 
 ```sh
 FROM python:3.6-alpine
@@ -235,11 +254,11 @@ COPY . /app
 
 ---
 
-### Keep Docker Images Slim with Alpine (2)
+### Keep images slim with Alpine (2)
 
 --
 
-#### Data Science Example
+#### Data science example
 
 ```sh
 FROM python:3.6-alpine
@@ -269,7 +288,7 @@ WORKDIR /notebooks
 
 ---
 
-### Use Multi-stage Builds (1)
+### Use multi-stage builds (1)
 
 Take advantage of [multi-stage builds](https://docs.docker.com/develop/develop-images/multistage-build/) to create a temp image used for building an artifact that will be copied over to the production image. The temp build image is discarded along with the original files, folders, and dependencies associated with the image.
 
@@ -281,7 +300,7 @@ One use case is to use a non-Alpine base to install dependencies that require co
 
 --
 
-#### Web Development Example
+#### Web development example
 
 ```sh
 FROM python:3.6 as base
@@ -300,9 +319,9 @@ Size before: 705MB, Size after: 103MB
 
 ---
 
-### Use Multi-stage Builds (2)
+### Use multi-stage builds (2)
 
-#### Data Science Example
+#### Data science example
 
 ```sh
 FROM python:3.6 as base
@@ -318,7 +337,7 @@ Size before: 929MB, Size after: 365MB
 
 --
 
-#### CI Example
+#### CI example
 
 ```sh
 FROM python:3.6 as base
@@ -335,7 +354,7 @@ COPY . /app
 
 ---
 
-### Order Dockerfile Commands
+### Order Dockerfile commands
 
 Docker caches the steps in a Dockerfile to speed up subsequent builds. When a change is made to a step, all steps following it will be redone.
 
@@ -367,7 +386,7 @@ Move the `COPY sample.py /app` statement to the bottom!
 
 ---
 
-### Minimize the Number of Layers
+### Minimize the number of layers
 
 Combine `RUN` steps that are related to prevent caching (since each `RUN` step will create a new layer) and using unnecessary disc space.
 
@@ -399,7 +418,7 @@ Finally... **Use multi-stage builds as much as possible!**
 
 ---
 
-### Version Docker Images
+### Version Docker images
 
 If you rely on just using the `latest` tag, you'll have know real way of knowing which image version is actually running in a specific environment.
 
@@ -427,7 +446,7 @@ $ docker build -t web/prod:a072c4e5d94b5a769225f621f08af3d4bf820a07 .
 
 ---
 
-### Create a Non-root User
+### Create a non-root user
 
 By default, Docker runs container processes as root inside of a container. This is a bad practice since attackers can gain root access to the Docker host if they manage to break out of the container.
 
@@ -456,13 +475,15 @@ Now, each containers' user, group, and groups are non-root users.
 
 ---
 
-### Do not Store Sensitive Information in a Docker Image
+### Do not store secrets in an image
+
+--
 
 #### Secrets?
 
 --
 
-Database credentials, SSH keys, usernames and passwords, API tokens, etc.
+Sensitive info. Database credentials, SSH keys, usernames and passwords, API tokens, etc.
 
 --
 
@@ -470,27 +491,107 @@ Database credentials, SSH keys, usernames and passwords, API tokens, etc.
 
 --
 
-1. Never store (at build-time) secrets or other sensitive information in a Docker image. WHY?
+*At run-time (recommended!):*
+
+1. You can pass secrets in via env variables, but they will be visible in all child processes - i.e., linked containers, `docker inspect` - and logs. It's also difficult to update them.
+1. Passing them in using a shared volume is a better solution, but they should be encrypted (via [Vault](https://www.vaultproject.io/) or [KMS](https://aws.amazon.com/kms/)) since they are saved to disc.
 
 --
 
-1. It's much better to pass them in (at run-time) via environment variables, but they will be visible in all child processes - i.e., linked containers - and logs. It's also difficult to update them.
+*At Build time:*
+
+1. Never store secrets in a Docker image.
+1. Pass secrets in at build-time using built-time args and environment variables. Again, they will be visible via `docker inspect`.
 
 --
-
-1. Passing secrets in (at run-time) using a shared volume is an even better solution, but they should be encrypted since they are saved to disc.
-
---
-
-1. Encrypt with secrets with [Vault](https://www.vaultproject.io/) or [KMS](https://aws.amazon.com/kms/).
-
-<img src="images/docker_secrets.png" alt="docker secrets logo" style="width:15%;">
 
 <div style="text-align:center">
   <small>!!! Using <a href="https://docs.docker.com/engine/swarm/">Docker Swarm</a>? Check out <a href="https://docs.docker.com/engine/swarm/secrets/">Docker Secrets</a>. !!!</small>
 </div>
 
-These are best practices of any language. Examples are in Python show, for web developers and data scientists
+---
+
+### Remove unused images, containers, and volumes (1)
+
+--
+
+Running out of disc space?
+
+--
+
+1. Visualize Docker disc space usage:
+
+    ```sh
+    $ docker system df
+    ```
+
+    For example:
+
+    ```sh
+    TYPE            TOTAL        ACTIVE        SIZE           RECLAIMABLE
+    Images          83           46            5.705GB        3.911GB (68%)
+    Containers      111          9             180.3MB        178.9MB (99%)
+    Local Volumes   17           12            545.7MB        182.6MB (33%)
+    ```
+
+--
+
+1. Remove stopped containers:
+
+    ```sh
+    $ docker rm -v $(docker ps -a -q -f status=exited)
+    ```
+
+--
+
+1. Keep in mind that volumes still hang around even if you stop the container. To remove dangling volumes run:
+
+    ```sh
+    $ docker volume rm $(docker volume ls -qf dangling=true)
+    ```
+
+---
+
+### Remove unused images, containers, and volumes (2)
+
+--
+
+1. Remove dangling images:
+
+    ```sh
+    $ ​docker rmi $(docker images -q -f dangling=true)
+    ```
+
+--
+
+1. Or remove them all (containers, volumes, and images) in one command:
+
+    ```sh
+    $ docker system prune
+    ```
+
+--
+
+#### Cron
+
+--
+
+*docker-prune.sh*
+
+```bash
+#!/bin/bash
+$(which docker) system prune -f
+```
+
+Run it daily at midnight:
+
+```sh
+$ crontab -e
+```
+
+```sh
+0 0 * * 1 ~/docker-prune.sh > /dev/null 2>&1
+```
 
 ---
 
