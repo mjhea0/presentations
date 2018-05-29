@@ -90,7 +90,7 @@ These practices, from this presentation, can be used for any language. Examples 
 1. Version Docker images
 1. Create a non-root user
 1. Do not store secrets in an image
-1. Remove unused images, containers, and volumes (wip)
+1. Remove unused images, containers, and volumes
 
 --
 
@@ -515,11 +515,11 @@ Sensitive info. Database credentials, SSH keys, usernames and passwords, API tok
 
 --
 
-Running out of disc space?
+#### Running out of disc space?
 
 --
 
-1. Visualize Docker disc space usage:
+- Visualize Docker disc space usage:
 
     ```sh
     $ docker system df
@@ -536,7 +536,7 @@ Running out of disc space?
 
 --
 
-1. Remove stopped containers:
+- Remove stopped containers:
 
     ```sh
     $ docker rm -v $(docker ps -a -q -f status=exited)
@@ -544,7 +544,7 @@ Running out of disc space?
 
 --
 
-1. Keep in mind that volumes still hang around even if you stop the container. To remove dangling volumes run:
+- Keep in mind that volumes still hang around even if you stop the container. To remove dangling volumes run:
 
     ```sh
     $ docker volume rm $(docker volume ls -qf dangling=true)
@@ -556,7 +556,7 @@ Running out of disc space?
 
 --
 
-1. Remove dangling images:
+- Remove dangling images:
 
     ```sh
     $ ​docker rmi $(docker images -q -f dangling=true)
@@ -564,7 +564,7 @@ Running out of disc space?
 
 --
 
-1. Or remove them all (containers, volumes, and images) in one command:
+- Or remove them all (containers, volumes, and images) in one command:
 
     ```sh
     $ docker system prune
@@ -576,22 +576,45 @@ Running out of disc space?
 
 --
 
-*docker-prune.sh*
+- *docker-prune.sh*
 
-```bash
-#!/bin/bash
-$(which docker) system prune -f
-```
+    ```bash
+    #!/bin/bash
+    $(which docker) system prune -f
+    ```
 
-Run it daily at midnight:
+- Run it daily at midnight:
 
-```sh
-$ crontab -e
-```
+    ```sh
+    $ crontab -e
+    ```
 
-```sh
-0 0 * * 1 ~/docker-prune.sh > /dev/null 2>&1
-```
+    ```sh
+    0 0 * * 1 ~/docker-prune.sh > /dev/null 2>&1
+    ```
+
+---
+
+class: center, middle
+
+## Docker Compose
+
+---
+
+### Docker Compose
+
+--
+
+[Docker Compose](https://docs.docker.com/compose/) is an orchestration tool used for running multi-container apps. It helps streamline building, running, and connecting multiple containers together. To use Docker Compose, you'll need to define how to build your containers with YAML in a *docker-compose.yml* file.
+
+<img src="images/docker-compose.png" alt="docker compose logo" style="width:100px;">
+
+--
+
+#### Examples
+
+1. Web Development
+1. Data Science
 
 ---
 
@@ -603,24 +626,19 @@ What's next?
 
 ##### Check your understanding
 
-1. [Secure](https://blog.alexellis.io/lock-down-openfaas/) the OpenFaaS functions
+1. WIP
 
 --
 
 ##### Resources
 
-1. Slides - http://mherman.org/presentations/pycon-2018
-1. Repo - https://github.com/testdrivenio/openci
-1. ***[Testdriven.io](http://testdriven.io/) - full course!*** ❤️
+1. Slides - http://mherman.org/presentations/dockercon-2018
+1. Repo - WIP
 1. [How to Build 12 Factor Microservices on Docker](https://www.packtpub.com/books/content/how-to-build-12-factor-design-microservices-on-docker-part-1)
 1. [Docker Cheat Sheet](https://github.com/wsargent/docker-cheat-sheet)
-1. https://docs.docker.com/develop/develop-images/dockerfile_best-practices/
-1. https://docs.docker.com/develop/dev-best-practices/
-
-
-<div>
-  <img src="images/mobile_image.png" style="max-width: 11%; border:0; box-shadow: none;" alt="testdriven.io">
-</div>
+1. From Docker:
+  - [Best practices for writing Dockerfiles](https://docs.docker.com/develop/develop-images/dockerfile_best-practices/)
+  - [Docker development best practices](https://docs.docker.com/develop/dev-best-practices/)
 
 --
 
