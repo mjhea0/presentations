@@ -331,13 +331,14 @@ Size before: 705MB, Size after: 103MB
 FROM python:3.6 as base
 RUN pip wheel --no-cache-dir --no-deps --wheel-dir /wheels jupyter pandas
 
-FROM python:3.6-slim # Alpine is not compatible with manylinux wheels
+# Alpine is not compatible with manylinux wheels
+FROM python:3.6-slim
 COPY --from=base /wheels /wheels
 RUN pip install --no-cache /wheels/*
 WORKDIR /notebooks
 ```
 
-Size before: 929MB, Size after: 365MB
+<small>Size before: 929MB, Size after: 365MB</small>
 
 --
 
@@ -347,12 +348,12 @@ Size before: 929MB, Size after: 365MB
 FROM python:3.6 as base
 RUN pip wheel --no-cache-dir --no-deps --wheel-dir /wheels -r flask
 COPY . /app
-RUN py.test # What happens if the tests fail?
+# What happens if the tests fail?
+RUN py.test
 
 FROM python:3.6-alpine
 COPY --from=base /wheels /wheels
 RUN pip install --no-cache /wheels/*
-WORKDIR /app
 COPY . /app
 ```
 
@@ -378,7 +379,8 @@ Docker caches the steps in a Dockerfile to speed up subsequent builds. When a ch
 FROM python:3.6-alpine
 
 WORKDIR /app
-COPY sample.py /app # What happens when a change is made to sample.py?
+# What happens when a change is made to sample.py?
+COPY sample.py /app
 
 COPY requirements.txt /
 RUN pip install -r /requirements.txt  # flask and gunicorn
@@ -628,16 +630,10 @@ What's next?
 
 --
 
-##### Check your understanding
-
-1. WIP
-
---
-
 ##### Resources
 
 1. Slides - http://mherman.org/presentations/dockercon-2018
-1. Repo - WIP
+1. Repo - https://github.com/testdrivenio/docker-python-devs
 1. [How to Build 12 Factor Microservices on Docker](https://www.packtpub.com/books/content/how-to-build-12-factor-design-microservices-on-docker-part-1)
 1. [Docker Cheat Sheet](https://github.com/wsargent/docker-cheat-sheet)
 1. From Docker:
