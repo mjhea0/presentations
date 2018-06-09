@@ -100,8 +100,8 @@ These practices, from this presentation, can be used for any language. Examples 
 
 ##### (4) Goodbye
 
-1. Next Steps (wip)
-1. Questions (wip)
+1. Resources
+1. Questions
 
 ---
 
@@ -189,11 +189,11 @@ By the end of this talk, you should be able to...
 
 --
 
-1. **Version Docker images** with Docker tags
+1. **Version** Docker images with Docker tags
 
 --
 
-1. **Order the statements in your Dockerfile properly** to avoid invalidating the cache
+1. **Order the statements** in your Dockerfile properly to avoid invalidating the cache
 
 --
 
@@ -235,7 +235,7 @@ Use [Alpine Linux](https://hub.docker.com/_/alpine/) based images since they com
 
 1. Decreased hosting costs since less disk space is used
 1. Quicker build, download, and run times
-1. More secure (since there are less packages and libraries)
+1. More secure (since there are less <a href="https://en.wikipedia.org/wiki/Shellshock_(software_bug)">packages</a> and libraries)
 1. Faster deployments
 
 --
@@ -253,8 +253,7 @@ RUN pip install -r /requirements.txt  # flask and gunicorn
 COPY . /app
 ```
 
-1. Size before: 702MB
-1. Size after: 102MB
+<small>Size before: 702MB, Size after: 102MB</small>
 
 ---
 
@@ -277,18 +276,17 @@ RUN apk --no-cache add --virtual build-dependencies \
 WORKDIR /notebooks
 ```
 
-1. Size before: 929MB
-1. Size after: 634MB
+<small>Size before: 929MB, Size after: 634MB</small>
 
 <br>
 
-<img src="images/alpine.jpg" style="max-width: 8%; border:0; box-shadow: none; padding-left:10px;" alt="alpine linux">
+<img src="images/alpine.jpg" style="max-width: 12%; border:0; box-shadow: none; padding-left:10px;" alt="alpine linux">
 
 --
 
-  <div style="text-align:center;">
-    <small>!!! Want to inspect an image? Check out <a href="https://microbadger.com">MicroBadger.</a> !!!</small>
-  </div>
+<div style="text-align:center;">
+  <small>Want to inspect an image from Docker Hub?<br>Check out <a href="https://microbadger.com">MicroBadger.</a></small>
+</div>
 
 ---
 
@@ -331,7 +329,6 @@ Size before: 705MB, Size after: 103MB
 FROM python:3.6 as base
 RUN pip wheel --no-cache-dir --no-deps --wheel-dir /wheels jupyter pandas
 
-# Alpine is not compatible with manylinux wheels
 FROM python:3.6-slim
 COPY --from=base /wheels /wheels
 RUN pip install --no-cache /wheels/*
@@ -363,10 +360,12 @@ COPY . /app
 
 Docker caches the steps in a Dockerfile to speed up subsequent builds. When a change is made to a step, all steps following it will be redone.
 
-#### Avoid invalidating the cache by
+--
+
+#### Avoid invalidating the cache by-
 
 1. Starting your Dockerfile with commands that are less likely to change
-1. Putting commands that are more likely to invalidate change (like `COPY .`) as late as possible
+1. Putting commands that are more likely to change (like `COPY .`) as late as possible
 1. Adding only the necessary files (use a *.dockerignore* file!)
 
 --
@@ -408,19 +407,19 @@ Combine `RUN` steps that are related to prevent caching (since each `RUN` step w
 
 #### Tips
 
-1. Put related commands (`apt-get` `update`/`upgrade`/`install`) in the same `RUN` step.
+1. Put related commands (`apt-get` `update`/`install`) in the same `RUN` step.
 1. Remove files in the same `RUN` step that created them.
-1. Avoid using `apt-get upgrade` since it upgrades all packages to the latest version ... why?
-
---
-
-*"If something’s going to change, it’s going to have to be the rest of the universe."*
+1. Avoid using `apt-get upgrade` since it upgrades all packages to the latest version... Why?
 
 --
 
 <br>
 
-Finally... **Use multi-stage builds as much as possible!**
+Finally...
+
+--
+
+**Use multi-stage builds as much as possible!**
 
 ---
 
@@ -462,8 +461,8 @@ By default, Docker runs container processes as root inside of a container. This 
 
 #### Examples
 
-1. Web Development
-1. Data Science
+1. [Web Development](https://github.com/testdrivenio/docker-python-devs/blob/master/web/04_user/Dockerfile)
+1. [Data Science](https://github.com/testdrivenio/docker-python-devs/blob/master/data-science/03_user/Dockerfile)
 
 --
 
@@ -477,11 +476,13 @@ $ docker run -p 8888:8888 -i ds id
 uid=100(app) gid=101(app) groups=101(app)
 ```
 
-Now, each containers' user, group, and groups are non-root users.
+<small>(The `id` command displays info about the current user.)</small>
+
+Now, each containers' user and associated group are non-root users.
 
 ---
 
-### Do not store secrets in an image
+### Do not store secrets in an image (1)
 
 --
 
@@ -493,23 +494,57 @@ Sensitive info. Database credentials, SSH keys, usernames and passwords, API tok
 
 --
 
-#### Secret Management
+#### Secret Management (build vs run time)
 
 --
 
 *At run-time (recommended!):*
 
 1. You can pass secrets in via env variables, but they will be visible in all child processes - i.e., linked containers, `docker inspect` - and logs. It's also difficult to update them.
+
+  ```sh
+  $ docker run -p 5000:5000 -d -e "foo=bar" -i sample \
+    gunicorn -b 0.0.0.0:5000 sample:app
+
+  f8650976bcb9a50257aa9c39114207bb07d42d89f9ae00f5f2ba36c68fc
+
+  $ docker inspect f8650976bcb9a50257aa9c39114207bb07d42d89f9ae00f5f2ba36c68fc
+  ```
+
 1. Passing them in using a shared volume is a better solution, but they should be encrypted (via [Vault](https://www.vaultproject.io/) or [KMS](https://aws.amazon.com/kms/)) since they are saved to disc.
 
---
+---
+
+### Do not store secrets in an image (2)
 
 *At Build time:*
 
+--
+
 1. Never store secrets in a Docker image.
-1. Pass secrets in at build-time using built-time args and environment variables. Again, they will be visible via `docker inspect`.
+1. You can pass secrets in at build-time using [build-time args](https://docs.docker.com/engine/reference/commandline/build/#set-build-time-variables---build-arg), but they will be visible to those who have access to the image via `docker history`.
+
+  *Dockerfile*:
+
+  ```sh
+  FROM alpine
+  ARG foo
+  RUN echo "Hello, World!"
+  ```
+
+  *Example*:
+
+  ```sh
+  $ docker build --build-arg "foo=bar" -t hi .
+  Successfully built f2bcff49ac09
+
+  $ docker history f2bcff49ac09 | grep foo
+  1796fafd3d00        About a minute ago       /bin/sh -c #(nop)  ARG foo
+  ```
 
 --
+
+<br>
 
 <div style="text-align:center">
   <small>!!! Using <a href="https://docs.docker.com/engine/swarm/">Docker Swarm</a>? Check out <a href="https://docs.docker.com/engine/swarm/secrets/">Docker Secrets</a>. !!!</small>
@@ -619,8 +654,8 @@ class: center, middle
 
 #### Examples
 
-1. Web Development
-1. Data Science
+1. [Web Development](https://github.com/testdrivenio/docker-python-devs/tree/master/web/05_compose)
+1. [Data Science](https://github.com/testdrivenio/docker-python-devs/tree/master/data-science/04_compose)
 
 ---
 
