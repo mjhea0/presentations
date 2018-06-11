@@ -317,7 +317,7 @@ WORKDIR /app
 COPY . /app
 ```
 
-Size before: 705MB, Size after: 103MB
+<small>Size before: 705MB, Size after: 103MB</small>
 
 ---
 
@@ -476,7 +476,7 @@ $ docker run -p 8888:8888 -i ds id
 uid=100(app) gid=101(app) groups=101(app)
 ```
 
-<small>(The `id` command displays info about the current user.)</small>
+<small>(The Linux `id` command displays info about the current user.)</small>
 
 Now, each containers' user and associated group are non-root users.
 
@@ -521,7 +521,7 @@ Sensitive info. Database credentials, SSH keys, usernames and passwords, API tok
 
 --
 
-1. Never store secrets in a Docker image.
+1. Never store secrets in a Docker image that will be pushed to a public repo.
 1. You can pass secrets in at build-time using [build-time args](https://docs.docker.com/engine/reference/commandline/build/#set-build-time-variables---build-arg), but they will be visible to those who have access to the image via `docker history`.
 
   *Dockerfile*:
