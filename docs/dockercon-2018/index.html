@@ -91,7 +91,6 @@ These practices, from this presentation, can be used for any language. Examples 
 1. Version Docker images
 1. Create a non-root user
 1. Do not store secrets in an image
-1. Remove unused images, containers, and volumes
 
 --
 
@@ -99,7 +98,11 @@ These practices, from this presentation, can be used for any language. Examples 
 
 --
 
-##### (4) Resources / Questions
+##### (4) Interesting Use Case 
+
+--
+
+##### (5) Resources / Questions
 
 ---
 
@@ -207,10 +210,6 @@ By the end of this talk, you should be able to...
 
 --
 
-1. **Remove unused containers, images, and volumes** on a daily basis with a cron job
-
---
-
 1. Use **Docker Compose** to build, run, and connect multiple containers together
 
 ---
@@ -221,11 +220,17 @@ It simplifies...
 
 --
 
-1. **Environment Setup** (consistent environments and dependencies, environment is up an running quickly)
+1. **Environment Setup** 
+
+    - Consistent environments and dependencies
+    - Environment is up an running quickly with just a few key strokes
 
 --
 
-1. **Distributing and deploying code and applications** (you need access to not only the code, but data and libraries used to create analysis from a notebook)
+1. **Distributing and deploying code and applications**
+
+    - You need access to not only the code, but the data and libraries used to create analysis from a notebook
+    - Enables collaboration
 
 --
 
@@ -574,90 +579,6 @@ Sensitive info. Database credentials, SSH keys, usernames and passwords, API tok
 
 ---
 
-### Remove unused images, containers, and volumes (1)
-
---
-
-#### Running out of disc space?
-
---
-
-- Visualize Docker disc space usage:
-
-    ```sh
-    $ docker system df
-    ```
-
-    For example:
-
-    ```sh
-    TYPE            TOTAL        ACTIVE        SIZE           RECLAIMABLE
-    Images          83           46            5.705GB        3.911GB (68%)
-    Containers      111          9             180.3MB        178.9MB (99%)
-    Local Volumes   17           12            545.7MB        182.6MB (33%)
-    ```
-
---
-
-- Remove stopped containers:
-
-    ```sh
-    $ docker rm -v $(docker ps -a -q -f status=exited)
-    ```
-
---
-
-- Keep in mind that volumes still hang around even if you stop the container. To remove dangling volumes run:
-
-    ```sh
-    $ docker volume rm $(docker volume ls -qf dangling=true)
-    ```
-
----
-
-### Remove unused images, containers, and volumes (2)
-
---
-
-- Remove dangling images:
-
-    ```sh
-    $ ​docker rmi $(docker images -q -f dangling=true)
-    ```
-
---
-
-- Or remove them all (containers, volumes, and images) in one command:
-
-    ```sh
-    $ docker system prune
-    ```
-
---
-
-#### Cron
-
---
-
-- *docker-prune.sh*
-
-    ```bash
-    #!/bin/bash
-    $(which docker) system prune -f
-    ```
-
-- Run it daily at midnight:
-
-    ```sh
-    $ crontab -e
-    ```
-
-    ```sh
-    0 0 * * 1 ~/docker-prune.sh > /dev/null 2>&1
-    ```
-
----
-
 class: center, middle
 
 ## Docker Compose
@@ -678,6 +599,45 @@ class: center, middle
 
 1. [Web Development](https://github.com/testdrivenio/docker-python-devs/tree/master/web/05_compose)
 1. [Data Science](https://github.com/testdrivenio/docker-python-devs/tree/master/data-science/04_compose)
+
+---
+
+
+class: center, middle
+
+## Use Case
+
+---
+
+### Use Case
+
+--
+
+#### Scenario
+
+--
+
+1. Ship dependencies along with the code to secure environments cut off from the internet
+1. Multiple operating systems
+1. Python 2.6, 2.7, 3.6
+
+--
+
+#### Docker
+
+--
+
+1. Spin up containers that match the requirmenets
+1. Build the wheel files
+1. Bundle code + wheels
+
+--
+
+<img src="images/python-docker-offline-deployments.webp" alt="python docker offline deployments" style="width:40%;">
+
+https://realpython.com/offline-python-deployments-with-docker
+
+--
 
 ---
 
