@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Managing Secrets with Vault</title>
+    <meta charset="utf-8">
+    <style>
+      @import url(https://fonts.googleapis.com/css?family=Yanone+Kaffeesatz);
+      @import url(https://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic);
+      @import url(https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,400italic);
+
+      body { font-family: 'Droid Serif'; }
+      h1, h2, h3 {
+        font-family: 'Yanone Kaffeesatz';
+        font-weight: normal;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      table, th, td {
+        border: 1px solid black;
+      }
+      th, td {
+        padding: 5px;
+        text-align: left;
+      }
+      td {
+        padding-left: 5px;
+        padding-right: 5px;
+      }
+      .remark-code { font-family: 'Ubuntu Mono'; }
+      .remark-inline-code {
+        font-family: 'Ubuntu Mono';
+        padding: 2px 4px;
+        font-size: 90%;
+        color: #c7254e;
+        background-color: #f9f2f4;
+        border-radius: 0;
+       }
+    </style>
+  </head>
+  <body>
+    <textarea id="source">
+
+class: center, middle
+
+# Managing Secrets with Vault
+
+<img src="images/vault-logo.png" alt="vault logo" style="width:20%;">
+
+<br>
+
+<div>
+  <span style="vertical-align:60%;">Presented by <em>Michael Herman</em></span>
+</div>
+
+---
+
+### Agenda
+
+--
+
+##### (1) Intro
+
+1. About Me
+1. Objectives
+
+--
+
+##### (2) Theory
+
+1. What is Vault?
+1. Why Vault?
+1. Secure Secret Storage
+1. Dynamic Secrets
+1. Encryption
+1. Leases
+1. Revocation
+1. Auditing
+
+--
+
+##### (3) Practice
+
+1. Foo
+1. Bar
+
+--
+
+##### (4) Next Steps
+
+---
+
+class: center, middle
+
+## Intro
+
+---
+
+### About Michael
+
+```
+$ whoami
+michael.herman
+```
+
+<p style="margin:0"><img src="images/me.png" style="max-width: 10%;" alt="me"></p>
+
+--
+
+### Day Job
+
+Software Engineer at [ClickFox](https://www.clickfox.com/).
+&nbsp;
+<img src="images/clickfox.png" style="max-width: 4%; border:0; box-shadow: none;" alt="clickfox logo">
+
+--
+
+### Also
+
+1. Co-founder/author of [Real Python](https://realpython.com)
+1. 😍 - [tech writing/education](http://mherman.org), [open source](http://github.com/mjhea0), [financial models](http://www.starterfinancialmodel.com/), [radiohead](http://radiohead.com/)
+
+<img src="images/mobile_image.png" style="max-width: 20%; padding-top:0px; box-shadow: none;" alt="testdriven.io">
+
+---
+
+## Objectives
+
+By the end of this talk, you should be able to...
+
+--
+
+1. foo
+
+--
+
+1. bar
+
+---
+
+class: center, middle
+
+## Theory
+
+---
+
+## What is Vault?
+
+--
+
+[Vault](https://www.vaultproject.io/) is an open-source tool used for securely storing and managing secrets.
+
+<img src="images/vault-logo2.png" alt="vault logo" style="width:30%;padding-top:20px;">
+
+--
+
+### Secrets?
+
+--
+
+Database credentials, SSH keys, usernames and passwords, AWS IAM credentials, API tokens, SSNs, Credit card info, etc.
+
+--
+
+### Distributing secrets
+
+- How do your apps get them?
+- how do developers access and manage them?
+- How are they updated or revoked?
+
+---
+
+## Why Vault?
+
+| Current problems                                   | Vault's Goals                                            |
+|----------------------------------------------------|----------------------------------------------------------|
+| Secrets are everywhere.                            | Vault is the single source of truth for all secrets.     |
+| They are generally unencrypted.                    | Vault manages encryption (during transit and at rest) out of the box. |
+| It's difficult to dynamically generate them.       | Secrets are dynamically generated.                       |
+| It's even more difficult to lease and revoke them. | Secrets can be leased and revoked.                       |
+| There's no audit trail.                            | There's an audit trail for generating and using secrets. |
+
+https://www.vaultproject.io/intro/index.html
+
+<img src="images/hashicorp.png" alt="hashicorp logo" style="width:30%;padding-top:20px;">
+
+---
+
+## Secure Secret Storage
+
+--
+
+<img src="images/vault-secure_secret_storage.png" alt="vault logo" style="width:90%;padding-top:20px;">
+
+--
+
+<br>
+
+```sh
+$ vault kv put secret/password value=myprecious
+Success! Data written to: secret/password
+
+$ vault/vault kv get secret/password
+
+==== Data ====
+Key      Value
+---      -----
+value    myprecious
+```
+
+(value at rest in S3 -> `2d947228-33f0-6b83-4d60-83fce930f804`)
+
+---
+
+## Dynamic Secrets
+
+---
+
+## Encryption
+
+---
+
+## Leases
+
+---
+
+## Revocation
+
+---
+
+## Auditing
+
+---
+
+class: center, middle
+
+## Practice
+
+---
+
+### That's it!
+
+What's next?
+
+--
+
+##### Resources
+
+1. Slides - http://mherman.org/presentations/dockercon-2018
+1. Repo - https://github.com/testdrivenio/docker-python-devs
+1. [7 best practices for building containers](https://cloudplatform.googleblog.com/2018/07/7-best-practices-for-building-containers.html)
+1. [How to Build 12 Factor Microservices on Docker](https://www.packtpub.com/books/content/how-to-build-12-factor-design-microservices-on-docker-part-1)
+1. [Docker Cheat Sheet](https://github.com/wsargent/docker-cheat-sheet)
+1. [Simplifying Offline Python Deployments With Docker](https://realpython.com/offline-python-deployments-with-docker)
+1. From Docker:
+  - [Best practices for writing Dockerfiles](https://docs.docker.com/develop/develop-images/dockerfile_best-practices/)
+  - [Docker development best practices](https://docs.docker.com/develop/dev-best-practices/)
+
+--
+
+##### Questions?
+
+✌️
+
+
+    </textarea>
+    <script src="https://remarkjs.com/downloads/remark-latest.min.js">
+    </script>
+    <script>
+      var slideshow = remark.create();
+    </script>
+  </body>
+</html>

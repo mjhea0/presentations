@@ -1,0 +1,35 @@
+1. What is vault?
+1. Secrets? (PII ssn, credit card info, passwords, etc)
+1. Distributing Secrets
+    - how do apps get them?
+    - how do devs get them?
+    - how are they updated?
+    - how do they get revoked?
+1. Why are config files bad for secrets?
+    - available to all, no access control
+    - no auditing
+    - no revocation
+1. Why not DBs?
+    - not designed for secrets
+    - limited access controls
+    - plaintext
+    - no auditing
+    - no revocation
+1. Sprawl
+    - secrets are sprinkled all over the place
+    - who has access?
+    - when was a specific secret used?
+    - what happens if there is a comprimise?
+1. Comprimised?
+    - revoke access
+    - get audit trail
+1. Why Vault?
+    - single source for secrets
+    - pluggable backends
+    - dynamic
+    - leasing, renewal, revocation
+    - autiting
+    - data is encypted in transit and at rest
+    - high availability
+    - easy to work with (api driven, nice cli, rich client libraries)
+    - small and lightweight
