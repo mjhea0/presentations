@@ -1,3 +1,16 @@
+1. What is Vault?
+1. Why Vault?
+1. Uses?
+1. Main uses - static secrets, dynamic secrets, transit
+1. Example
+
+1. Secure Secret Storage
+1. Dynamic Secrets
+1. Encryption
+1. Leases and Revocation
+1. Auditing
+
+
 1. What is vault?
 1. Secrets? (PII ssn, credit card info, passwords, etc)
 1. Distributing Secrets
