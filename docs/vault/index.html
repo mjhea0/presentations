@@ -355,7 +355,7 @@ Take note of the unseal keys and the initial root token. You will need to provid
 
 --
 
-Now you can unseal the Vault using 3 of the tokens:
+Now you can unseal the Vault using 3 of the keys:
 
 ```sh
 $ vault operator unseal
@@ -411,6 +411,8 @@ Vault can be managed through the [CLI](https://www.vaultproject.io/docs/commands
 
 #### CLI Examples
 
+https://www.vaultproject.io/docs/secrets/kv/index.html
+
 Create:
 
 ```sh
@@ -427,12 +429,14 @@ $ vault kv get secret/foo
 Delete:
 
 ```sh
-$ vault kv delete kv/foo
+$ vault kv delete secret/foo
 ```
+
+--
 
 <br>
 
-https://www.vaultproject.io/docs/secrets/kv/index.html
+Take note of the audit log. Each of the above requests were logged!
 
 ---
 
@@ -485,7 +489,7 @@ $ vault read aws/creds/ec2-read
 
 --
 
-*Secrets are generated when they are requested (i.e., a web app requests access to s3). They are not available in the store before this.*
+*Secrets are generated when they are requested (i.e., a web app requests access to S3). They are not available in the store before this.*
 
 https://www.vaultproject.io/intro/getting-started/dynamic-secrets.html
 
