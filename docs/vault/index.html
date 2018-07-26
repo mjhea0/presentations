@@ -351,7 +351,7 @@ $ vault operator init
 
 Take note of the unseal keys and the initial root token. You will need to provide 3 of the unseal keys every time the Vault server is re-sealed.
 
-<small><em>(Why 3 tokens? https://en.wikipedia.org/wiki/Shamir's_Secret_Sharing)</em></small>
+<small><em>(Why 3 keys? https://en.wikipedia.org/wiki/Shamir's_Secret_Sharing)</em></small>
 
 --
 
@@ -381,7 +381,7 @@ https://www.vaultproject.io/docs/concepts/policies.html
 Before we test out the functionality, let’s enable an [Audit Device](https://www.vaultproject.io/docs/audit/index.html):
 
 ```sh
-$ vault/vault audit enable file file_path=/vault/logs/audit.log
+$ vault audit enable file file_path=/vault/logs/audit.log
 Success! Enabled the file audit device at: file/
 ```
 
@@ -390,7 +390,7 @@ Success! Enabled the file audit device at: file/
 To test, run the following command to view all enabled Audit Devices:
 
 ```sh
-$ vault/vault audit list
+$ vault audit list
 
 Path     Type    Description
 ----     ----    -----------
