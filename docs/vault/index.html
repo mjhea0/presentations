@@ -254,14 +254,16 @@ Backends are everywhere!
 
 | Backend                                                                      | Use                                      | Examples                                                       |
 |------------------------------------------------------------------------------|------------------------------------------|----------------------------------------------------------------|
-| [Storage](https://www.vaultproject.io/docs/configuration/storage/index.html) | Where secrets are stored                 | Consul, Filesystem, In-Memory, PostgreSQL, S3                  |
-| [Secret](https://www.vaultproject.io/docs/secrets/index.html)                | Handles static or dynamic secrets        | AWS, Databases, Key/Value, RabbitMQ, SSH                       |
-| [Auth](https://www.vaultproject.io/docs/auth/index.html)                     | Handles authentication and authorization | AWS, Azure, Google Clouds, GitHub, Tokens, Username & Password |
-| [Audit](https://www.vaultproject.io/docs/auth/index.html)                    | Logs all requests                        | File, Syslog, Socket                                           |
+| [Storage](https://www.vaultproject.io/docs/configuration/storage/index.html) | Where secrets are stored                 | Consul, Filesystem`*`, In-Memory, PostgreSQL, S3                  |
+| [Secret](https://www.vaultproject.io/docs/secrets/index.html)                | Handles static or dynamic secrets        | AWS`*`, Databases, Key/Value`*`, RabbitMQ, SSH                       |
+| [Auth](https://www.vaultproject.io/docs/auth/index.html)                     | Handles authentication and authorization | AWS, Azure, Google Cloud, GitHub, Tokens`*`, Username & Password |
+| [Audit](https://www.vaultproject.io/docs/auth/index.html)                    | Logs all requests                        | File`*`, Syslog, Socket                                           |
 
-<a href="images/vault-architecture.png">
-  <img src="images/vault-architecture.png" alt="vault architecture" style="width:40%;">
-</a>
+<small>`*` used in this presentation</small>
+
+--
+
+<a href="images/vault-architecture.png">vault-architecture.png</a>
 
 https://www.vaultproject.io/docs/internals/architecture.html
 
@@ -297,6 +299,8 @@ Build the image and run the container:
 ```sh
 $ docker-compose up -d --build
 ```
+
+--
 
 Start a bash session within the running container and add Vault to `$PATH`:
 
