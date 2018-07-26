@@ -257,7 +257,7 @@ Backends are everywhere!
 | [Storage](https://www.vaultproject.io/docs/configuration/storage/index.html) | Where secrets are stored                 | Consul, Filesystem`*`, In-Memory, PostgreSQL, S3                  |
 | [Secret](https://www.vaultproject.io/docs/secrets/index.html)                | Handles static or dynamic secrets        | AWS`*`, Databases, Key/Value`*`, RabbitMQ, SSH                       |
 | [Auth](https://www.vaultproject.io/docs/auth/index.html)                     | Handles authentication and authorization | AWS, Azure, Google Cloud, GitHub, Tokens`*`, Username & Password |
-| [Audit](https://www.vaultproject.io/docs/auth/index.html)                    | Logs all requests                        | File`*`, Syslog, Socket                                           |
+| [Audit](https://www.vaultproject.io/docs/auth/index.html)                    | Logs all requests and responses                     | File`*`, Syslog, Socket                                           |
 
 <small>`*` used in this presentation</small>
 
@@ -450,7 +450,7 @@ Take note of the audit log. Each of the above requests were logged!
 
 Vault supports a number of dynamic secret backends for generating secrets dynamically when needed.
 
-For example, with the [AWS](https://www.vaultproject.io/docs/secrets/aws/index.html) and [Google Cloud](https://www.vaultproject.io/docs/secrets/gcp/index.html), backends you can create access credentials based on IAM policies. The [databases](https://www.vaultproject.io/docs/secrets/databases/index.html) backend, meanwhile, generates database credentials based on configured roles.
+For example, with the [AWS](https://www.vaultproject.io/docs/secrets/aws/index.html) and [Google Cloud](https://www.vaultproject.io/docs/secrets/gcp/index.html) backends, you can create access credentials based on IAM policies. The [databases](https://www.vaultproject.io/docs/secrets/databases/index.html) backend, meanwhile, generates database credentials based on configured roles.
 
 --
 
@@ -487,7 +487,8 @@ Success! Data written to: aws/config/root
 Create role and credentials:
 
 ```sh
-$ vault write aws/roles/ec2-read arn=arn:aws:iam::aws:policy/AmazonEC2ReadOnlyAccess
+$ vault write aws/roles/ec2-read \
+  arn=arn:aws:iam::aws:policy/AmazonEC2ReadOnlyAccess
 $ vault read aws/creds/ec2-read
 ```
 
