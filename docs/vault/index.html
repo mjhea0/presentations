@@ -277,7 +277,7 @@ class: center, middle
 
 ### Project Overview
 
-https://github.com/testdrivenio/vault-docker-example
+https://github.com/testdrivenio/vault-consul-docker
 
 ```sh
 ├── docker-compose.yml
@@ -287,8 +287,8 @@ https://github.com/testdrivenio/vault-docker-example
     │   └── vault-config.json
     ├── data
     ├── logs
-    │   └─ audit.log
     └── policies
+        └── app-policy.json
 ```
 
 --
@@ -302,11 +302,10 @@ $ docker-compose up -d --build
 
 --
 
-Start a bash session within the running container and add Vault to `$PATH`:
+Start a bash session within the running container:
 
 ```sh
 $ docker-compose exec vault bash
-$ export PATH=$PATH:$PWD/vault
 ```
 
 ---
@@ -550,7 +549,6 @@ What's next?
 ##### What has not been covered?
 
 1. Leases and revocation
-1. Re-sealing the Vault
 1. Setting up new policies
 1. Deployment
 1. Configuring TLS
@@ -560,9 +558,10 @@ What's next?
 
 ##### Resources
 
+1. Full blog post - https://testdriven.io/managing-secrets-with-vault-and-consul
 1. Slides - http://mherman.org/presentations/vault
 1. Repo - https://github.com/testdrivenio/vault-docker-example
-1. Why We Need Dynamic Secrets - https://www.hashicorp.com/blog/why-we-need-dynamic-secrets (blog post for more info on the advantages of using dynamic secrets)
+1. Why We Need Dynamic Secrets - https://www.hashicorp.com/blog/why-we-need-dynamic-secrets (advantages of using dynamic secrets)
 
 --
 
