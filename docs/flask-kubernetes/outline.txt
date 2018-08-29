@@ -1,0 +1,28 @@
+Scaling Flask with Kubernetes
+
+Blurb: In this talk, Michael Herman (https://mherman.org/) will first explain Kubernetes from a high-level and then he'll show how to deploy a Flask-based microservice (along with Postgress and Vue.js) to a managed Kubernetes cluster.
+
+Theory:
+
+1. What is container orchestration?
+2. What is Kubernetes and why should you use it?
+3. Why should web developers care about Kubernetes?
+
+Practice:
+
+1. Google SDK
+1. Kubectl
+1. Create cluster
+1. Image registry
+1. Helm
+1. Postgres
+1. Cloud storage for static files
+1. Flask
+1. Ingress
+
+
+Sources:
+
+1. https://www.codementor.io/apcelent/scaling-python-microservices-with-kubernetes-mm27nsm6z
+2. https://blog.gorgias.io/deploying-flask-celery-with-docker-and-kubernetes/
+3. https://www.agiliq.com/blog/2018/07/django-on-kubernetes/
