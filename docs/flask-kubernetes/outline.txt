@@ -21,8 +21,26 @@ Practice:
 1. Ingress
 
 
+
+##### (4) Google Cloud Setup
+
+1. Google Cloud SDK
+1. Kubernetes Engine
+1. Container Registry
+1. Cloud Storage
+
+##### (5) Google Cloud Deployment
+
+1. Kubectl
+1. Helm
+1. Postgres
+1. Flask
+1. Ingress
+
+
 Sources:
 
 1. https://www.codementor.io/apcelent/scaling-python-microservices-with-kubernetes-mm27nsm6z
 2. https://blog.gorgias.io/deploying-flask-celery-with-docker-and-kubernetes/
 3. https://www.agiliq.com/blog/2018/07/django-on-kubernetes/
+4. https://github.com/dynatrace-innovationlab/developing-microservices

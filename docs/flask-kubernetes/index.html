@@ -71,21 +71,17 @@ class: center, middle
 
 ##### (2) Theory
 
-1. What is Vault?
-1. Why Vault?
-1. Using Vault
+1. Container Orchestration
+1. Kubernetes 101
 
 --
 
 ##### (3) Practice
 
-1. Project Overview
-1. Storage Backends
-1. Init, Unseal, and Authenticate
-1. Auditing
-1. Static Secrets
-1. Dynamic Secrets
-1. Encryption as a Service
+1. App Overview
+1. Minikube
+1. Google Cloud Platform (GCP)
+1. GCP Deployment
 
 --
 
@@ -135,38 +131,10 @@ By the end of this talk, you should be able to...
 
 --
 
-1. Explain what Vault is and why you may want to use it
-
---
-
-1. Describe the basic Vault architecture along with dynamic and static secrets, the various backends (storage, secret, auth, audit), and how Vault can be used as an "encryption as a service"
-
---
-
-1. Spin up Vault with the Filesystem backend
-
---
-
-1. Init and unseal Vault
-
---
-
-1. Authenticate against Vault
-
---
-
-1. Configure an Audit backend
-
---
-
-1. Work with static and dynamic secrets
-
---
-
-1. Use the Transit backend as an "encryption as a service"
+1. foo
+1. bar
 
 ---
-
 
 class: center, middle
 
@@ -174,99 +142,47 @@ class: center, middle
 
 ---
 
-### What is Vault?
+### Container Orchestration
 
 --
 
-[Vault](https://www.vaultproject.io/) is an open-source tool used for securely storing and managing secrets.
+sdjkhdsadjkh
 
-<img src="images/vault-logo2.png" alt="vault logo" style="width:30%;padding-top:20px;">
+https://testdriven.io/running-flask-on-docker-swarm#what-is-container-orchestration
 
---
 
-#### Secrets?
+More:
 
---
+1. How do containers located on different servers talk to one another?
+1. Scaling horizontally
+1. Service discovery
+1. Security
+1. Zero-downtime deploys + rollbacks
 
-Secrets are securely-sensitive or personally identifiable info like database credentials, SSH keys, usernames/passwords, AWS IAM credentials, API tokens, SSNs, credit card numbers.
---
+More:
 
-#### Distributing secrets
-
-1. Who has access to them?
-1. Who manages them?
-1. How do you control who has access to them?
-1. How do your apps get them?
-1. How are they updated?
-1. How are they revoked?
+1. Replication of components
+1. Auto-scaling
+1. Load balancing
+1. Rolling updates
+1. Logging across components
+1. Monitoring and health checking
+1. Service discovery
+1. Authentication
 
 ---
 
-### Why Vault?
+### Kubernetes 101
 
 --
 
-Vault provides answers to the questions on the previous slide and helps to solve the following problems with secret management:
+Core concepts
 
-| Current problems                                   | Vault's Goals                                            |
-|----------------------------------------------------|----------------------------------------------------------|
-| Secrets are everywhere.                            | Vault is the single source of truth for all secrets.     |
-| They are generally unencrypted.                    | Vault manages encryption (during transit and at rest) out of the box. |
-| It's difficult to dynamically generate them.       | Secrets can be dynamically generated.                       |
-| It's even more difficult to lease and revoke them. | Secrets can be leased and revoked.                       |
-| There's no audit trail.                            | There's an audit trail for generating and using secrets. |
-
-https://www.vaultproject.io/intro/index.html
-
-<img src="images/hashicorp.png" alt="hashicorp logo" style="width:25%;padding-top:5px;">
-
----
-
-### Using Vault (1)
-
---
-
-#### Secret Management
-
-Vault has two types of secrets:
-
-1. **[Static](https://www.vaultproject.io/guides/secret-mgmt/static-secrets.html)** secrets (think encrypted Redis or Memcached) have refresh intervals but they do not expire unless explicitly revoked. They are defined ahead of time and then shared.
-
-    <img src="images/vault-secure_secret_storage.png" alt="secure secret storage" style="width:50%;">
-
-1. **[Dynamic](https://www.vaultproject.io/intro/getting-started/dynamic-secrets.html)** secrets have enforced leases and generally expire after a short period of time. Since they don’t exist until they are accessed, there’s less exposure - so dynamic secrets are much more secure.
-
---
-
-#### Encryption as a Service
-
-The [Transit](https://www.vaultproject.io/docs/secrets/transit/index.html) backend can be used as an "encryption as a service":
-
-1. Encrypt and decrypt data "in-transit" without storing it
-1. Easily integrate encryption into your application workflow
-
----
-
-### Using Vault (2)
-
---
-
-Backends are everywhere!
-
-| Backend                                                                      | Use                                      | Examples                                                       |
-|------------------------------------------------------------------------------|------------------------------------------|----------------------------------------------------------------|
-| [Storage](https://www.vaultproject.io/docs/configuration/storage/index.html) | Where secrets are stored                 | Consul, Filesystem`*`, In-Memory, PostgreSQL, S3                  |
-| [Secret](https://www.vaultproject.io/docs/secrets/index.html)                | Handles static or dynamic secrets        | AWS`*`, Databases, Key/Value`*`, RabbitMQ, SSH                       |
-| [Auth](https://www.vaultproject.io/docs/auth/index.html)                     | Handles authentication and authorization | AWS, Azure, Google Cloud, GitHub, Tokens`*`, Username & Password |
-| [Audit](https://www.vaultproject.io/docs/auth/index.html)                    | Logs all requests and responses                     | File`*`, Syslog, Socket                                           |
-
-<small>`*` used in this presentation</small>
-
---
-
-<a href="images/vault-architecture.png">vault-architecture.png</a>
-
-https://www.vaultproject.io/docs/internals/architecture.html
+1. pod
+1. node
+1. services
+1. labels
+1. deployments
 
 ---
 
@@ -276,268 +192,44 @@ class: center, middle
 
 ---
 
-### Project Overview
-
-https://github.com/testdrivenio/vault-consul-docker
-
-```sh
-├── docker-compose.yml
-└─ vault
-    ├── Dockerfile
-    ├── config
-    │   └── vault-config.json
-    ├── data
-    ├── logs
-    └── policies
-        └── app-policy.json
-```
+### App Overview
 
 --
 
-Build the image and run the container:
-
-
-```sh
-$ docker-compose up -d --build
-```
-
---
-
-Start a bash session within the running container:
-
-```sh
-$ docker-compose exec vault bash
-```
+vue + flask + postgres
 
 ---
 
-### Storage Backends
+### Minikube
 
 --
 
-Vault works with a number of storage backends that are used for storing the secrets - in-memory, files, various SQL and NoSQL databases, Consul, S3, etc.
-
-https://www.vaultproject.io/docs/configuration/storage/index.html
-
---
-
-To keep things simple, the examples in this presentation use the [Filesystem](https://www.vaultproject.io/docs/configuration/storage/filesystem.html) backend:
-
-```json
-{
-  "backend": {
-    "file": {
-      "path": "vault/data"
-    }
-  },
-  "listener": {
-    "tcp":{
-      "address": "0.0.0.0:8200",
-      "tls_disable": 1
-    }
-  },
-  "ui": true
-}
-```
+1. What is it?
+1. Set up
+1. Running the app locally
 
 ---
 
-
-### Init, Unseal, and Authenticate
-
---
-
-Initialize Vault:
-
-```sh
-$ vault operator init
-```
-
-Take note of the unseal keys and the initial root token. You will need to provide 3 of the unseal keys every time the Vault server is re-sealed.
-
-<small><em>(Why 3 keys? https://en.wikipedia.org/wiki/Shamir's_Secret_Sharing)</em></small>
+### Google Cloud Platform (GCP)
 
 --
 
-Now you can unseal the Vault using 3 of the keys:
-
-```sh
-$ vault operator unseal
-```
-
-Authenticate:
-
-```sh
-$ vault login
-Token (will be hidden):
-```
-
-This uses the root policy. In production you'll want to set up policies with different levels of access.
-
-https://www.vaultproject.io/docs/concepts/policies.html
+1. Google Cloud SDK
+1. Kubernetes Engine
+1. Container Registry
+1. Cloud Storage
 
 ---
 
-### Auditing
+### GCP Deployment
 
 --
 
-Before we test out the functionality, let’s enable an [Audit Device](https://www.vaultproject.io/docs/audit/index.html):
-
-```sh
-$ vault audit enable file file_path=/vault/logs/audit.log
-Success! Enabled the file audit device at: file/
-```
-
---
-
-To test, run the following command to view all enabled Audit Devices:
-
-```sh
-$ vault audit list
-
-Path     Type    Description
-----     ----    -----------
-file/    file    n/a
-```
-
-This request should be logged in *vault/logs/audit.log*.
-
----
-
-### Static Secrets
-
---
-
-Vault can be managed through the [CLI](https://www.vaultproject.io/docs/commands/index.html), [HTTP API](https://www.vaultproject.io/api/index.html), or [UI](https://www.vaultproject.io/docs/configuration/ui/index.html).
-
---
-
-#### CLI Examples
-
-https://www.vaultproject.io/docs/secrets/kv/index.html
-
-Create:
-
-```sh
-$ vault kv put secret/foo bar=precious
-Success! Data written to: secret/foo
-```
-
-Read:
-
-```sh
-$ vault kv get secret/foo
-```
-
-Delete:
-
-```sh
-$ vault kv delete secret/foo
-```
-
---
-
-<br>
-
-Take note of the audit log. Each of the above requests were logged!
-
----
-
-### Dynamic Secrets (1)
-
---
-
-Vault supports a number of dynamic secret backends for generating secrets dynamically when needed.
-
-For example, with the [AWS](https://www.vaultproject.io/docs/secrets/aws/index.html) and [Google Cloud](https://www.vaultproject.io/docs/secrets/gcp/index.html) backends, you can create access credentials based on IAM policies. The [databases](https://www.vaultproject.io/docs/secrets/databases/index.html) backend, meanwhile, generates database credentials based on configured roles.
-
---
-
-*Dynamic Secrets:*
-
-- are generated on demand
-- have limited access based on role
-- are "leased"
-- can be revoked
-- come with an audit trail
-
----
-
-### Dynamic Secrets (2)
-
---
-
-#### Generate dynamic, on-demand AWS access credentials
-
-Enable:
-
-```sh
-$ vault secrets enable -path=aws aws
-Success! Enabled the aws secrets engine at: aws/
-```
-
-Authenticate:
-
-```sh
-$ vault write aws/config/root access_key=foo secret_key=bar
-Success! Data written to: aws/config/root
-```
-
-Create role and credentials:
-
-```sh
-$ vault write aws/roles/ec2-read \
-  arn=arn:aws:iam::aws:policy/AmazonEC2ReadOnlyAccess
-$ vault read aws/creds/ec2-read
-```
-
---
-
-*Secrets are generated when they are requested (i.e., a web app requests access to S3). They are not available in the store before this.*
-
-https://www.vaultproject.io/intro/getting-started/dynamic-secrets.html
-
----
-
-### Encryption as a Service
-
---
-
-Enable transit:
-
-```sh
-$ vault secrets enable transit
-Success! Enabled the transit secrets engine at: transit/
-```
-
---
-
-Configure named encryption key:
-
-```sh
-$ vault write -f transit/keys/foo
-Success! Data written to: transit/keys/foo
-```
-
---
-
-Encrypt and decrypt:
-
-```sh
-$ vault write transit/encrypt/foo plaintext=$(base64 <<< "my precious")
-Key           Value
----           -----
-ciphertext    vault:v1:/Tun95IT+dVTvDfYiCHdI5rGPSAxgvPcFaDDtneRorQCyBOgv9mPKw==
-
-$ vault write transit/decrypt/foo ciphertext=vault:v1:/Tun95IT+dVTvDfYiCHdI5rGPSAxgvPcFaDDtneRorQCyBOgv9mPKw==
-Key          Value
----          -----
-plaintext    bXkgcHJlY2lvdXMK
-
-$ base64 -d <<< "bXkgcHJlY2lvdXMK"
-my precious
-```
+1. Kubectl
+1. Helm
+1. Postgres
+1. Flask
+1. Ingress
 
 ---
 
