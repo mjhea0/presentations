@@ -360,7 +360,13 @@ class: center, middle
 
 --
 
-vue + flask + postgres
+*Bookshelf* - Flask + Vue + Postgres
+
+http://github.com/testdrivenio/flask-vue-kubernetes
+
+<br>
+
+<img src="images/final-app.gif" alt="final app" style="width:70%;">
 
 ---
 
@@ -368,17 +374,225 @@ vue + flask + postgres
 
 --
 
-1. What is it?
-1. Set up
-1. Running the app locally https://github.com/kubernetes/minikube/blob/master/docs/drivers.md#hyperkit-driver
+[Minikube](https://kubernetes.io/docs/setup/minikube/) is a tool which allows developers to use and run a Kubernetes cluster locally.
 
-kubectl create -f postgres-deployment.yaml
-kubectl create -f postgres-service.yaml
-kubectl exec postgres-POD_IDENTIFIER --stdin --tty -- createdb -U postgres books
+--
 
-kubectl create -f flask-deployment.yaml
-kubectl expose deployment flask --type=NodePort --port 5000
-minikube service flask --url
+Install via [HyperKit](https://github.com/moby/hyperkit):
+
+```sh
+$ curl -Lo docker-machine-driver-hyperkit \
+https://storage.googleapis.com/minikube/releases/latest/docker-machine-driver-hyperkit \
+&& chmod +x docker-machine-driver-hyperkit \
+&& sudo cp docker-machine-driver-hyperkit /usr/local/bin/ \
+&& rm docker-machine-driver-hyperkit \
+&& sudo chown root:wheel /usr/local/bin/docker-machine-driver-hyperkit \
+&& sudo chmod u+s /usr/local/bin/docker-machine-driver-hyperkit
+```
+
+--
+
+<small><em>Source: https://github.com/kubernetes/minikube/blob/master/docs/drivers.md#hyperkit-driver</em></small>
+
+Then, start the cluster:
+
+```sh
+$ minikube start --vm-driver=hyperkit
+$ eval $(minikube docker-env)
+$ minikube dashboard
+```
+
+<img src="images/minikube.jpg" alt="minikube logo" style="width:35%;">
+
+---
+
+### Postgres Deployment
+
+--
+
+*kubernetes/flask-deployment.yml*:
+
+```yaml
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: postgres
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        service: postgres
+    spec:
+      containers:
+      - name: postgres
+        image: postgres:10.4-alpine
+      restartPolicy: Always
+```
+
+--
+
+Create the deployment:
+
+```sh
+$ kubectl create -f ./kubernetes/postgres-deployment.yml
+```
+
+<p style="padding-top:20px;">
+  <img src="images/postgres-logo.png" alt="postgres logo" style="width:9%;">
+</p>
+
+---
+
+### Postgres Service
+
+--
+
+*kubernetes/postgres-service.yml*:
+
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    service: postgres
+  name: postgres
+spec:
+  type: ClusterIP
+  ports:
+  - name: postgres
+    port: 5432
+  selector:
+    service: postgres
+```
+
+--
+
+Create the service:
+
+```sh
+$ kubectl create -f ./kubernetes/postgres-service.yml
+```
+
+--
+
+Create the database:
+
+```sh
+$ kubectl get pods
+$ kubectl exec postgres-<POD_IDENTIFIER> \
+    --stdin --tty -- createdb -U postgres books
+```
+
+---
+
+### Flask Deployment
+
+--
+
+*kubernetes/flask-deployment.yml*:
+
+```yaml
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: flask
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: flask
+    spec:
+      containers:
+      - name: flask
+        image: mjhea0/flask-kubernetes:latest
+        env:
+        - name: FLASK_ENV
+          value: "development"
+        - name: APP_SETTINGS
+          value: "project.config.DevelopmentConfig"
+        - name: DATABASE_URL
+          value: "postgres://postgres:postgres@postgres:5432/books"
+        ports:
+        - containerPort: 5000
+          protocol: TCP
+      restartPolicy: Always
+```
+
+---
+
+### Flask Deployment (continued...)
+
+--
+
+Build and push the image to [Docker Hub](https://hub.docker.com/):
+
+```sh
+$ docker build -t mjhea0/flask-kubernetes ./services/server
+$ docker push mjhea0/flask-kubernetes
+```
+
+--
+
+Create the deployment:
+
+```sh
+$ kubectl create -f ./kubernetes/flask-deployment.yml
+```
+
+<br>
+
+<img src="images/flask-logo.png" alt="flask logo" style="width:30%;">
+
+---
+
+### Flask Service
+
+--
+
+*kubernetes/flask-service.yml*:
+
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    service: flask
+  name: flask
+spec:
+  ports:
+  - name: "5000"
+    port: 5000
+    targetPort: 5000
+  selector:
+    service: flask
+```
+
+--
+
+Create (and [expose](https://kubernetes.io/docs/tutorials/stateless-application/expose-external-ip-address/)) the service:
+
+```sh
+$ kubectl expose deployment flask --type=NodePort --port 5000
+```
+
+--
+
+Try it out:
+
+```sh
+$ open $(minikube service flask --url)/books/ping
+$ open $(minikube service flask --url)/books
+```
+
+---
+
+Ingress
+
+---
+
+
 
 
 kubectl create -f vue-deployment.yaml
@@ -421,11 +635,8 @@ What's next?
 
 ##### What has not been covered?
 
-1. Leases and revocation
-1. Setting up new policies
-1. Deployment
-1. Configuring TLS
-1. High availability
+1. Database Volumes
+
 
 --
 
