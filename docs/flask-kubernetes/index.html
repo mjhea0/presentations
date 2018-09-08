@@ -410,7 +410,7 @@ $ minikube dashboard
 
 --
 
-*kubernetes/flask-deployment.yml*:
+*kubernetes/postgres-deployment.yml*:
 
 ```yaml
 apiVersion: extensions/v1beta1
@@ -588,19 +588,181 @@ $ open $(minikube service flask --url)/books
 
 ---
 
-Ingress
+### Ingress
+
+--
+
+*kubernetes/minikube-ingress.yml*:
+
+```yaml
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: minikube-ingress
+  annotations:
+spec:
+  rules:
+  - host: hello.world
+    http:
+      paths:
+      - path: /books
+        backend:
+          serviceName: flask
+          servicePort: 5000
+```
+
+--
+
+Enable and apply:
+
+```sh
+$ minikube addons enable ingress
+$ kubectl apply -f ./kubernetes/minikube-ingress.yml
+```
+
+--
+
+Add entry to */etc/hosts* file: `<MINIKUBE_IP> hello.world`
+
+--
+
+Try it out: http://hello.world/books
 
 ---
 
+### Vue Deployment
 
+--
 
+*kubernetes/vue-deployment.yml*:
 
-kubectl create -f vue-deployment.yaml
-kubectl expose deployment vue --type=NodePort --port 8080
-minikube service vue --url
+```yaml
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: vue
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        run: vue
+    spec:
+      containers:
+      - name: vue
+        image: mjhea0/vue-kubernetes:latest
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+      restartPolicy: Always
+```
 
+---
 
-minikube addons enable ingress
+### Vue Deployment (continued...)
+
+--
+
+Build and push the image to Docker Hub:
+
+```sh
+$ docker build -t mjhea0/vue-kubernetes ./services/client \
+    -f ./services/client/Dockerfile-minikube
+$ docker push mjhea0/vue-kubernetes
+```
+
+--
+
+Create the deployment:
+
+```sh
+$ kubectl create -f ./kubernetes/vue-deployment.yml
+```
+
+<br>
+
+<img src="images/vue-logo.png" alt="vue logo" style="width:20%;">
+
+---
+
+### Vue Service
+
+--
+
+*kubernetes/vue-service.yml*:
+
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    service: vue
+  name: vue
+spec:
+  ports:
+  - name: "8080"
+    port: 8080
+    targetPort: 8080
+  selector:
+    service: vue
+```
+
+--
+
+Create (and [expose](https://kubernetes.io/docs/tutorials/stateless-application/expose-external-ip-address/)) the service:
+
+```sh
+$ kubectl expose deployment vue --type=NodePort --port 8080
+```
+
+--
+
+Try it out:
+
+```sh
+$ open $(minikube service vue --url)
+```
+
+---
+
+### Update Ingress
+
+--
+
+*kubernetes/minikube-ingress.yml*:
+
+```yaml
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: minikube-ingress
+  annotations:
+spec:
+  rules:
+  - host: hello.world
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: vue
+          servicePort: 8080
+      - path: /books
+        backend:
+          serviceName: flask
+          servicePort: 5000
+```
+
+--
+
+Apply the changes:
+
+```sh
+$ kubectl apply -f ./kubernetes/minikube-ingress.yml
+```
+
+--
+
+Try it out: http://hello.world
 
 ---
 
