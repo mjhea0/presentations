@@ -10,7 +10,6 @@ metadata - Data that helps uniquely identify the object, including a name string
 1. health checks
 1. practice
 1. show load balancer in action
-1. encrypted secrets?
 
 1. nodeport vs loadbalancer vs ingress
 
@@ -19,10 +18,5 @@ There are three ways to expose your Kubernetes application to external users:
 Use a Kubernetes service of type NodePort to expose the application on a port across all nodes.
 Use a Kubernetes service of type LoadBalancer to create an external load balancer that points to a service in your cluster.
 Use a Kubernetes Ingress resource to define host- or URL-based HTTP routing rules that specify how external users access services running in your cluster.
-
-1. Configure health checks to check the status of a service before it's added to a cluster
-1. Access the logs of a service running on a Swarm cluster
-1. Use a round robin algorithm to route traffic on a Swarm cluster
-1. Monitor a Swarm cluster with Docker Swarm Visualizer
 
 Why should web developers care about Kubernetes?
