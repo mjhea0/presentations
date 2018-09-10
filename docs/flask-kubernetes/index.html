@@ -73,6 +73,7 @@ class: center, middle
 
 1. Container Orchestration
 1. Kubernetes Concepts
+1. Creating Objects
 
 --
 
@@ -84,7 +85,6 @@ class: center, middle
 1. Secrets
 1. Deployments and Services (Postgres, Flask, Vue)
 1. Ingress
-1. Sanity Check
 1. Helpful Commands
 
 --
@@ -393,6 +393,41 @@ A [Service](https://kubernetes.io/docs/concepts/services-networking/service/) is
 <p style="margin-top:45px">
   <img src="images/flask-kubernetes-pv-pvc-pod.png" alt="kubernetes volume" style="width:65%;">
 </p>
+
+---
+
+### Creating Objects
+
+To create a new [object](https://kubernetes.io/docs/concepts/overview/working-with-objects/kubernetes-objects/) in Kubernetes, you must provide a "spec" that describes its desired state. We'll be using YAML files for this. Example:
+
+--
+
+```yaml
+apiVersion: v1
+kind: Deployment
+metadata:
+  name: flask
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: flask
+    spec:
+      containers:
+      - name: flask
+        image: mjhea0/flask-kubernetes:latest
+        ports:
+        - containerPort: 5000
+```
+
+Required Fields:
+
+1. `apiVersion` - [Kubernetes API](https://kubernetes.io/docs/reference/#api-reference) version
+1. `kind` - the type of object you want to create
+1. `metadata` - info about the object so that it can be uniquely identified
+1. `spec` - desired state of the object
+
 
 ---
 
@@ -890,7 +925,38 @@ $ open $(minikube service vue --url)
 
 --
 
-Enable and apply:
+Enable the Ingress [addon](https://github.com/kubernetes/minikube/tree/master/deploy/addons/ingress):
+
+```sh
+$ minikube addons enable ingress
+```
+
+--
+
+Before applying the spec, let's remove the existing Flask and Vue deployments since we used a [NodePort](https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types) to expose the service to external users:
+
+
+```sh
+$ kubectl delete deployment flask
+$ kubectl delete deployment vue
+```
+
+--
+
+Create new deployments:
+
+```sh
+$ kubectl create -f ./kubernetes/flask-deployment.yml
+$ kubectl create -f ./kubernetes/vue-deployment.yml
+```
+
+---
+
+### Ingress (continued...)
+
+--
+
+Create the Ingress object:
 
 ```sh
 $ minikube addons enable ingress
