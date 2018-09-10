@@ -88,6 +88,23 @@ db
 openfaas
 Dockerfiles
 artifact
+Minikube
+Vue
+config
+Vue.js
+Hypervisor
+HyperKit
+kubectl
+kubernetes
+base64
+loadbalancer
+Init
+auth
+Memcached
+PostgreSQL
+RabbitMQ
+Syslog
+NoSQL
  - docs/pycon-2018/index.html
 docker-compose-faas
 v1
@@ -116,3 +133,21 @@ routes.movies.test.js
 args
 MicroBadger
 wip
+ - docs/flask-kubernetes/index.html
+PersistentVolume
+Rollbacks
+Pod-lifecycle
+PersistentVolumeClaims
+PersistentVolumeClaim
+secret.yml
+minikube-ingress
+vue-deployment
+vue-service
+CheatSheet
+nodeport
+ - docs/vault/index.html
+Backends
+backends
+SSNs
+png
+audit.log

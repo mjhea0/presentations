@@ -38,9 +38,8 @@ Practice:
 1. Ingress
 
 
-Sources:
+Resources:
 
-1. https://www.codementor.io/apcelent/scaling-python-microservices-with-kubernetes-mm27nsm6z
-2. https://blog.gorgias.io/deploying-flask-celery-with-docker-and-kubernetes/
-3. https://www.agiliq.com/blog/2018/07/django-on-kubernetes/
-4. https://github.com/dynatrace-innovationlab/developing-microservices
+1. https://blog.oestrich.org/2015/08/running-postgres-inside-kubernetes/
+2. https://www.agiliq.com/blog/2018/07/django-on-kubernetes/
+3. https://github.com/dynatrace-innovationlab/developing-microservices

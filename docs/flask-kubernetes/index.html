@@ -80,8 +80,12 @@ class: center, middle
 
 1. App Overview
 1. Minikube
-1. Google Cloud Platform (GCP)
-1. GCP Deployment
+1. Volume
+1. Postgres
+1. Flask
+1. Ingress
+1. Vue
+1. Helpful Commands
 
 --
 
@@ -108,7 +112,7 @@ michael.herman
 
 #### Day Job
 
-Software Engineer at [ClickFox](https://www.clickfox.com/).
+Senior Software Engineer at [ClickFox](https://www.clickfox.com/).
 &nbsp;
 <img src="images/clickfox.png" style="max-width: 4%; border:0; box-shadow: none;" alt="clickfox logo">
 
@@ -132,17 +136,45 @@ By the end of this talk, you should be able to...
 --
 
 1. Explain what container orchestration is and why you may need to use an orchestration tool
+
+--
+
 1. Discuss the pros and cons of using Kubernetes over other orchestration tools like Docker Swarm and Elastic Container Service (ECS)
-1. Spin up a Flask-based microservice locally with Docker Compose
+
+--
+
+1. Explain the following Kubernetes primitives - Node, Pod, Service, Label, Deployment, Ingress, Volume
+
+--
+
+1. Spin up a Python-based microservice locally with Docker Compose
+
+--
+
+1. Configure a Kubernetes cluster to run locally with Minikube
+
+--
+
+1. Set up a volume, via a PersistentVolume, to hold Postgres data
+
+--
+
+1. Use Kubernetes Secrets to manage sensitive information
+
+--
+
 1. Build Docker images and push them up to the Docker Hub image registry
-1. Provision hosts on Digital Ocean with Docker Machine
-1. Configure a Docker Swarm cluster to run on Digital Ocean
-1. Run Flask, Nginx, and Postgres on Docker Swarm
-1. Use a round robin algorithm to route traffic on a Swarm cluster
-1. Monitor a Swarm cluster with Docker Swarm Visualizer
-1. Use Docker Secrets to manage sensitive information within Docker Swarm
-1. Configure health checks to check the status of a service before it's added to a cluster
-1. Access the logs of a service running on a Swarm cluster
+
+--
+
+1. Run Flask, Gunicorn, Postgres, and Vue on Kubernetes
+
+--
+
+1. Expose Flask and Vue to external users via an Ingress
+
+--
+
 
 ---
 
@@ -266,8 +298,9 @@ The primitives:
 1. Pod
 1. Service
 1. Label
-1. Deployments
+1. Deployment
 1. Ingress
+1. Volume
 
 <small><em>Source: [Kubernetes 101: Pods, Nodes, Containers, and Clusters](https://medium.com/google-cloud/kubernetes-101-pods-nodes-containers-and-clusters-c1509e409e16)</em></small>
 
@@ -302,7 +335,7 @@ A [Pod](https://kubernetes.io/docs/concepts/workloads/pods/pod/) is a logical, t
 
 --
 
-**Service**
+**Services**
 
 A [Service](https://kubernetes.io/docs/concepts/services-networking/service/) is a logical set of Pods that perform a similar function. It enables load balancing and service discovery. It's an abstraction layer over the Pods; Pods are meant to be ephemeral while services are much more persistent.
 
@@ -326,11 +359,11 @@ A [Service](https://kubernetes.io/docs/concepts/services-networking/service/) is
 
 **Label**
 
-[Labels](https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/) are key/value pairs that are attached to resources (like pods) which are used to organize related resources. You can think of them like CSS selectors.
+[Labels](https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/) are key/value pairs that are attached to resources (like Pods) which are used to organize related resources. You can think of them like CSS selectors. For example:
 
-1. Environment - `dev`, `test`, `prod`
-1. App version - `beta`, `1.2.1`
-1. Type - `client`, `server`, `db`
+1. *Environment* - `dev`, `test`, `prod`
+1. *App version* - `beta`, `1.2.1`
+1. *Type* - `client`, `server`, `db`
 
 --
 
@@ -350,6 +383,27 @@ A [Service](https://kubernetes.io/docs/concepts/services-networking/service/) is
 
 ---
 
+### Kubernetes Concepts (continued...)
+
+--
+
+**Volumes**
+
+[Volumes](https://kubernetes.io/docs/concepts/storage/volumes/) are used to persist data beyond the life of a container. They are especially important for stateful applications like Redis and Postgres.
+
+1. **[PersistentVolume](https://kubernetes.io/docs/concepts/storage/persistent-volumes/)** defines a storage volume independent of the normal Pod-lifecycle. It's managed outside of the particular Pod that it resides in.
+1. **[PersistentVolumeClaims](https://kubernetes.io/docs/concepts/storage/persistent-volumes/)** is a request to use the PersistentVolume by a user.
+
+<p style="margin-top:20px">
+  <img src="images/volumes.jpg" alt="kubernetes volumes" style="width:60%;">
+</p>
+
+<p style="margin:0">
+  <small><em>Image source: <a href="https://www.slideshare.net/kubecon/kubecon-eu-2016-kubernetes-storage-101">Kubernetes Storage 101</a></em></small>
+</p>
+
+---
+
 class: center, middle
 
 ## Practice
@@ -364,9 +418,9 @@ class: center, middle
 
 http://github.com/testdrivenio/flask-vue-kubernetes
 
-<br>
-
 <img src="images/final-app.gif" alt="final app" style="width:70%;">
+
+<small><em>Want to learn how to build this project? [Developing a Single Page App with Flask and Vue.js](https://testdriven.io/developing-a-single-page-app-with-flask-and-vuejs)</em></small>
 
 ---
 
@@ -378,31 +432,146 @@ http://github.com/testdrivenio/flask-vue-kubernetes
 
 --
 
-Install via [HyperKit](https://github.com/moby/hyperkit):
+#### Getting Started
 
-```sh
-$ curl -Lo docker-machine-driver-hyperkit \
-https://storage.googleapis.com/minikube/releases/latest/docker-machine-driver-hyperkit \
-&& chmod +x docker-machine-driver-hyperkit \
-&& sudo cp docker-machine-driver-hyperkit /usr/local/bin/ \
-&& rm docker-machine-driver-hyperkit \
-&& sudo chown root:wheel /usr/local/bin/docker-machine-driver-hyperkit \
-&& sudo chmod u+s /usr/local/bin/docker-machine-driver-hyperkit
-```
+First, install the following tools:
+
+1. **Install a  [Hypervisor](https://kubernetes.io/docs/tasks/tools/install-minikube/#install-a-hypervisor)** (like [VirtualBox](https://www.virtualbox.org/wiki/Downloads) or [HyperKit](https://github.com/moby/hyperkit)) to manage virtual machines
+1. **Install and Set Up [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/)** to deploy and manage apps on Kubernetes
+1. **Install [Minikube](https://github.com/kubernetes/minikube/releases)**
 
 --
-
-<small><em>Source: https://github.com/kubernetes/minikube/blob/master/docs/drivers.md#hyperkit-driver</em></small>
 
 Then, start the cluster:
 
 ```sh
-$ minikube start --vm-driver=hyperkit
-$ eval $(minikube docker-env)
+$ minikube start --vm-driver=virtualbox
 $ minikube dashboard
 ```
 
-<img src="images/minikube.jpg" alt="minikube logo" style="width:35%;">
+<p style="margin-top:30px">
+  <img src="images/minikube.jpg" alt="minikube logo" style="width:35%;">
+</p>
+
+---
+
+### PersistentVolume
+
+--
+
+*kubernetes/persistent-volume.yml*:
+
+```yaml
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: postgres-pv
+  labels:
+    type: local
+spec:
+  capacity:
+    storage: 2Gi
+  storageClassName: standard
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/data/postgres-pv"
+```
+
+--
+
+Create the volume:
+
+```sh
+$ kubectl apply -f ./kubernetes/persistent-volume.yml
+```
+
+--
+
+View details:
+
+```sh
+$ kubectl get pv
+```
+
+---
+
+### PersistentVolumeClaim
+
+--
+
+*kubernetes/persistent-volume-claim.yml*:
+
+```yaml
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: postgres-pvc
+  labels:
+    type: local
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+  volumeName: postgres-pv
+```
+
+--
+
+Create the volume claim:
+
+```sh
+$ kubectl apply -f ./kubernetes/persistent-volume-claim.yml
+```
+
+--
+
+View details:
+
+```sh
+$ kubectl get pvc
+```
+
+---
+
+### Secrets
+
+--
+
+[Secrets](https://kubernetes.io/docs/concepts/configuration/secret/) are used to hold sensitive data such as a password, a token, or a key.
+
+--
+
+*kubernetes/secret.yml*:
+
+```yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: postgres-credentials
+type: Opaque
+data:
+  user: c2FtcGxl
+  password: cGxlYXNlY2hhbmdlbWU=
+```
+
+--
+
+The `user` and `password` fields are base64 encoded strings ([security via obscurity](https://en.wikipedia.org/wiki/Security_through_obscurity)):
+
+```sh
+$ echo -n "<string>" | base64
+```
+
+--
+
+Add the secrets:
+
+```sh
+$ kubectl apply -f ./kubernetes/secret.yml
+```
 
 ---
 
@@ -412,35 +581,19 @@ $ minikube dashboard
 
 *kubernetes/postgres-deployment.yml*:
 
-```yaml
-apiVersion: extensions/v1beta1
-kind: Deployment
-metadata:
-  name: postgres
-spec:
-  replicas: 1
-  template:
-    metadata:
-      labels:
-        service: postgres
-    spec:
-      containers:
-      - name: postgres
-        image: postgres:10.4-alpine
-      restartPolicy: Always
-```
+[https://github.com/testdrivenio/flask-vue-kubernetes/blob/master/kubernetes/postgres-deployment.yml](https://github.com/testdrivenio/flask-vue-kubernetes/blob/master/kubernetes/postgres-deployment.yml)
 
 --
 
-Create the deployment:
+Create the Deployment:
 
 ```sh
 $ kubectl create -f ./kubernetes/postgres-deployment.yml
 ```
 
-<p style="padding-top:20px;">
-  <img src="images/postgres-logo.png" alt="postgres logo" style="width:9%;">
-</p>
+<br>
+
+<img src="images/postgres-logo.png" alt="postgres logo" style="width:20%;">
 
 ---
 
@@ -481,7 +634,7 @@ Create the database:
 ```sh
 $ kubectl get pods
 $ kubectl exec postgres-<POD_IDENTIFIER> \
-    --stdin --tty -- createdb -U postgres books
+    --stdin --tty -- createdb -U sample books
 ```
 
 ---
@@ -492,37 +645,7 @@ $ kubectl exec postgres-<POD_IDENTIFIER> \
 
 *kubernetes/flask-deployment.yml*:
 
-```yaml
-apiVersion: extensions/v1beta1
-kind: Deployment
-metadata:
-  name: flask
-spec:
-  replicas: 1
-  template:
-    metadata:
-      labels:
-        app: flask
-    spec:
-      containers:
-      - name: flask
-        image: mjhea0/flask-kubernetes:latest
-        env:
-        - name: FLASK_ENV
-          value: "development"
-        - name: APP_SETTINGS
-          value: "project.config.DevelopmentConfig"
-        - name: DATABASE_URL
-          value: "postgres://postgres:postgres@postgres:5432/books"
-        ports:
-        - containerPort: 5000
-          protocol: TCP
-      restartPolicy: Always
-```
-
----
-
-### Flask Deployment (continued...)
+[https://github.com/testdrivenio/flask-vue-kubernetes/blob/master/kubernetes/flask-deployment.yml](https://github.com/testdrivenio/flask-vue-kubernetes/blob/master/kubernetes/flask-deployment.yml)
 
 --
 
@@ -535,7 +658,7 @@ $ docker push mjhea0/flask-kubernetes
 
 --
 
-Create the deployment:
+Create the Deployment:
 
 ```sh
 $ kubectl create -f ./kubernetes/flask-deployment.yml
@@ -673,7 +796,7 @@ $ docker push mjhea0/vue-kubernetes
 
 --
 
-Create the deployment:
+Create the Deployment:
 
 ```sh
 $ kubectl create -f ./kubernetes/vue-deployment.yml
@@ -766,26 +889,45 @@ Try it out: http://hello.world
 
 ---
 
-### Google Cloud Platform (GCP)
+### Sanity Check the Volume
 
 --
 
-1. Google Cloud SDK
-1. Kubernetes Engine
-1. Container Registry
-1. Cloud Storage
+How can we tell that the volume is *actually* working?
+
+--
+
+1. Make a change to the book data
+1. Delete the Postgres Pod (take note how a new Pod immediately spins up)
+1. Wait a few moments for the new Pod to spin up and the old Pod to spin down
+1. The book data should have the same state
+
+<p style="margin-top:30px">
+  <img src="images/minikube_dashboard.png" alt="minikube dashboard" style="width:80%;">
+</p>
 
 ---
 
-### GCP Deployment
+### Helpful Commands
 
 --
 
-1. Kubectl
-1. Helm
-1. Postgres
-1. Flask
-1. Ingress
+| Command                     | Explanation                                          |
+|-----------------------------|------------------------------------------------------|
+| `minikube get-k8s-versions` | Lists the supported Kubernetes versions              |
+| `minikube start`            | Starts a local kubernetes cluster                    |
+| `minikube ip`               | Displays the IP address of the cluster               |
+| `minikube dashboard`        | Opens the kubernetes dashboard in your browser       |
+| `kubectl version`           | Displays the kubectl version                         |
+| `kubectl cluster-info`      | Displays the cluster info                            |
+| `kubectl get nodes`         | Lists the Nodes                                      |
+| `kubectl get pods`          | Lists the Pods                                       |
+| `kubectl get deployments`   | Lists the Deployments                                |
+| `kubectl get services`      | Lists the Deployments                                |
+| `minikube stop`             | Stops a local kubernetes cluster                     |
+| `minikube delete`           | Removes a local kubernetes cluster                   |
+
+More commands: [Minikube Cheat Sheet](https://medium.com/@wisegain/minikube-cheat-sheet-a273385e66c9), [Kubernetes CheatSheet](https://github.com/dennyzhang/cheatsheet-kubernetes-A4)
 
 ---
 
@@ -795,19 +937,16 @@ What's next?
 
 --
 
-##### What has not been covered?
-
-1. Database Volumes
-
+### TODO - add what's not been covered
 
 --
 
 ##### Resources
 
-1. Full blog post - https://testdriven.io/managing-secrets-with-vault-and-consul
-1. Slides - http://mherman.org/presentations/vault
-1. Repo - https://github.com/testdrivenio/vault-docker-example
-1. Why We Need Dynamic Secrets - https://www.hashicorp.com/blog/why-we-need-dynamic-secrets (advantages of using dynamic secrets)
+1. Slides - https://mherman.org/presentations/flask-kubernetes
+1. Repo - https://github.com/testdrivenio/flask-vue-kubernetes
+1. Learn Kubernetes Basics - https://kubernetes.io/docs/tutorials/kubernetes-basics/
+1. Running Flask on Docker Swarm - https://testdriven.io/running-flask-on-docker-swarm
 
 --
 
