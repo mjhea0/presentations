@@ -6,3 +6,5 @@
 1. horizontal scaling / update entrypoint.sh
 1. practice
 1. show load balancer in action
+1. practice
+1. add gunicorn
