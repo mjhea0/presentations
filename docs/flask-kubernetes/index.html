@@ -81,10 +81,10 @@ class: center, middle
 1. App Overview
 1. Minikube
 1. Volume
-1. Postgres
-1. Flask
+1. Secrets
+1. Deployments and Services (Postgres, Flask, Vue)
 1. Ingress
-1. Vue
+1. Sanity Check
 1. Helpful Commands
 
 --
@@ -135,46 +135,43 @@ By the end of this talk, you should be able to...
 
 --
 
-1. Explain what container orchestration is and why you may need to use an orchestration tool
+1. Explain what **container orchestration** is and why you may need to use an orchestration tool
 
 --
 
-1. Discuss the pros and cons of using Kubernetes over other orchestration tools like Docker Swarm and Elastic Container Service (ECS)
+1. Discuss the pros and cons of using **Kubernetes** over other orchestration tools like Docker Swarm and Elastic Container Service (ECS)
 
 --
 
-1. Explain the following Kubernetes primitives - Node, Pod, Service, Label, Deployment, Ingress, Volume
+1. Explain the following **Kubernetes primitives** - Node, Pod, Service, Label, Deployment, Ingress, Volume
 
 --
 
-1. Spin up a Python-based microservice locally with Docker Compose
+1. Spin up a Python-based microservice locally with **Docker Compose**
 
 --
 
-1. Configure a Kubernetes cluster to run locally with Minikube
+1. Configure a Kubernetes cluster to run locally with **Minikube**
 
 --
 
-1. Set up a volume, via a PersistentVolume, to hold Postgres data
+1. Set up a **volume**, via a PersistentVolume, to hold Postgres data
 
 --
 
-1. Use Kubernetes Secrets to manage sensitive information
+1. Use **Kubernetes Secrets** to manage sensitive information
 
 --
 
-1. Build Docker images and push them up to the Docker Hub image registry
+1. Build Docker images and push them up to the **Docker Hub** image registry
 
 --
 
-1. Run Flask, Gunicorn, Postgres, and Vue on Kubernetes
+1. Run Flask, Gunicorn, Postgres, and Vue on **Kubernetes**
 
 --
 
-1. Expose Flask and Vue to external users via an Ingress
-
---
-
+1. Expose Flask and Vue to external users via an **Ingress**
 
 ---
 
@@ -325,8 +322,9 @@ A [Node](https://kubernetes.io/docs/concepts/architecture/nodes/) is a worker ma
 A [Pod](https://kubernetes.io/docs/concepts/workloads/pods/pod/) is a logical, tightly-coupled group of application containers that run on a Node. Containers in a Pod are deployed together and share resources (like data volumes and network addresses). Multiple Pods can run on a single Node.
 
 --
-<p style="margin-top:-20px">
-  <img src="images/node-pod.svg" alt="kubernetes node and pod" style="width:45%;">
+
+<p style="margin-top:30px">
+  <img src="images/flask-kubernetes-node-pod.png" alt="kubernetes node and pod" style="width:65%;">
 </p>
 
 ---
@@ -347,8 +345,8 @@ A [Service](https://kubernetes.io/docs/concepts/services-networking/service/) is
 
 --
 
-<p style="margin-top:-25px">
-  <img src="images/service-deployment.svg" alt="kubernetes service and deployment" style="width:42%;">
+<p style="margin-top:40px">
+  <img src="images/flask-kubernetes-service-pod.png" alt="kubernetes service and pod" style="width:70%;">
 </p>
 
 ---
@@ -373,12 +371,8 @@ A [Service](https://kubernetes.io/docs/concepts/services-networking/service/) is
 
 --
 
-<p style="margin-bottom:0;margin-top:-10px">
-  <img src="images/ingress.png" alt="kubernetes ingress" style="width:40%;">
-</p>
-
-<p style="margin:0">
-  <small><em>Image source: <a href="https://medium.com/google-cloud/kubernetes-nodeport-vs-loadbalancer-vs-ingress-when-should-i-use-what-922f010849e0">Kubernetes NodePort vs LoadBalancer vs Ingress? When should I use what?</a></em></small>
+<p style="margin-top:25px">
+  <img src="images/flask-kubernetes-ingress-example.png" alt="kubernetes ingress" style="width:25%;">
 </p>
 
 ---
@@ -392,14 +386,12 @@ A [Service](https://kubernetes.io/docs/concepts/services-networking/service/) is
 [Volumes](https://kubernetes.io/docs/concepts/storage/volumes/) are used to persist data beyond the life of a container. They are especially important for stateful applications like Redis and Postgres.
 
 1. **[PersistentVolume](https://kubernetes.io/docs/concepts/storage/persistent-volumes/)** defines a storage volume independent of the normal Pod-lifecycle. It's managed outside of the particular Pod that it resides in.
-1. **[PersistentVolumeClaims](https://kubernetes.io/docs/concepts/storage/persistent-volumes/)** is a request to use the PersistentVolume by a user.
+1. **[PersistentVolumeClaim](https://kubernetes.io/docs/concepts/storage/persistent-volumes/)** is a request to use the PersistentVolume by a user.
 
-<p style="margin-top:20px">
-  <img src="images/volumes.jpg" alt="kubernetes volumes" style="width:60%;">
-</p>
+--
 
-<p style="margin:0">
-  <small><em>Image source: <a href="https://www.slideshare.net/kubecon/kubecon-eu-2016-kubernetes-storage-101">Kubernetes Storage 101</a></em></small>
+<p style="margin-top:45px">
+  <img src="images/flask-kubernetes-pv-pvc-pod.png" alt="kubernetes volume" style="width:65%;">
 </p>
 
 ---
@@ -414,9 +406,11 @@ class: center, middle
 
 --
 
-*Bookshelf* - Flask + Vue + Postgres
+*Bookshelf* - Flask + Vue + Postgres CRUD app
 
 http://github.com/testdrivenio/flask-vue-kubernetes
+
+--
 
 <img src="images/final-app.gif" alt="final app" style="width:70%;">
 
@@ -455,7 +449,15 @@ $ minikube dashboard
 
 ---
 
-### PersistentVolume
+### Volume - PersistentVolume
+
+<div style="padding-top:20px;">
+  <img src="images/flask-kubernetes-pv.png" style="max-width:100%; border:0; box-shadow: none;" alt="diagram">
+</div>
+
+---
+
+### Volume - PersistentVolume
 
 --
 
@@ -496,7 +498,15 @@ $ kubectl get pv
 
 ---
 
-### PersistentVolumeClaim
+### Volume - PersistentVolumeClaim
+
+<div style="padding-top:20px;">
+  <img src="images/flask-kubernetes-pvc.png" style="max-width:100%; border:0; box-shadow: none;" alt="diagram">
+</div>
+
+---
+
+### Volume - PersistentVolumeClaim
 
 --
 
@@ -538,9 +548,17 @@ $ kubectl get pvc
 
 ### Secrets
 
+<div style="padding-top:20px;">
+  <img src="images/flask-kubernetes-secrets.png" style="max-width:100%; border:0; box-shadow: none;" alt="diagram">
+</div>
+
+---
+
+### Secrets
+
 --
 
-[Secrets](https://kubernetes.io/docs/concepts/configuration/secret/) are used to hold sensitive data such as a password, a token, or a key.
+[Secrets](https://kubernetes.io/docs/concepts/configuration/secret/) are used to hold sensitive data such as passwords, API tokens, or SSH keys.
 
 --
 
@@ -577,6 +595,14 @@ $ kubectl apply -f ./kubernetes/secret.yml
 
 ### Postgres Deployment
 
+<div style="padding-top:20px;">
+  <img src="images/flask-kubernetes-pg-deployment.png" style="max-width:100%; border:0; box-shadow: none;" alt="diagram">
+</div>
+
+---
+
+### Postgres Deployment
+
 --
 
 *kubernetes/postgres-deployment.yml*:
@@ -594,6 +620,14 @@ $ kubectl create -f ./kubernetes/postgres-deployment.yml
 <br>
 
 <img src="images/postgres-logo.png" alt="postgres logo" style="width:20%;">
+
+---
+
+### Postgres Service
+
+<div style="padding-top:20px;">
+  <img src="images/flask-kubernetes-pg-service.png" style="max-width:100%; border:0; box-shadow: none;" alt="diagram">
+</div>
 
 ---
 
@@ -641,6 +675,14 @@ $ kubectl exec postgres-<POD_IDENTIFIER> \
 
 ### Flask Deployment
 
+<div style="padding-top:20px;">
+  <img src="images/flask-kubernetes-flask-deployment.png" style="max-width:100%; border:0; box-shadow: none;" alt="diagram">
+</div>
+
+---
+
+### Flask Deployment
+
 --
 
 *kubernetes/flask-deployment.yml*:
@@ -667,6 +709,14 @@ $ kubectl create -f ./kubernetes/flask-deployment.yml
 <br>
 
 <img src="images/flask-logo.png" alt="flask logo" style="width:30%;">
+
+---
+
+### Flask Service
+
+<div style="padding-top:20px;">
+  <img src="images/flask-kubernetes-flask-service.png" style="max-width:100%; border:0; box-shadow: none;" alt="diagram">
+</div>
 
 ---
 
@@ -711,45 +761,11 @@ $ open $(minikube service flask --url)/books
 
 ---
 
-### Ingress
+### Vue Deployment
 
---
-
-*kubernetes/minikube-ingress.yml*:
-
-```yaml
-apiVersion: extensions/v1beta1
-kind: Ingress
-metadata:
-  name: minikube-ingress
-  annotations:
-spec:
-  rules:
-  - host: hello.world
-    http:
-      paths:
-      - path: /books
-        backend:
-          serviceName: flask
-          servicePort: 5000
-```
-
---
-
-Enable and apply:
-
-```sh
-$ minikube addons enable ingress
-$ kubectl apply -f ./kubernetes/minikube-ingress.yml
-```
-
---
-
-Add entry to */etc/hosts* file: `<MINIKUBE_IP> hello.world`
-
---
-
-Try it out: http://hello.world/books
+<div style="padding-top:20px;">
+  <img src="images/flask-kubernetes-vue-deployment.png" style="max-width:100%; border:0; box-shadow: none;" alt="diagram">
+</div>
 
 ---
 
@@ -810,6 +826,14 @@ $ kubectl create -f ./kubernetes/vue-deployment.yml
 
 ### Vue Service
 
+<div style="padding-top:20px;">
+  <img src="images/flask-kubernetes-vue-service.png" style="max-width:100%; border:0; box-shadow: none;" alt="diagram">
+</div>
+
+---
+
+### Vue Service
+
 --
 
 *kubernetes/vue-service.yml*:
@@ -848,44 +872,43 @@ $ open $(minikube service vue --url)
 
 ---
 
-### Update Ingress
+### Ingress
+
+<div style="padding-top:20px;">
+  <img src="images/flask-kubernetes-ingress.png" style="max-width:100%; border:0; box-shadow: none;" alt="diagram">
+</div>
+
+---
+
+### Ingress
 
 --
 
 *kubernetes/minikube-ingress.yml*:
 
-```yaml
-apiVersion: extensions/v1beta1
-kind: Ingress
-metadata:
-  name: minikube-ingress
-  annotations:
-spec:
-  rules:
-  - host: hello.world
-    http:
-      paths:
-      - path: /
-        backend:
-          serviceName: vue
-          servicePort: 8080
-      - path: /books
-        backend:
-          serviceName: flask
-          servicePort: 5000
-```
+[https://github.com/testdrivenio/flask-vue-kubernetes/blob/master/kubernetes/minikube-ingress.yml](https://github.com/testdrivenio/flask-vue-kubernetes/blob/master/kubernetes/minikube-ingress.yml)
 
 --
 
-Apply the changes:
+Enable and apply:
 
 ```sh
+$ minikube addons enable ingress
 $ kubectl apply -f ./kubernetes/minikube-ingress.yml
 ```
 
 --
 
-Try it out: http://hello.world
+Add entry to */etc/hosts* file: `<MINIKUBE_IP> hello.world`
+
+--
+
+Try it out:
+
+1. http://hello.world
+1. http://hello.world/#/ping
+1. http://hello.world/books
+1. http://hello.world/books/ping
 
 ---
 

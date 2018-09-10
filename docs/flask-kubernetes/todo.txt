@@ -1,12 +1,15 @@
 ##### TODO
 
+https://kubernetes.io/docs/concepts/overview/working-with-objects/kubernetes-objects/
+apiVersion - Which version of the Kubernetes API you’re using to create this object
+kind - What kind of object you want to create
+metadata - Data that helps uniquely identify the object, including a name string, UID, and optional namespace
 1. practice
 1. why should web developers learn kubernetes
 1. practice
 1. health checks
 1. practice
 1. show load balancer in action
-1. update images
 1. encrypted secrets?
 
 1. nodeport vs loadbalancer vs ingress
