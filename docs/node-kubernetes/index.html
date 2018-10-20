@@ -74,7 +74,6 @@ class: center, middle
 1. Container Orchestration
 1. Kubernetes for App Developers
 1. Kubernetes Concepts
-1. Creating Kubernetes Objects
 
 --
 
@@ -84,8 +83,8 @@ class: center, middle
 1. Google Cloud Platform (GCP)
 1. Volume
 1. Secrets
-1. Deployments
-1. Services
+1. Postgres Deployment + Service
+1. Node Deployment + Service
 
 --
 
@@ -473,69 +472,70 @@ http://github.com/testdrivenio/node-kubernetes
 
 --
 
-1. Configure the [Google Cloud SDK](https://cloud.google.com/sdk).
-1. Install [kubectl](https://kubernetes.io/docs/reference/kubectl/overview/), a CLI tool used for running commands against Kubernetes clusters.
-1. Create a GCP project.
-1. Create the cluster
+#### Steps
 
 --
 
-[Minikube](https://kubernetes.io/docs/setup/minikube/) is a tool which allows developers to use and run a Kubernetes cluster locally.
+- Configure the [Google Cloud SDK](https://cloud.google.com/sdk).
+
+    <small>(install, configure your account and access credentials, set up a project)</small>
 
 --
 
-#### Getting Started
+- Install [kubectl](https://kubernetes.io/docs/reference/kubectl/overview/):
 
-First, install the following tools:
-
-1. **Install a  [Hypervisor](https://kubernetes.io/docs/tasks/tools/install-minikube/#install-a-hypervisor)** (like [VirtualBox](https://www.virtualbox.org/wiki/Downloads) or [HyperKit](https://github.com/moby/hyperkit)) to manage virtual machines
-1. **Install and Set Up [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/)** to deploy and manage apps on Kubernetes
-1. **Install [Minikube](https://github.com/kubernetes/minikube/releases)**
+    ```sh
+    $ gcloud components install kubectl
+    ```
 
 --
 
-Then, start the cluster:
+- Create a cluster on [GKE](https://cloud.google.com/kubernetes-engine/):
 
-```sh
-$ minikube start --vm-driver=virtualbox
-$ minikube dashboard
-```
+    ```sh
+    # create
+    $ gcloud container clusters create node-kubernetes \
+        --num-nodes=3 --zone us-central1-a --machine-type f1-micro
 
-<p style="margin-top:30px">
-  <img src="images/minikube.jpg" alt="minikube logo" style="width:35%;">
-</p>
+    # check status
+    $ kubectl get nodes
+
+    # point kubectl at the cluster
+    $ gcloud container clusters get-credentials node-kubernetes \
+        --zone us-central1-a
+    ```
 
 ---
 
-### Volume - PersistentVolume
+### Volume - Persistent Volume
 
 <div style="padding-top:20px;">
-  <img src="images/flask-kubernetes-pv.png" style="max-width:100%; border:0; box-shadow: none;" alt="diagram">
+  <img src="images/node-kubernetes-pv.png" style="max-width:100%; border:0; box-shadow: none;" alt="diagram">
 </div>
 
 ---
 
-### Volume - PersistentVolume
+### Volume - Persistent Volume
 
 --
 
-*kubernetes/persistent-volume.yml*:
+*kubernetes/persistent-volume.yaml*:
 
 ```yaml
-kind: PersistentVolume
 apiVersion: v1
+kind: PersistentVolume
 metadata:
   name: postgres-pv
   labels:
-    type: local
+    name: postgres-pv
 spec:
   capacity:
-    storage: 2Gi
-  storageClassName: standard
+    storage: 50Gi
   accessModes:
     - ReadWriteOnce
-  hostPath:
-    path: "/data/postgres-pv"
+  gcePersistentDisk:
+    pdName: pg-data-disk
+    fsType: ext4
 ```
 
 --
@@ -543,7 +543,8 @@ spec:
 Create the volume:
 
 ```sh
-$ kubectl apply -f ./kubernetes/persistent-volume.yml
+$ gcloud compute disks create pg-data-disk --size 50GB --zone us-central1-a
+$ kubectl apply -f ./kubernetes/persistent-volume.yaml
 ```
 
 --
@@ -556,23 +557,23 @@ $ kubectl get pv
 
 ---
 
-### Volume - PersistentVolumeClaim
+### Volume - Persistent Volume Claim
 
 <div style="padding-top:20px;">
-  <img src="images/flask-kubernetes-pvc.png" style="max-width:100%; border:0; box-shadow: none;" alt="diagram">
+  <img src="images/node-kubernetes-pvc.png" style="max-width:100%; border:0; box-shadow: none;" alt="diagram">
 </div>
 
 ---
 
-### Volume - PersistentVolumeClaim
+### Volume - Persistent Volume Claim
 
 --
 
-*kubernetes/persistent-volume-claim.yml*:
+*kubernetes/volume-claim.yaml*:
 
 ```yaml
-kind: PersistentVolumeClaim
 apiVersion: v1
+kind: PersistentVolumeClaim
 metadata:
   name: postgres-pvc
   labels:
@@ -582,8 +583,7 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 2Gi
-  volumeName: postgres-pv
+      storage: 50Gi
 ```
 
 --
@@ -591,7 +591,7 @@ spec:
 Create the volume claim:
 
 ```sh
-$ kubectl apply -f ./kubernetes/persistent-volume-claim.yml
+$ kubectl apply -f ./kubernetes/volume-claim.yaml
 ```
 
 --
@@ -607,7 +607,7 @@ $ kubectl get pvc
 ### Secrets
 
 <div style="padding-top:20px;">
-  <img src="images/flask-kubernetes-secrets.png" style="max-width:100%; border:0; box-shadow: none;" alt="diagram">
+  <img src="images/node-kubernetes-secrets.png" style="max-width:100%; border:0; box-shadow: none;" alt="diagram">
 </div>
 
 ---
@@ -620,7 +620,7 @@ $ kubectl get pvc
 
 --
 
-*kubernetes/secret.yml*:
+*kubernetes/secret.yaml*:
 
 ```yaml
 apiVersion: v1
@@ -646,7 +646,7 @@ $ echo -n "<string>" | base64
 Add the secrets:
 
 ```sh
-$ kubectl apply -f ./kubernetes/secret.yml
+$ kubectl apply -f ./kubernetes/secret.yaml
 ```
 
 ---
@@ -654,7 +654,7 @@ $ kubectl apply -f ./kubernetes/secret.yml
 ### Postgres Deployment
 
 <div style="padding-top:20px;">
-  <img src="images/flask-kubernetes-pg-deployment.png" style="max-width:100%; border:0; box-shadow: none;" alt="diagram">
+  <img src="images/node-kubernetes-postgres-deployment.png" style="max-width:100%; border:0; box-shadow: none;" alt="diagram">
 </div>
 
 ---
@@ -663,28 +663,32 @@ $ kubectl apply -f ./kubernetes/secret.yml
 
 --
 
-*kubernetes/postgres-deployment.yml*:
+*kubernetes/postgres-deployment.yaml*:
 
-[https://github.com/testdrivenio/flask-vue-kubernetes/blob/master/kubernetes/postgres-deployment.yml](https://github.com/testdrivenio/flask-vue-kubernetes/blob/master/kubernetes/postgres-deployment.yml)
+[https://github.com/testdrivenio/node-kubernetes/blob/master/kubernetes/postgres-deployment.yaml](https://github.com/testdrivenio/node-kubernetes/blob/master/kubernetes/postgres-deployment.yaml)
+
+1. Spin up pod via the `postgres:10.5-alpine` image
+1. Use the secret to define the database credentials
+1. Mount "/var/lib/postgresql/data" to the persistent disc
 
 --
 
 Create the Deployment:
 
 ```sh
-$ kubectl create -f ./kubernetes/postgres-deployment.yml
+$ kubectl create -f ./kubernetes/postgres-deployment.yaml
 ```
 
 <br>
 
-<img src="images/postgres-logo.png" alt="postgres logo" style="width:20%;">
+<img src="images/postgres-logo.png" alt="postgres logo" style="width:15%;">
 
 ---
 
 ### Postgres Service
 
 <div style="padding-top:20px;">
-  <img src="images/flask-kubernetes-pg-service.png" style="max-width:100%; border:0; box-shadow: none;" alt="diagram">
+  <img src="images/node-kubernetes-postgres-service.png" style="max-width:100%; border:0; box-shadow: none;" alt="diagram">
 </div>
 
 ---
@@ -693,22 +697,21 @@ $ kubectl create -f ./kubernetes/postgres-deployment.yml
 
 --
 
-*kubernetes/postgres-service.yml*:
+*kubernetes/postgres-service.yaml*:
 
 ```yaml
 apiVersion: v1
 kind: Service
 metadata:
+  name: postgres
   labels:
     service: postgres
-  name: postgres
 spec:
-  type: ClusterIP
-  ports:
-  - name: postgres
-    port: 5432
   selector:
     service: postgres
+  type: ClusterIP
+  ports:
+  - port: 5432
 ```
 
 --
@@ -716,7 +719,7 @@ spec:
 Create the service:
 
 ```sh
-$ kubectl create -f ./kubernetes/postgres-service.yml
+$ kubectl create -f ./kubernetes/postgres-service.yaml
 ```
 
 --
@@ -726,34 +729,35 @@ Create the database:
 ```sh
 $ kubectl get pods
 $ kubectl exec postgres-<POD_IDENTIFIER> \
-    --stdin --tty -- createdb -U sample books
+    --stdin --tty -- createdb -U sample todos
 ```
 
 ---
 
-### Flask Deployment
+### Node Deployment
 
 <div style="padding-top:20px;">
-  <img src="images/flask-kubernetes-flask-deployment.png" style="max-width:100%; border:0; box-shadow: none;" alt="diagram">
+  <img src="images/node-kubernetes-node-deployment.png" style="max-width:100%; border:0; box-shadow: none;" alt="diagram">
 </div>
 
 ---
 
-### Flask Deployment
+### Node Deployment
 
 --
 
-*kubernetes/flask-deployment.yml*:
+*kubernetes/node-deployment-updated.yaml*:
 
-[https://github.com/testdrivenio/flask-vue-kubernetes/blob/master/kubernetes/flask-deployment.yml](https://github.com/testdrivenio/flask-vue-kubernetes/blob/master/kubernetes/flask-deployment.yml)
+[https://github.com/testdrivenio/node-kubernetes/blob/master/kubernetes/node-deployment-updated.yaml](https://github.com/testdrivenio/node-kubernetes/blob/master/kubernetes/node-deployment-updated.yaml)
 
 --
 
-Build and push the image to [Docker Hub](https://hub.docker.com/):
+Build and push the image to the [Container Registry](https://cloud.google.com/container-registry/):
 
 ```sh
-$ docker build -t mjhea0/flask-kubernetes ./services/server
-$ docker push mjhea0/flask-kubernetes
+$ gcloud auth configure-docker
+$ docker build -t gcr.io/node-kubernetes-1337/node-kubernetes:v0.0.1 .
+$ docker push gcr.io/node-kubernetes-1337/node-kubernetes:v0.0.1
 ```
 
 --
@@ -761,243 +765,63 @@ $ docker push mjhea0/flask-kubernetes
 Create the Deployment:
 
 ```sh
-$ kubectl create -f ./kubernetes/flask-deployment.yml
+$ kubectl create -f ./kubernetes/node-deployment-updated.yaml
 ```
 
-<br>
+Apply the migration and seed the database:
 
-<img src="images/flask-logo.png" alt="flask logo" style="width:30%;">
+```sh
+$ kubectl get pods
+$ kubectl exec <POD_NAME> knex migrate:latest
+$ kubectl exec <POD_NAME> knex seed:run
+```
 
 ---
 
-### Flask Service
+### Node Service
 
 <div style="padding-top:20px;">
-  <img src="images/flask-kubernetes-flask-service.png" style="max-width:100%; border:0; box-shadow: none;" alt="diagram">
+  <img src="images/node-kubernetes-node-service.png" style="max-width:100%; border:0; box-shadow: none;" alt="diagram">
 </div>
 
 ---
 
-### Flask Service
+### Node Service
 
 --
 
-*kubernetes/flask-service.yml*:
+*kubernetes/node-service.yaml*:
 
 ```yaml
 apiVersion: v1
 kind: Service
 metadata:
+  name: node
   labels:
-    service: flask
-  name: flask
+    service: node
 spec:
-  ports:
-  - name: "5000"
-    port: 5000
-    targetPort: 5000
   selector:
-    service: flask
-```
-
---
-
-Create (and [expose](https://kubernetes.io/docs/tutorials/stateless-application/expose-external-ip-address/)) the service:
-
-```sh
-$ kubectl expose deployment flask --type=NodePort --port 5000
-```
-
---
-
-Try it out:
-
-```sh
-$ open $(minikube service flask --url)/books/ping
-$ open $(minikube service flask --url)/books
-```
-
----
-
-### Vue Deployment
-
-<div style="padding-top:20px;">
-  <img src="images/flask-kubernetes-vue-deployment.png" style="max-width:100%; border:0; box-shadow: none;" alt="diagram">
-</div>
-
----
-
-### Vue Deployment
-
---
-
-*kubernetes/vue-deployment.yml*:
-
-```yaml
-apiVersion: extensions/v1beta1
-kind: Deployment
-metadata:
-  name: vue
-spec:
-  replicas: 1
-  template:
-    metadata:
-      labels:
-        run: vue
-    spec:
-      containers:
-      - name: vue
-        image: mjhea0/vue-kubernetes:latest
-        ports:
-        - containerPort: 8080
-          protocol: TCP
-      restartPolicy: Always
-```
-
----
-
-### Vue Deployment (continued...)
-
---
-
-Build and push the image to Docker Hub:
-
-```sh
-$ docker build -t mjhea0/vue-kubernetes ./services/client \
-    -f ./services/client/Dockerfile-minikube
-$ docker push mjhea0/vue-kubernetes
-```
-
---
-
-Create the Deployment:
-
-```sh
-$ kubectl create -f ./kubernetes/vue-deployment.yml
-```
-
-<br>
-
-<img src="images/vue-logo.png" alt="vue logo" style="width:20%;">
-
----
-
-### Vue Service
-
-<div style="padding-top:20px;">
-  <img src="images/flask-kubernetes-vue-service.png" style="max-width:100%; border:0; box-shadow: none;" alt="diagram">
-</div>
-
----
-
-### Vue Service
-
---
-
-*kubernetes/vue-service.yml*:
-
-```yaml
-apiVersion: v1
-kind: Service
-metadata:
-  labels:
-    service: vue
-  name: vue
-spec:
+    app: node
+  type: LoadBalancer
   ports:
-  - name: "8080"
-    port: 8080
-    targetPort: 8080
-  selector:
-    service: vue
+    - port: 3000
 ```
 
 --
 
-Create (and [expose](https://kubernetes.io/docs/tutorials/stateless-application/expose-external-ip-address/)) the service:
+Create the service:
 
 ```sh
-$ kubectl expose deployment vue --type=NodePort --port 8080
+$ kubectl create -f ./kubernetes/node-service.yaml
 ```
 
 --
 
-Try it out:
+Grab the external IP and try it out!
 
 ```sh
-$ open $(minikube service vue --url)
-```
-
----
-
-### Ingress
-
-<div style="padding-top:20px;">
-  <img src="images/flask-kubernetes-ingress.png" style="max-width:100%; border:0; box-shadow: none;" alt="diagram">
-</div>
-
----
-
-### Ingress
-
---
-
-*kubernetes/minikube-ingress.yml*:
-
-[https://github.com/testdrivenio/flask-vue-kubernetes/blob/master/kubernetes/minikube-ingress.yml](https://github.com/testdrivenio/flask-vue-kubernetes/blob/master/kubernetes/minikube-ingress.yml)
-
---
-
-Enable the Ingress [addon](https://github.com/kubernetes/minikube/tree/master/deploy/addons/ingress):
-
-```sh
-$ minikube addons enable ingress
-```
-
---
-
-Before applying the spec, let's remove the existing Flask and Vue deployments since we used a [NodePort](https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types) to expose the service to external users:
-
-
-```sh
-$ kubectl delete deployment flask
-$ kubectl delete deployment vue
-```
-
---
-
-Create new deployments:
-
-```sh
-$ kubectl create -f ./kubernetes/flask-deployment.yml
-$ kubectl create -f ./kubernetes/vue-deployment.yml
-```
-
----
-
-### Ingress (continued...)
-
---
-
-Create the Ingress object:
-
-```sh
-$ minikube addons enable ingress
-$ kubectl apply -f ./kubernetes/minikube-ingress.yml
-```
-
---
-
-Add entry to */etc/hosts* file: `<MINIKUBE_IP> hello.world`
-
---
-
-Try it out:
-
-1. http://hello.world
-1. http://hello.world/#/ping
-1. http://hello.world/books
-1. http://hello.world/books/ping
+$ kubectl get service node
+````
 
 ---
 
@@ -1009,40 +833,47 @@ How can we tell that the volume is *actually* working?
 
 --
 
-1. Make a change to the book data
-1. Delete the Postgres Pod (take note how a new Pod immediately spins up)
-1. Wait a few moments for the new Pod to spin up and the old Pod to spin down
-1. The book data should have the same state
+1. Make a change to the todos data
+1. Delete the Postgres pod (take note how a new pod immediately spins up)
+1. Wait a few moments for the new pod to spin up and the old pod to spin down
+1. The todos data should have the same state
 
-<p style="margin-top:30px">
-  <img src="images/minikube_dashboard.png" alt="minikube dashboard" style="width:80%;">
-</p>
+```sh
+kubectl get pods
+
+NAME                        READY     STATUS              RESTARTS   AGE
+node-54fc49774c-l6qvn       1/1       Running             0          19m
+postgres-798c7ccc96-jqlcm   1/1       Terminating         0          1h
+postgres-798c7ccc96-w6jq7   0/1       ContainerCreating   0          25s
+```
 
 ---
 
-### Helpful Commands
+### Remove Resources
 
 --
 
-| Command                     | Explanation                                          |
-|-----------------------------|------------------------------------------------------|
-| `minikube get-k8s-versions` | Lists the supported Kubernetes versions              |
-| `minikube start`            | Starts a local kubernetes cluster                    |
-| `minikube ip`               | Displays the IP address of the cluster               |
-| `minikube dashboard`        | Opens the kubernetes dashboard in your browser       |
-| `kubectl version`           | Displays the kubectl version                         |
-| `kubectl cluster-info`      | Displays the cluster info                            |
-| `kubectl get nodes`         | Lists the Nodes                                      |
-| `kubectl get pods`          | Lists the Pods                                       |
-| `kubectl get deployments`   | Lists the Deployments                                |
-| `kubectl get services`      | Lists the Deployments                                |
-| `minikube stop`             | Stops a local kubernetes cluster                     |
-| `minikube delete`           | Removes a local kubernetes cluster                   |
+Remove the resources once done:
 
-More commands: [Minikube Cheat Sheet](https://medium.com/@wisegain/minikube-cheat-sheet-a273385e66c9), [Kubernetes CheatSheet](https://github.com/dennyzhang/cheatsheet-kubernetes-A4)
+```sh
+$ kubectl delete -f ./kubernetes/node-service.yaml
+$ kubectl delete -f ./kubernetes/node-deployment-updated.yaml
+
+$ kubectl delete -f ./kubernetes/secret.yaml
+
+$ kubectl delete -f ./kubernetes/volume.yaml
+$ kubectl delete -f ./kubernetes/volume-claim.yaml
+
+$ kubectl delete -f ./kubernetes/postgres-deployment.yaml
+$ kubectl delete -f ./kubernetes/postgres-service.yaml
+
+$ gcloud compute disks delete pg-data-disk
+$ gcloud container clusters delete node-kubernetes
+$ gcloud container images delete \
+    gcr.io/node-kubernetes-1337/node-kubernetes:v0.0.1
+```
 
 ---
-
 ### That's it!
 
 What's next?
@@ -1052,22 +883,27 @@ What's next?
 ##### Check your understanding
 
 1. [Encrypt the secret data](https://kubernetes.io/docs/tasks/administer-cluster/encrypt-data/)
-1. [Access application logs from the Minikube dashboard](https://kubernetes.io/docs/tasks/access-application-cluster/web-ui-dashboard/#logs-viewer)
+1. [Configure Logging](https://cloud.google.com/kubernetes-engine/docs/how-to/logging)
 1. [Dive deeper into health checks with liveness and readiness probes](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/)
-1. [Create an external load balancer](https://kubernetes.io/docs/tasks/access-application-cluster/create-external-load-balancer/)
 
 --
 
 ##### Resources
 
-1. Slides - https://mherman.org/presentations/flask-kubernetes
-1. Repo - https://github.com/testdrivenio/flask-vue-kubernetes
-1. Learn Kubernetes Basics - https://kubernetes.io/docs/tutorials/kubernetes-basics/
-1. Running Flask on Docker Swarm - https://testdriven.io/running-flask-on-docker-swarm (Kubernetes vs. Docker Swarm)
+1. Slides - https://mherman.org/presentations/node-kubernetes
+1. Repo - https://github.com/testdrivenio/node-kubernetes
+1. Blog post - foo
 
 --
 
-##### Questions?
+##### New to Kubernetes?
+
+1. Learn the Docker basics
+1. Dockerize a number of apps
+1. Learn about container orchestration and the Kubernetes Basics
+1. Deploy some apps with GCP
+
+--
 
 ✌️
 
