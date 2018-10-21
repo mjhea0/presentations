@@ -134,7 +134,7 @@ By the end of this talk, you should be able to...
 
 --
 
-1. Explain what **container orchestration** is and why you may need to use an orchestration tool
+1. Explain what **container orchestration** is
 
 --
 
@@ -142,31 +142,11 @@ By the end of this talk, you should be able to...
 
 --
 
-1. Explain the following **Kubernetes primitives** - Node, Pod, Service, Label, Deployment, Volume
-
---
-
-1. Spin up a Node-based microservice locally with **Docker Compose**
-
---
-
 1. Configure a Kubernetes cluster to run on **Google Cloud Platform (GCP)**
 
 --
 
-1. Set up a **Volume** to hold Postgres data
-
---
-
-1. Use **Kubernetes Secrets** to manage sensitive information
-
---
-
 1. Run Node and Postgres on **Kubernetes**
-
---
-
-1. Expose a Node API to external users via a **Load Balancer**
 
 ---
 
@@ -217,11 +197,11 @@ This is where [Kubernetes](https://kubernetes.io/) fits in along with a number o
 
 --
 
-| Tool         | Pros                                          | Cons                               |
-|--------------|-----------------------------------------------|------------------------------------|
-| Kubernetes   | large community, flexible, most features, hip | complex setup, high learning curve |
-| Docker Swarm | easy to set up, perfect for smaller clusters  | limited by the Docker API          |
-| ECS          | fully-managed service, integrated with AWS    | vendor lock-in                     |
+| Tool         | Pros                                          | Cons                                    |
+|--------------|-----------------------------------------------|-----------------------------------------|
+| Kubernetes   | large community, flexible, most features, hip | complex setup, high learning curve, hip |
+| Docker Swarm | easy to set up, perfect for smaller clusters  | limited by the Docker API               |
+| ECS          | fully-managed service, integrated with AWS    | vendor lock-in                          |
 
 --
 
@@ -308,7 +288,7 @@ Solid abstractions provide consistency across platforms, which leads to standard
 
 **Concepts**
 
-App developers probably won't set up Kubernetes clusters, but you will use it much like you would any other PaaS. It helps to have an understanding of the architecture in order to debug and deploy your apps.
+App developers probably won't set up Kubernetes clusters, but you will use Kubernetes much like you would any other PaaS. It helps to have an understanding of the architecture in order to debug and deploy your apps.
 
 ---
 
@@ -821,7 +801,7 @@ Grab the external IP and try it out!
 
 ```sh
 $ kubectl get service node
-````
+```
 
 ---
 
