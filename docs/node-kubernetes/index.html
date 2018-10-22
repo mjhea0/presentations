@@ -444,8 +444,6 @@ http://github.com/testdrivenio/node-kubernetes
 | /todos/:id  | PUT       | Update a todo       |
 | /todos/:id  | DELETE    | Delete a todo       |
 
-
-
 ---
 
 ### Google Cloud Platform
@@ -511,6 +509,7 @@ metadata:
 spec:
   capacity:
     storage: 50Gi
+  storageClassName: standard
   accessModes:
     - ReadWriteOnce
   gcePersistentDisk:
@@ -564,6 +563,7 @@ spec:
   resources:
     requests:
       storage: 50Gi
+  volumeName: postgres-pv
 ```
 
 --
@@ -847,8 +847,8 @@ $ kubectl delete -f ./kubernetes/volume-claim.yaml
 $ kubectl delete -f ./kubernetes/postgres-deployment.yaml
 $ kubectl delete -f ./kubernetes/postgres-service.yaml
 
-$ gcloud compute disks delete pg-data-disk
 $ gcloud container clusters delete node-kubernetes
+$ gcloud compute disks delete pg-data-disk
 $ gcloud container images delete \
     gcr.io/node-kubernetes-1337/node-kubernetes:v0.0.1
 ```
