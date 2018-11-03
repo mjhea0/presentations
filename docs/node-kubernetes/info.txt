@@ -1,0 +1,4 @@
+gcloud config set project node-kubernetes-1337
+gcloud components install kubectl
+gcloud container clusters create node-kubernetes \
+    --num-nodes=3 --zone us-central1-a --machine-type f1-micro
