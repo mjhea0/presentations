@@ -317,21 +317,18 @@ The primitives:
 
 --
 
-**Nodes**
-
-A [Node](https://kubernetes.io/docs/concepts/architecture/nodes/) is a worker machine provisioned to run Kubernetes. Each Node is managed by the Kubernetes master.
-
---
-
-**Pods**
-
-A [Pod](https://kubernetes.io/docs/concepts/workloads/pods/pod/) is a logical, tightly-coupled group of application containers that run on a Node. Containers in a Pod are deployed together and share resources (like data volumes and network addresses). Multiple Pods can run on a single Node.
-
---
-
-<p style="margin-top:30px">
-  <img src="images/flask-kubernetes-node-pod.png" alt="kubernetes node and pod" style="width:65%;">
-</p>
+<div class="grid">
+  <div style="float: left; width: 45%;">
+    <strong>Nodes</strong>
+    <p>A <a href="https://kubernetes.io/docs/concepts/architecture/nodes/">Node</a> is a worker machine provisioned to run Kubernetes. Each Node is managed by the Kubernetes master.</p>
+    <strong>Pods</strong>
+    <p>A <a href="https://kubernetes.io/docs/concepts/workloads/pods/pod/">Pods</a> is a logical, tightly-coupled group of application containers that run on a Node. Containers in a Pod are deployed together and share resources (like data volumes and network addresses). Multiple Pods can run on a single Node.</p>
+  </div>
+  <div style="float: left; width: 55%;">
+    <p style="margin-top:30px;text-align:center;">
+      <img src="images/flask-kubernetes-node-pod.png" alt="kubernetes node and pod" style="width:75%;">
+    </p>
+</div>
 
 ---
 
@@ -352,7 +349,7 @@ A [Service](https://kubernetes.io/docs/concepts/services-networking/service/) is
 --
 
 <p style="margin-top:40px">
-  <img src="images/flask-kubernetes-service-pod.png" alt="kubernetes service and pod" style="width:70%;">
+  <img src="images/node-kubernetes-service-pod.png" alt="kubernetes service and pod" style="width:70%;">
 </p>
 
 ---
@@ -382,11 +379,9 @@ A [Service](https://kubernetes.io/docs/concepts/services-networking/service/) is
 
 ### Creating Objects
 
-To create a new [object](https://kubernetes.io/docs/concepts/overview/working-with-objects/kubernetes-objects/) in Kubernetes, you must provide a "spec" that describes its desired state. We'll be using YAML files for this.
+To create a new [object](https://kubernetes.io/docs/concepts/overview/working-with-objects/kubernetes-objects/) in Kubernetes, you must provide a "spec" that describes its desired state. We'll be using YAML files for this. Example:
 
 --
-
-**Example**
 
 ```yaml
 apiVersion: extensions/v1beta1
@@ -497,7 +492,7 @@ http://github.com/testdrivenio/node-kubernetes
 
 --
 
-*kubernetes/persistent-volume.yaml*:
+*kubernetes/volume.yaml*:
 
 ```yaml
 apiVersion: v1
@@ -523,15 +518,8 @@ Create the volume:
 
 ```sh
 $ gcloud compute disks create pg-data-disk --size 50GB --zone us-central1-a
-$ kubectl apply -f ./kubernetes/persistent-volume.yaml
-```
-
---
-
-View details:
-
-```sh
-$ kubectl get pv
+$ kubectl apply -f ./kubernetes/volume.yaml
+$ kubectl get pv # view details
 ```
 
 ---
@@ -814,7 +802,7 @@ How can we tell that the volume is *actually* working?
 --
 
 1. Make a change to the todos data
-1. Delete the Postgres pod (take note how a new pod immediately spins up)
+1. Delete the Postgres pod (take note that a new pod immediately spins up)
 1. Wait a few moments for the new pod to spin up and the old pod to spin down
 1. The todos data should have the same state
 
@@ -841,8 +829,8 @@ $ kubectl delete -f ./kubernetes/node-deployment-updated.yaml
 
 $ kubectl delete -f ./kubernetes/secret.yaml
 
-$ kubectl delete -f ./kubernetes/volume.yaml
 $ kubectl delete -f ./kubernetes/volume-claim.yaml
+$ kubectl delete -f ./kubernetes/volume.yaml
 
 $ kubectl delete -f ./kubernetes/postgres-deployment.yaml
 $ kubectl delete -f ./kubernetes/postgres-service.yaml
@@ -872,7 +860,7 @@ What's next?
 
 1. Slides - https://mherman.org/presentations/node-kubernetes
 1. Repo - https://github.com/testdrivenio/node-kubernetes
-1. Blog post - foo
+1. Blog post - https://testdriven.io/deploying-a-node-app-to-google-cloud-with-kubernetes
 
 --
 
@@ -882,10 +870,6 @@ What's next?
 1. Dockerize a number of apps
 1. Learn about container orchestration and the Kubernetes Basics
 1. Deploy some apps with GCP
-
---
-
-✌️
 
 
     </textarea>
