@@ -1,0 +1,1 @@
+In this talk, we will look at how to run a highly-available HashiCorp Vault cluster on Kubernetes.
