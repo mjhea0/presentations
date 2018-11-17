@@ -78,10 +78,9 @@ class: center, middle
 
 ##### (3) Practice
 
-1. Project Setup
-1. Key Management Service (KMS)
-1. Storage Bucket
-1. IAM Account
+1. Google Cloud Platform (GCP)
+1. Storage Backend - GCS
+1. IAM Service Account
 1. GKE cluster
 1. Deploy Vault
 1. Test
@@ -275,72 +274,162 @@ class: center, middle
 
 ---
 
-### Project Overview
-
-https://github.com/testdrivenio/vault-consul-docker
-
-```sh
-├── docker-compose.yml
-└─ vault
-    ├── Dockerfile
-    ├── config
-    │   └── vault-config.json
-    ├── data
-    ├── logs
-    └── policies
-        └── app-policy.json
-```
+### Google Cloud Platform (GCP) Setup
 
 --
 
-Build the image and run the container:
-
-
-```sh
-$ docker-compose up -d --build
-```
+#### Steps
 
 --
 
-Start a bash session within the running container:
+- Configure the [Google Cloud SDK](https://cloud.google.com/sdk).
 
-```sh
-$ docker-compose exec vault bash
-```
+    <small>(install, configure your account and access credentials, set up a project)</small>
+
+--
+
+- Enable the following [API](https://cloud.google.com/apis/)s:
+
+    ```sh
+    $ gcloud services enable \
+      cloudapis.googleapis.com \
+      cloudkms.googleapis.com \
+      iam.googleapis.com \
+      --project ${PROJECT_ID}
+    ```
+
+--
+
+- Set the following config:
+
+    ```sh
+    $ export COMPUTE_ZONE=us-central1-a
+    $ export COMPUTE_REGION=us-central1
+    $ export PROJECT_ID=vault-kubernetes-1337
+    ```
+
+--
+
+- Set the project:
+
+    ```sh
+    gcloud config set project ${PROJECT_ID}
+    ```
 
 ---
 
-### Storage Backends
+### Storage Backend - GCS
 
 --
 
-Vault works with a number of storage backends that are used for storing the secrets - in-memory, files, various SQL and NoSQL databases, Consul, S3, etc.
+Vault works with a number of storage backends that are used for storing the secrets - in-memory, files, various SQL and NoSQL databases, Consul, S3, GCS, etc.
 
 https://www.vaultproject.io/docs/configuration/storage/index.html
 
 --
 
-To keep things simple, the examples in this presentation use the [Filesystem](https://www.vaultproject.io/docs/configuration/storage/filesystem.html) backend:
+<br>
 
-```json
-{
-  "backend": {
-    "file": {
-      "path": "vault/data"
-    }
-  },
-  "listener": {
-    "tcp":{
-      "address": "0.0.0.0:8200",
-      "tls_disable": 1
-    }
-  },
-  "ui": true
-}
+Since we're on GCP, we'll use the [Google Cloud Storage backend](https://www.vaultproject.io/docs/configuration/storage/google-cloud-storage.html), which supports high availability.
+
+```sh
+$ gsutil mb -p ${PROJECT_ID} gs://${PROJECT_ID}-vault-storage
 ```
+
+<br>
+
+<img src="images/gcs.png" alt="gcs logo" style="width:15%;">
 
 ---
 
+### IAM Service Account
+
+--
+
+Create a [service account](https://cloud.google.com/iam/docs/understanding-service-accounts) so Vault can access the GCS bucket:
+
+```sh
+$ gcloud iam service-accounts create vault-server \
+    --project ${PROJECT_ID} \
+    --display-name "vault service account"
+```
+
+--
+
+Grant the service account access to the storage bucket:
+
+```sh
+$ gsutil iam ch \
+    serviceAccount:vault-server@${PROJECT_ID}.iam.gserviceaccount.com:objectAdmin \
+    serviceAccount:vault-server@${PROJECT_ID}.iam.gserviceaccount.com:legacyBucketReader \
+    gs://${PROJECT_ID}-vault-storage
+```
+
+<br>
+
+<img src="images/iam.png" alt="iam logo" style="width:15%;">
+
+---
+
+### Google Kubernetes Engine (GKE) cluster - [part 1]
+
+--
+
+Create the cluster:
+
+```sh
+$ gcloud container clusters create vault \
+    --machine-type n1-standard-1 \
+    --num-nodes 3 \
+    --zone ${COMPUTE_ZONE} \
+    --service-account vault-server@${PROJECT_ID}.iam.gserviceaccount.com
+```
+
+--
+
+Create a public IP to expose the Vault server:
+
+```sh
+$ gcloud compute addresses create vault \
+  --region ${COMPUTE_REGION} \
+  --project ${PROJECT_ID}
+
+$ export LOAD_BALANCER_IP=$(gcloud compute addresses describe vault \
+  --region ${COMPUTE_REGION} \
+  --project ${PROJECT_ID} \
+  --format='value(address)')
+```
+
+
+
+--
+
+Create TLS certificates.
+
+--
+
+Create a secret to hold the Vault TLS certificates:
+
+```sh
+$ kubectl create secret generic vault-tls \
+    --from-file "$(pwd)/tls/ca.crt" \
+    --from-file "vault.crt=$(pwd)/tls/vault-combined.crt" \
+    --from-file "vault.key=$(pwd)/tls/vault.key"
+```
+
+Create a configmap:
+
+```sh
+$ kubectl create configmap vault \
+  --from-literal api-addr=https://${LOAD_BALANCER_IP}:8200 \
+  --from-literal gcs-bucket-name=${PROJECT_ID}-vault-storage
+```
+
+kubectl apply -f vault.yaml
+
+load balancer
+
+---
 
 ### Init, Unseal, and Authenticate
 
@@ -571,10 +660,10 @@ What's next?
 
 
     </textarea>
-    <script src="https://remarkjs.com/downloads/remark-latest.min.js">
+    <script src="./remark-latest.min.js">
     </script>
     <script>
-      var slideshow = remark.create();
+      var slideshow = remark.create({countIncrementalSlides: false});
     </script>
   </body>
 </html>
