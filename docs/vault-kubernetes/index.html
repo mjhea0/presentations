@@ -288,6 +288,16 @@ class: center, middle
 
 --
 
+- Set the following config:
+
+    ```sh
+    $ export COMPUTE_ZONE=us-central1-a
+    $ export COMPUTE_REGION=us-central1
+    $ export PROJECT_ID=vault-kubernetes-1337
+    ```
+
+--
+
 - Enable the following [API](https://cloud.google.com/apis/)s:
 
     ```sh
@@ -300,22 +310,11 @@ class: center, middle
 
 --
 
-- Set the following config:
-
-    ```sh
-    $ export COMPUTE_ZONE=us-central1-a
-    $ export COMPUTE_REGION=us-central1
-    $ export PROJECT_ID=vault-kubernetes-1337
-    ```
-
---
-
 - Set the project:
 
     ```sh
-    gcloud config set project ${PROJECT_ID}
+    $ gcloud config set project ${PROJECT_ID}
     ```
-
 ---
 
 ### Storage Backend - GCS
@@ -394,36 +393,25 @@ $ gcloud compute addresses create vault \
   --region ${COMPUTE_REGION} \
   --project ${PROJECT_ID}
 
-$ export LOAD_BALANCER_IP=$(gcloud compute addresses describe vault \
+$ export VAULT_IP=$(gcloud compute addresses describe vault \
   --region ${COMPUTE_REGION} \
   --project ${PROJECT_ID} \
   --format='value(address)')
 ```
 
-
-
 --
-
-Create TLS certificates.
-
---
-
-Create a secret to hold the Vault TLS certificates:
-
-```sh
-$ kubectl create secret generic vault-tls \
-    --from-file "$(pwd)/tls/ca.crt" \
-    --from-file "vault.crt=$(pwd)/tls/vault-combined.crt" \
-    --from-file "vault.key=$(pwd)/tls/vault.key"
-```
 
 Create a configmap:
 
 ```sh
 $ kubectl create configmap vault \
-  --from-literal api-addr=https://${LOAD_BALANCER_IP}:8200 \
+  --from-literal api-addr=http://${VAULT_IP}:8200 \
   --from-literal gcs-bucket-name=${PROJECT_ID}-vault-storage
 ```
+
+---
+
+### Google Kubernetes Engine (GKE) cluster - [part 2]
 
 kubectl apply -f vault.yaml
 
