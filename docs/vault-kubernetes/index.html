@@ -254,7 +254,7 @@ Backends are everywhere!
 | Backend                                                                      | Use                                      | Examples                                                       |
 |------------------------------------------------------------------------------|------------------------------------------|----------------------------------------------------------------|
 | [Storage](https://www.vaultproject.io/docs/configuration/storage/index.html) | Where secrets are stored                 | Consul, Filesystem, In-Memory, PostgreSQL, S3, Google Cloud Storage`*`                  |
-| [Secret](https://www.vaultproject.io/docs/secrets/index.html)                | Handles static or dynamic secrets        | AWS, Databases, Key/Value, RabbitMQ, SSH, Google KMS`*`                       |
+| [Secret](https://www.vaultproject.io/docs/secrets/index.html)                | Handles static or dynamic secrets        | AWS, Databases, Key/Value, RabbitMQ, SSH, Google KMS                       |
 | [Auth](https://www.vaultproject.io/docs/auth/index.html)                     | Handles authentication and authorization | AWS, Azure, Google Cloud`*`, GitHub, Tokens, Username & Password |
 | [Audit](https://www.vaultproject.io/docs/auth/index.html)                    | Logs all requests and responses                     | File, Syslog, Socket                                           |
 
@@ -378,7 +378,7 @@ Create the cluster:
 
 ```sh
 $ gcloud container clusters create vault \
-    --machine-type n1-standard-1 \
+    --machine-type n1-standard-2 \
     --num-nodes 3 \
     --zone ${COMPUTE_ZONE} \
     --service-account vault-server@${PROJECT_ID}.iam.gserviceaccount.com
@@ -401,6 +401,16 @@ $ export VAULT_IP=$(gcloud compute addresses describe vault \
 
 --
 
+<br>
+
+<small><strong>NOTE</strong>: Be sure to generate TLS certificates in a production environment!</small>
+
+---
+
+### Google Kubernetes Engine (GKE) cluster - [part 2]
+
+--
+
 Create a configmap:
 
 ```sh
@@ -409,13 +419,28 @@ $ kubectl create configmap vault \
   --from-literal gcs-bucket-name=${PROJECT_ID}-vault-storage
 ```
 
----
-
-### Google Kubernetes Engine (GKE) cluster - [part 2]
-
 kubectl apply -f vault.yaml
 
-load balancer
+Spin up a load balancer:
+
+```sh
+$ kubectl apply -f load-balancer.yaml
+```
+
+Check the status:
+
+```sh
+$ kubectl get service vault
+
+NAME      TYPE           CLUSTER-IP     EXTERNAL-IP     PORT(S)        AGE
+vault     LoadBalancer   10.39.241.34   104.154.164.8   80:32122/TCP   9m
+```
+
+Test the external IP out in your browser and set it as the `VAULT_ADDR` env var:
+
+```sh
+$ export VAULT_ADDR="http://${VAULT_IP}"
+```
 
 ---
 
