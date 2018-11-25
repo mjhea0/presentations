@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Running HashiCorp Vault on Kubernetes</title>
+    <title>Running Vault and Consul on Kubernetes</title>
     <meta charset="utf-8">
     <style>
       @import url(https://fonts.googleapis.com/css?family=Yanone+Kaffeesatz);
@@ -45,7 +45,7 @@
 
 class: center, middle
 
-# Running Vault on Kubernetes
+# Running <span style="color:#1563ff">Vault</span> + <span style="color:#c62a71">Consul</span> on <span style="color:#5c4ee5">Kubernetes</span>
 
 <img src="images/vault-logo.png" alt="vault logo" style="width:20%;">
 
@@ -78,12 +78,13 @@ class: center, middle
 
 ##### (3) Practice
 
-1. Google Cloud Platform (GCP)
-1. Storage Backend - GCS
-1. IAM Service Account
-1. GKE cluster
-1. Deploy Vault
-1. Test
+1. Project Overview
+1. Minikube
+1. Setup (TLS, Consul, Vault)
+1. Init, Unseal, and Authenticate
+1. Static Secrets
+1. Dynamic Secrets
+1. Encryption as a Service
 
 --
 
@@ -133,35 +134,31 @@ By the end of this talk, you should be able to...
 
 --
 
-1. Explain what Vault is and why you may want to use it
+1. Explain what **Vault** is and why you may want to use it
 
 --
 
-1. Describe the basic Vault architecture along with dynamic and static secrets, the various backends (storage, secret, auth, audit), and how Vault can be used as an "encryption as a service"
+1. Describe the basic **Vault architecture** along with dynamic and static secrets, the various backends (storage, secret, auth, audit), and how Vault can be used as an "encryption as a service"
 
 --
 
-1. Spin up a Vault cluster on Google Kubernetes Engine (GKE)
+1. Spin up a Vault + Consul cluster on **kubernetes**
 
 --
 
-1. Init and unseal Vault
+1. **Init** and **unseal** Vault
 
 --
 
-1. Authenticate against Vault
+1. **Authenticate** against Vault
 
 --
 
-1. Configure an Audit backend
+1. Work with **static** and **dynamic** secrets
 
 --
 
-1. Work with static and dynamic secrets
-
---
-
-1. Use the Transit backend as an "encryption as a service"
+1. Use the **Transit** backend as an "encryption as a service"
 
 ---
 
@@ -253,9 +250,9 @@ Backends are everywhere!
 
 | Backend                                                                      | Use                                      | Examples                                                       |
 |------------------------------------------------------------------------------|------------------------------------------|----------------------------------------------------------------|
-| [Storage](https://www.vaultproject.io/docs/configuration/storage/index.html) | Where secrets are stored                 | Consul, Filesystem, In-Memory, PostgreSQL, S3, Google Cloud Storage`*`                  |
-| [Secret](https://www.vaultproject.io/docs/secrets/index.html)                | Handles static or dynamic secrets        | AWS, Databases, Key/Value, RabbitMQ, SSH, Google KMS                       |
-| [Auth](https://www.vaultproject.io/docs/auth/index.html)                     | Handles authentication and authorization | AWS, Azure, Google Cloud`*`, GitHub, Tokens, Username & Password |
+| [Storage](https://www.vaultproject.io/docs/configuration/storage/index.html) | Where secrets are stored                 | Consul`*`, Filesystem, In-Memory, PostgreSQL, S3, Google Cloud Storage                  |
+| [Secret](https://www.vaultproject.io/docs/secrets/index.html)                | Handles static or dynamic secrets        | AWS`*`, Databases, Key/Value`*`, RabbitMQ, SSH, Google KMS                       |
+| [Auth](https://www.vaultproject.io/docs/auth/index.html)                     | Handles authentication and authorization | AWS, Azure, Google Cloud, GitHub, Tokens`*`, Username & Password |
 | [Audit](https://www.vaultproject.io/docs/auth/index.html)                    | Logs all requests and responses                     | File, Syslog, Socket                                           |
 
 <small>`*` used in this presentation</small>
@@ -274,7 +271,66 @@ class: center, middle
 
 ---
 
-### Google Cloud Platform (GCP) Setup
+### Project Overview
+
+[https://github.com/testdrivenio/vault-consul-kubernetes](https://github.com/testdrivenio/vault-consul-kubernetes)
+
+```sh
+├── certs
+│   ├── config
+│   │   ├── ca-config.json
+│   │   ├── ca-csr.json
+│   │   ├── consul-csr.json
+│   │   └── vault-csr.json
+├── consul
+│   ├── config.json
+│   ├── service.yaml
+│   └── statefulset.yaml
+├── create.sh
+└── vault
+    ├── config.json
+    ├── deployment.yaml
+    └── service.yaml
+```
+
+Prerequisites:
+
+- Go, [cfssl](https://github.com/cloudflare/cfssl) and cfssljson, Consul CLI, Vault CLI
+
+---
+
+### Minikube
+
+--
+
+[Minikube](https://kubernetes.io/docs/setup/minikube/) is a tool which allows developers to use and run a Kubernetes cluster locally.
+
+--
+
+#### Getting Started
+
+First, install the following tools:
+
+1. **Install a  [Hypervisor](https://kubernetes.io/docs/tasks/tools/install-minikube/#install-a-hypervisor)** (like [VirtualBox](https://www.virtualbox.org/wiki/Downloads) or [HyperKit](https://github.com/moby/hyperkit)) to manage virtual machines
+1. **Install and Set Up [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/)** to deploy and manage apps on Kubernetes
+1. **Install [Minikube](https://github.com/kubernetes/minikube/releases)**
+
+--
+
+Then, start the cluster:
+
+```sh
+$ minikube start --vm-driver=virtualbox
+$ minikube dashboard
+```
+
+<p style="margin-top:30px">
+  <img src="images/minikube.jpg" alt="minikube logo" style="width:35%;">
+</p>
+
+---
+
+### Project Setup
 
 --
 
@@ -282,165 +338,34 @@ class: center, middle
 
 --
 
-- Configure the [Google Cloud SDK](https://cloud.google.com/sdk).
+- Create the TLS Certificates:
 
-    <small>(install, configure your account and access credentials, set up a project)</small>
+  See https://testdriven.io/running-vault-and-consul-on-kubernetes
 
 --
 
-- Set the following config:
+- Run *create.sh* to deploy a Vault and Consul cluster:
 
     ```sh
-    $ export COMPUTE_ZONE=us-central1-a
-    $ export COMPUTE_REGION=us-central1
-    $ export PROJECT_ID=vault-kubernetes-1337
+    $ sh create.sh
     ```
 
 --
 
-- Enable the following [API](https://cloud.google.com/apis/)s:
+- Set the following environment variables:
 
     ```sh
-    $ gcloud services enable \
-      cloudapis.googleapis.com \
-      cloudkms.googleapis.com \
-      iam.googleapis.com \
-      --project ${PROJECT_ID}
+    $ export VAULT_ADDR=https://127.0.0.1:8200
+    $ export VAULT_CACERT="certs/ca.pem"
     ```
 
 --
 
-- Set the project:
+- Verify:
 
     ```sh
-    $ gcloud config set project ${PROJECT_ID}
+    $ vault status
     ```
----
-
-### Storage Backend - GCS
-
---
-
-Vault works with a number of storage backends that are used for storing the secrets - in-memory, files, various SQL and NoSQL databases, Consul, S3, GCS, etc.
-
-https://www.vaultproject.io/docs/configuration/storage/index.html
-
---
-
-<br>
-
-Since we're on GCP, we'll use the [Google Cloud Storage backend](https://www.vaultproject.io/docs/configuration/storage/google-cloud-storage.html), which supports high availability.
-
-```sh
-$ gsutil mb -p ${PROJECT_ID} gs://${PROJECT_ID}-vault-storage
-```
-
-<br>
-
-<img src="images/gcs.png" alt="gcs logo" style="width:15%;">
-
----
-
-### IAM Service Account
-
---
-
-Create a [service account](https://cloud.google.com/iam/docs/understanding-service-accounts) so Vault can access the GCS bucket:
-
-```sh
-$ gcloud iam service-accounts create vault-server \
-    --project ${PROJECT_ID} \
-    --display-name "vault service account"
-```
-
---
-
-Grant the service account access to the storage bucket:
-
-```sh
-$ gsutil iam ch \
-    serviceAccount:vault-server@${PROJECT_ID}.iam.gserviceaccount.com:objectAdmin \
-    serviceAccount:vault-server@${PROJECT_ID}.iam.gserviceaccount.com:legacyBucketReader \
-    gs://${PROJECT_ID}-vault-storage
-```
-
-<br>
-
-<img src="images/iam.png" alt="iam logo" style="width:15%;">
-
----
-
-### Google Kubernetes Engine (GKE) cluster - [part 1]
-
---
-
-Create the cluster:
-
-```sh
-$ gcloud container clusters create vault \
-    --machine-type n1-standard-2 \
-    --num-nodes 3 \
-    --zone ${COMPUTE_ZONE} \
-    --service-account vault-server@${PROJECT_ID}.iam.gserviceaccount.com
-```
-
---
-
-Create a public IP to expose the Vault server:
-
-```sh
-$ gcloud compute addresses create vault \
-  --region ${COMPUTE_REGION} \
-  --project ${PROJECT_ID}
-
-$ export VAULT_IP=$(gcloud compute addresses describe vault \
-  --region ${COMPUTE_REGION} \
-  --project ${PROJECT_ID} \
-  --format='value(address)')
-```
-
---
-
-<br>
-
-<small><strong>NOTE</strong>: Be sure to generate TLS certificates in a production environment!</small>
-
----
-
-### Google Kubernetes Engine (GKE) cluster - [part 2]
-
---
-
-Create a configmap:
-
-```sh
-$ kubectl create configmap vault \
-  --from-literal api-addr=http://${VAULT_IP}:8200 \
-  --from-literal gcs-bucket-name=${PROJECT_ID}-vault-storage
-```
-
-kubectl apply -f vault.yaml
-
-Spin up a load balancer:
-
-```sh
-$ kubectl apply -f load-balancer.yaml
-```
-
-Check the status:
-
-```sh
-$ kubectl get service vault
-
-NAME      TYPE           CLUSTER-IP     EXTERNAL-IP     PORT(S)        AGE
-vault     LoadBalancer   10.39.241.34   104.154.164.8   80:32122/TCP   9m
-```
-
-Test the external IP out in your browser and set it as the `VAULT_ADDR` env var:
-
-```sh
-$ export VAULT_ADDR="http://${VAULT_IP}"
-```
 
 ---
 
@@ -479,33 +404,6 @@ https://www.vaultproject.io/docs/concepts/policies.html
 
 ---
 
-### Auditing
-
---
-
-Before we test out the functionality, let’s enable an [Audit Device](https://www.vaultproject.io/docs/audit/index.html):
-
-```sh
-$ vault audit enable file file_path=/vault/logs/audit.log
-Success! Enabled the file audit device at: file/
-```
-
---
-
-To test, run the following command to view all enabled Audit Devices:
-
-```sh
-$ vault audit list
-
-Path     Type    Description
-----     ----    -----------
-file/    file    n/a
-```
-
-This request should be logged in *vault/logs/audit.log*.
-
----
-
 ### Static Secrets
 
 --
@@ -536,12 +434,6 @@ Delete:
 ```sh
 $ vault kv delete secret/foo
 ```
-
---
-
-<br>
-
-Take note of the audit log. Each of the above requests were logged!
 
 ---
 
@@ -653,16 +545,15 @@ What's next?
 1. Leases and revocation
 1. Setting up new policies
 1. Deployment
-1. Configuring TLS
-1. High availability
+1. Audit backend
 
 --
 
 ##### Resources
 
-1. Full blog post - https://testdriven.io/managing-secrets-with-vault-and-consul
-1. Slides - http://mherman.org/presentations/vault
-1. Repo - https://github.com/testdrivenio/vault-docker-example
+1. Full blog post - https://github.com/testdrivenio/vault-consul-kubernetes
+1. Slides - http://mherman.org/presentations/vault-kubernetes
+1. Repo - https://github.com/testdrivenio/vault-consul-kubernetes
 1. Why We Need Dynamic Secrets - https://www.hashicorp.com/blog/why-we-need-dynamic-secrets (advantages of using dynamic secrets)
 
 --
