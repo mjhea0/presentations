@@ -142,7 +142,7 @@ By the end of this talk, you should be able to...
 
 --
 
-1. Spin up a Vault + Consul cluster on **kubernetes**
+1. Spin up a Vault + Consul cluster on **Kubernetes**
 
 --
 
@@ -352,7 +352,7 @@ $ minikube dashboard
 
 --
 
-- Set the following environment variables:
+- In a new terminal window, set the following environment variables:
 
     ```sh
     $ export VAULT_ADDR=https://127.0.0.1:8200
@@ -529,7 +529,7 @@ Key          Value
 ---          -----
 plaintext    bXkgcHJlY2lvdXMK
 
-$ base64 -d <<< "bXkgcHJlY2lvdXMK"
+$ base64 -D <<< "bXkgcHJlY2lvdXMK"
 my precious
 ```
 
@@ -552,7 +552,7 @@ What's next?
 
 ##### Resources
 
-1. Full blog post - https://github.com/testdrivenio/vault-consul-kubernetes
+1. Full blog post - https://testdriven.io/running-vault-and-consul-on-kubernetes
 1. Slides - http://mherman.org/presentations/vault-kubernetes
 1. Repo - https://github.com/testdrivenio/vault-consul-kubernetes
 1. Why We Need Dynamic Secrets - https://www.hashicorp.com/blog/why-we-need-dynamic-secrets (advantages of using dynamic secrets)
