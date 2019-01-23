@@ -45,11 +45,11 @@
 
 class: center, middle
 
-# Cypress'ing Your Way<br>to a Better Night's Sleep 😴
+## Cypress'ing Your Way to a Better Night's Sleep 😴
 
-<img src="https://www.cypress.io/img/logo-dark.36f3e062.png" alt="vault logo" style="width:30%;">
+<img src="images/cypress.png" alt="cypress logo" style="width:40%;">
 
-<br>
+<br><br>
 
 <div>
   <span style="vertical-align:60%;">Presented by <em>Michael Herman</em> at <a href="https://www.meetup.com/DenverScript">DenverScript</a></span>
@@ -120,7 +120,9 @@ Senior Software Engineer at [ClickFox](https://www.clickfox.com/).
 
 [Cypress](https://www.cypress.io/) is a modern JavaScript-based end-to-end testing framework that's designed to overcome many of the shortcomings found in Selenium.
 
-<img src="https://www.cypress.io/img/logo-dark.36f3e062.png" alt="cypress logo" style="padding-top:10px;width:30%;">
+Selenium was designed to test applications that require a page refresh. It was not designed to handle all the timing issues that occur with AJAX data fetching in Single Page Applications.
+
+<img src="images/cypress.png" alt="cypress logo" style="padding-top:10px;width:30%;">
 
 <br>
 
@@ -142,6 +144,37 @@ It makes setting up, writing, running, and debugging tests easy.
 
 ### Why Cypress?
 
+--
+
+#### Developer-friendly
+
+1. Familiar Mocha and Chai syntax
+1. Access to native browser elements
+1. [Debug](https://docs.cypress.io/guides/guides/debugging.html#Using-debugger) failing tests in Chrome Dev Tools
+1. [Time-travel](https://docs.cypress.io/guides/core-concepts/test-runner.html#Command-Log)
+
+--
+
+#### Batteries-included
+
+1. Screenshots and videos
+1. Framework + assertions + [mocks](https://docs.cypress.io/guides/guides/stubs-spies-and-clocks.html#Stubs)
+1. [Stub network requests](https://docs.cypress.io/guides/guides/network-requests.html)
+1. Electron GUI
+
+--
+
+#### Reliable
+
+1. [Automatic waiting](https://docs.cypress.io/guides/core-concepts/introduction-to-cypress.html#Cypress-is-Not-Like-jQuery)
+1. Consistent results that developers actually trust ❤️
+
+--
+
+<hr>
+
+<small><strong>Source</strong>: https://docs.cypress.io/guides/overview/why-cypress.html#Features</small>
+
 ---
 
 ### Cypress in Action
@@ -154,25 +187,7 @@ It makes setting up, writing, running, and debugging tests easy.
 
 ### That's it!
 
-What's next?
-
---
-
-##### What has not been covered?
-
-1. Leases and revocation
-1. Setting up new policies
-1. Deployment
-1. Audit backend
-
---
-
-##### Resources
-
-1. Full blog post - https://testdriven.io/running-vault-and-consul-on-kubernetes
-1. Slides - http://mherman.org/presentations/vault-kubernetes
-1. Repo - https://github.com/testdrivenio/vault-consul-kubernetes
-1. Why We Need Dynamic Secrets - https://www.hashicorp.com/blog/why-we-need-dynamic-secrets (advantages of using dynamic secrets)
+https://github.com/mjhea0/cypress-visual-regression
 
 --
 
