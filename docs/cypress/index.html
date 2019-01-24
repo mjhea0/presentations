@@ -148,10 +148,10 @@ It makes setting up, writing, running, and debugging tests easy.
 
 #### Developer-friendly
 
-1. Familiar Mocha and Chai syntax
+1. Familiar Mocha and Chai syntax <small>(sinon, moment, lodash...)</small>
 1. Access to native browser elements
 1. [Debug](https://docs.cypress.io/guides/guides/debugging.html#Using-debugger) failing tests in Chrome Dev Tools
-1. [Time-travel](https://docs.cypress.io/guides/core-concepts/test-runner.html#Command-Log)
+1. Amazing [documentation](https://docs.cypress.io)
 
 --
 
@@ -160,7 +160,7 @@ It makes setting up, writing, running, and debugging tests easy.
 1. Screenshots and videos
 1. Framework + assertions + [mocks](https://docs.cypress.io/guides/guides/stubs-spies-and-clocks.html#Stubs)
 1. [Stub network requests](https://docs.cypress.io/guides/guides/network-requests.html)
-1. Electron GUI
+1. Electron GUI <small>(watch and debug tests in real-time, [time-travel](https://docs.cypress.io/guides/core-concepts/test-runner.html#Command-Log))</small>
 
 --
 
@@ -179,15 +179,57 @@ It makes setting up, writing, running, and debugging tests easy.
 
 ### Cypress in Action
 
+--
+
+```javascript
+describe('payment type 1', () => {
+  it('should process the payment', () => {
+    cy.login('regular@user.com', 'justatest'); // command
+    cy.visit('/payments/microservices-with-docker-flask-and-react/');
+    cy.get('h1').contains('Purchase');
+    cy.get('h3').contains('Microservices with Docker, Flask, and React');
+    cy.get('button#purchase-btn').contains('Pay $40.00 with Card');
+    cy.get('#purchase-btn').click();
+    cy.wait(2000); // bad
+    cy.get('iframe.stripe_checkout_app').then(function($iframe) {
+      const $body = $iframe.contents().find('body')
+      cy.wrap($body).find('input:eq(0)').type('hermanmu@gmail.com')
+      cy.wrap($body).find('input:eq(1)').type('4242424242424242')
+      cy.wrap($body).find('input:eq(2)').type('1222')
+      cy.wrap($body).find('input:eq(3)').type('123')
+      cy.wrap($body).find('button').click();
+    });
+    cy.wait(9000); // bad
+    cy
+      .get('div.alert.alert-success')
+      .contains('Thanks for purchasing!');
+});
+```
+
+--
+
+Be sure to review:
+
+1. [Best practices](https://docs.cypress.io/guides/references/best-practices.html)
+1. Each command has correct/incorrect usage - [example](https://docs.cypress.io/api/commands/click.html#Usage)
+
+
 ---
 
 ### My Workflow
+
+Docker
+Parallel
+Iterate on a single test
+Loosely coupled `.only`
+
 
 ---
 
 ### That's it!
 
 https://github.com/mjhea0/cypress-visual-regression
+
 
 --
 
