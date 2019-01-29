@@ -118,13 +118,13 @@ Senior Software Engineer at [ClickFox](https://www.clickfox.com/).
 
 --
 
-[Cypress](https://www.cypress.io/) is a modern JavaScript-based end-to-end testing framework that's designed to overcome many of the shortcomings found in Selenium.
-
-Selenium was designed to test applications that require a page refresh. It was not designed to handle all the timing issues that occur with AJAX data fetching in Single Page Applications.
+[Cypress](https://www.cypress.io/) is a modern web automation test framework designed to simplify browser testing.
 
 <img src="images/cypress.png" alt="cypress logo" style="padding-top:10px;width:30%;">
 
-<br>
+--
+
+While it's best known as a Selenium replacement, it's much more than just an end-to-end test automation tool. Cypress is a developer tool made to be used proactively by developers rather than a non-technical QA team focused on after-the-fact testing.
 
 --
 
@@ -138,7 +138,7 @@ It's built on top of some familiar JavaScript testing tools:
 
 --
 
-It makes setting up, writing, running, and debugging tests easy.
+<strong>It makes setting up, writing, running, and debugging tests easy.</strong>
 
 ---
 
@@ -148,25 +148,25 @@ It makes setting up, writing, running, and debugging tests easy.
 
 #### Developer-friendly
 
-1. Familiar Mocha and Chai syntax <small>(sinon, moment, lodash...)</small>
+1. Familiar Mocha and Chai syntax
 1. Access to native browser elements
 1. [Debug](https://docs.cypress.io/guides/guides/debugging.html#Using-debugger) failing tests in Chrome Dev Tools
 1. Amazing [documentation](https://docs.cypress.io)
 
 --
 
-#### Batteries-included
+#### [Batteries-included](https://www.cypress.io/how-it-works/)
 
 1. Screenshots and videos
 1. Framework + assertions + [mocks](https://docs.cypress.io/guides/guides/stubs-spies-and-clocks.html#Stubs)
 1. [Stub network requests](https://docs.cypress.io/guides/guides/network-requests.html)
-1. Electron GUI <small>(watch and debug tests in real-time, [time-travel](https://docs.cypress.io/guides/core-concepts/test-runner.html#Command-Log))</small>
+1. Electron GUI (watch and debug tests in real-time, [time-travel](https://docs.cypress.io/guides/core-concepts/test-runner.html#Command-Log))
 
 --
 
 #### Reliable
 
-1. [Automatic waiting](https://docs.cypress.io/guides/core-concepts/introduction-to-cypress.html#Cypress-is-Not-Like-jQuery)
+1. [Waiting](https://docs.cypress.io/guides/core-concepts/introduction-to-cypress.html#Cypress-is-Not-Like-jQuery) is built-in to every command and assertion
 1. Consistent results that developers actually trust ❤️
 
 --
@@ -182,31 +182,29 @@ It makes setting up, writing, running, and debugging tests easy.
 --
 
 ```javascript
-describe('payment type 1', () => {
-  it('should process the payment', () => {
-    cy.login('regular@user.com', 'justatest'); // command
-    cy.visit('/payments/microservices-with-docker-flask-and-react/');
-    cy.get('h1').contains('Purchase');
-    cy.get('h3').contains('Microservices with Docker, Flask, and React');
-    cy.get('button#purchase-btn').contains('Pay $40.00 with Card');
-    cy.get('#purchase-btn').click();
-    cy.wait(2000); // bad
-    cy.get('iframe.stripe_checkout_app').then(function($iframe) {
-      const $body = $iframe.contents().find('body')
-      cy.wrap($body).find('input:eq(0)').type('hermanmu@gmail.com')
-      cy.wrap($body).find('input:eq(1)').type('4242424242424242')
-      cy.wrap($body).find('input:eq(2)').type('1222')
-      cy.wrap($body).find('input:eq(3)').type('123')
-      cy.wrap($body).find('button').click();
-    });
-    cy.wait(9000); // bad
-    cy
-      .get('div.alert.alert-success')
-      .contains('Thanks for purchasing!');
+it('should handle feedback submission correctly', () => {
+  // navigate to testdriven.io
+  cy.visit('/');
+  cy.get('h1').contains('Test-Driven Development Courses');
+
+  // click feedback button
+  cy.get('button').contains('Feedback').click();
+  cy.get('#feedbackModal').should('have.css', 'display', 'block');
+  cy.get('h5').contains('Send Us Feedback');
+  cy.get('input[placeholder="Your email address"]').type('test@test.com');
+  cy.get('textarea').type('just a test');
+
+  // submit feedback
+  cy.get('button.btn.btn-primary[type="submit"]').contains('Send').click();
+  cy.get('h4').contains('Thank You!');
+  cy.get('button').contains('Close').click();
+  cy.get('#feedbackModal').should('have.css', 'display', 'none');
 });
 ```
 
 --
+
+<br>
 
 Be sure to review:
 
@@ -218,17 +216,57 @@ Be sure to review:
 
 ### My Workflow
 
-Docker
-Parallel
-Iterate on a single test
-Loosely coupled `.only`
+--
 
+Cypress is great for end-to-end testing (as a Selenium-replacement), but it's better to use it directly in your TDD workflow for unit and integration testing.
+
+--
+
+<strong>Cypress is not just a testing tool--it's a development tool!</strong>
+
+<br>
+
+--
+
+1. Convert user stories, requirements, etc. into partial test specs
+
+--
+
+1. Add fixtures and stub out network calls
+
+--
+
+1. Run the Cypress GUI and keep it open next to my code editor
+
+--
+
+1. Use `.only` to iterate on a single test
+
+--
+
+1. Ensure the test fails
+
+--
+
+1. Code until that test passes (red, green, refactor)
+
+--
+
+1. Repeat the previous three steps until all tests are green
+
+--
+
+1. Optional: Convert the integration tests to e2e tests
 
 ---
 
 ### That's it!
 
-https://github.com/mjhea0/cypress-visual-regression
+##### Resources
+
+1. [Sliding Down the Testing Pyramid](https://www.cypress.io/blog/2018/04/02/sliding-down-the-testing-pyramid)<br>tutorial that details how Cypress can execute integration and unit tests
+1. [Cypress Visual Regression](https://github.com/mjhea0/cypress-visual-regression)<br>module for adding visual regression testing to Cypress
+
 
 
 --
