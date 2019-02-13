@@ -1,0 +1,9 @@
+Assumptions:
+
+(1) Talk is meant for an intermediate to advanced-level JavaScript web developer.
+(2) This is not my first time teaching this audience. No need for an intro, in other words.
+(3) The class is already familiar with the "I do, We do, You do" approach.
+
+Full disclosure:
+
+(1) I spoke on this topic at DenverScript last month. Most of the theory parts were taken from that talk.
