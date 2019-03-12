@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Test-Driven Writing</title>
+    <meta charset="utf-8">
+    <style>
+      @import url(https://fonts.googleapis.com/css?family=Yanone+Kaffeesatz);
+      @import url(https://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic);
+      @import url(https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,400italic);
+
+      body {
+        font-family: 'Droid Serif';
+      }
+      h1, h2, h3 {
+        font-family: 'Yanone Kaffeesatz';
+        font-weight: normal;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      table, th, td {
+        border: 1px solid black;
+      }
+      th, td {
+        padding: 5px;
+        text-align: left;
+      }
+      td {
+        padding-left: 5px;
+        padding-right: 5px;
+      }
+      .remark-code { font-family: 'Ubuntu Mono'; }
+      .remark-inline-code {
+        font-family: 'Ubuntu Mono';
+        padding: 2px 4px;
+        font-size: 90%;
+        color: #c7254e;
+        background-color: #f9f2f4;
+        border-radius: 0;
+       }
+    </style>
+  </head>
+  <body>
+    <textarea id="source">
+
+class: center, middle
+
+# Test-Driven Writing
+
+<div>
+  <small>Presented By<br><a href="https://mherman.org">Michael Herman</a><br><a href="https://twitter.com/mikeherman">@mikeherman</a> </span>
+</div>
+
+---
+
+### Agenda
+
+--
+
+##### (1) Intro
+
+1. About Me
+1. Objectives
+
+--
+
+##### (2) Theory
+
+1. Test-Driven Development
+1. Test-Driven Writing
+1. Learning How to Learn
+
+--
+
+##### (3) Practice
+
+1. Red
+1. Green
+1. Refactor
+
+--
+
+##### (4) Next Steps
+
+---
+
+class: center, middle
+
+## Intro
+
+---
+
+### About Michael
+
+```
+$ whoami
+michael.herman
+```
+
+<p style="margin:0"><img src="images/me.png" style="max-width: 10%;" alt="me"></p>
+
+--
+
+#### Senior Software Engineer
+
+1. Python and JavaScript Contractor
+1. [TestDriven.io](https://testdriven.io)
+
+<a href="https://testdriven.io">
+  <img src="images/mobile_image.png" style="max-width: 15%; padding-top:5px; box-shadow: none;" alt="testdriven.io">
+</a>
+
+--
+
+#### Also
+
+1. Founder and Organizer of [Node.js Meetup Group](https://www.meetup.com/Node-js-Denver-Boulder/)
+1. Former Lead Instructor at [Galvanize](https://www.galvanize.com/)
+1. Co-founder/author of [Real Python](https://realpython.com)
+1. 😍 - [tech writing/education](http://mherman.org), [open source](http://github.com/mjhea0), [financial models](http://www.starterfinancialmodel.com/), [radiohead](http://radiohead.com/)
+
+---
+
+### Objectives
+
+By the end of this training, you should be able to...
+
+--
+
+1. Describe what Test-Driven Development is and how the Test-Driven model can be applied to writing
+
+--
+
+1. Develop a technical blog post using the Red-Green-Refactor process
+
+--
+
+1. Describe the difference between a how-to article, a high-level narrative, and a list post
+
+--
+
+1. Explain what narrative is and why it's important
+
+--
+
+1. Engage in reverse-planning by writing objectives first
+
+--
+
+1. Describe the learning how to learn process
+
+---
+
+class: center, middle
+
+## Theory
+
+---
+
+### What is Test-Driven Development?
+
+--
+
+[Test-Driven Development](https://en.wikipedia.org/wiki/Test-driven_development) (TDD) is a methodology in software development that focuses on an iterative development cycle where the emphasis is placed on writing test cases before the actual feature or function is written.
+
+- code, verify, repeat
+- design, validate, repeat
+
+--
+
+#### TDD
+
+1. Utilizes repetition of a short development cycle
+1. Combines building and testing
+1. Helps ensure correctness of code - but also helps to indirectly evolve the design and architecture of the project at hand.
+
+--
+
+<br><br>
+
+<div style="text-align:center;">
+  "Code without tests is broken by design."<br>- Jacob Kaplan-Moss
+</div>
+
+---
+
+### Red-Green-Refactor
+
+TDD usually follows the "Red-Green-Refactor" cycle:
+
+1. Add a test to the test suite
+1. Run all the tests to ensure the new test fails (red)
+1. Write just enough code to get that single test to pass (green)
+1. Run all tests
+1. Refactor
+1. Repeat
+
+![tdd](tdd.png)
+
+This process sounds slower, and it often can be in the short-term, but it does improve the quality of the software project. Having adequate test coverage acts as a safeguard so you don't accidentally change the functionality. It's much better to catch a bug locally from your test suite than by a customer in production.
+
+Finally, test suites can encapsulate the expectations of your software project so that your project's stakeholders (current self, future self, everyone else) can better understand the project.
+
+STOP: Turn to your neighbor and talk about what test-driven development is.
+
+---
+
+### Why Cypress?
+
+--
+
+#### Developer-friendly
+
+1. Familiar Mocha and Chai syntax
+1. Access to native browser elements
+1. [Debug](https://docs.cypress.io/guides/guides/debugging.html#Using-debugger) failing tests in Chrome Dev Tools
+1. Amazing [documentation](https://docs.cypress.io)
+1. Auto reloads
+
+--
+
+#### [Batteries-included](https://www.cypress.io/how-it-works/)
+
+1. Screenshots and videos
+1. Framework + assertions + [mocks](https://docs.cypress.io/guides/guides/stubs-spies-and-clocks.html#Stubs)
+1. [Stub network requests](https://docs.cypress.io/guides/guides/network-requests.html)
+1. Electron GUI (watch and debug tests in real-time, [time-travel](https://docs.cypress.io/guides/core-concepts/test-runner.html#Command-Log))
+
+--
+
+#### Reliable
+
+1. [Waiting](https://docs.cypress.io/guides/core-concepts/introduction-to-cypress.html#Cypress-is-Not-Like-jQuery) is built-in to every command and assertion
+1. Consistent results that developers actually trust ❤️
+
+---
+
+### Cypress in Action
+
+--
+
+```javascript
+it('should handle feedback submission correctly', () => {
+  // navigate to testdriven.io
+  cy.visit('/');
+  cy.get('h1').contains('Test-Driven Development Courses');
+
+  // click feedback button
+  cy.get('button').contains('Feedback').click();
+  cy.get('#feedbackModal').should('have.css', 'display', 'block');
+  cy.get('h5').contains('Send Us Feedback');
+  cy.get('input[placeholder="Your email address"]').type('test@test.com');
+  cy.get('textarea').type('just a test');
+
+  // submit feedback
+  cy.get('button.btn.btn-primary[type="submit"]').contains('Send').click();
+  cy.get('h4').contains('Thank You!');
+  cy.get('button').contains('Close').click();
+  cy.get('#feedbackModal').should('have.css', 'display', 'none');
+});
+```
+
+--
+
+<br>
+
+Be sure to review:
+
+1. [Best practices](https://docs.cypress.io/guides/references/best-practices.html)
+1. Each command has correct/incorrect usage - [example](https://docs.cypress.io/api/commands/click.html#Usage)
+
+
+---
+
+### TDD Development Workflow (theory)
+
+--
+
+Cypress is great for end-to-end testing (as a Selenium-replacement), but it's better to use it directly in your TDD workflow for unit and integration testing.
+
+--
+
+<strong>Cypress is not just a testing tool--it's a development tool!</strong>
+
+<br>
+
+--
+
+1. Convert user stories, requirements, etc. into partial test specs
+
+--
+
+1. Add fixtures and stub out network calls
+
+--
+
+1. Run the Cypress GUI and keep it open next to your code editor
+
+--
+
+1. Use `.only` to iterate on a single test
+
+--
+
+1. Ensure the test fails
+
+--
+
+1. Code until that test passes (<span style="color:red;">red</span>, <span style="color:green;">green</span>, <span style="color:orange;">refactor</span>)
+
+--
+
+1. Repeat the previous three steps until all tests are <span style="color:green;">green</span>
+
+--
+
+1. Optional: Convert the integration tests to e2e tests
+
+---
+
+class: center, middle
+
+## Practice
+
+---
+
+### Project Setup
+
+--
+
+1. Create a new project:
+    ```sh
+    $ mkdir cypress-workflow && cd cypress-workflow
+    $ npm init -y
+    $ npm install cypress --save-dev
+    ```
+--
+
+1. Run Cypress to generate a new project scaffold:
+    ```sh
+    $ ./node_modules/.bin/cypress open
+    ```
+--
+
+1. Remove the "cypress/integration/examples" directory.
+
+--
+
+1. Add a *sample.spec.js* file to the "cypress/integration" directory.
+
+---
+
+### TDD Development Workflow (action)
+
+--
+
+#### Steps:
+
+--
+
+1. Convert user stories, requirements, and acceptance criteria into partial test specs - `"As a user I can see the "hello, world!" text'`:
+    ```sh
+    describe('cypress sample', () => {
+      beforeEach(() => { cy.visit('http://localhost:8080') });
+      it('should display the "hello, world" text', () => {});
+    });
+    ```
+--
+
+1. ~~Add fixtures and stub out network calls~~
+
+--
+
+1. Run the Cypress GUI and keep it open next to your code editor
+
+--
+
+1. Use `.only` to focus, and iterate, on a single test
+
+--
+
+1. Ensure the test fails
+
+--
+
+1. Code until that test passes (<span style="color:red;">red</span>, <span style="color:green;">green</span>, <span style="color:orange;">refactor</span>)
+
+--
+
+1. ~~Repeat the previous three steps until all tests are <span style="color:green;">green</span>~~
+
+--
+
+1. ~~Optional: Convert the integration tests to e2e tests~~
+
+---
+
+### That's it!
+
+--
+
+##### Resources
+
+1. [My Cypress Workflow](https://www.youtube.com/watch?v=5sXulBZe25Q) *(video)* - example Cypress workflow for building and testing web applications
+
+1. [Modern Front-End Testing with Cypress](https://testdriven.io/blog/modern-frontend-testing-with-cypress/) *(blog post)* - looks at how to introduce Cypress into your test-driven development workflow
+
+1. [Sliding Down the Testing Pyramid](https://www.cypress.io/blog/2018/04/02/sliding-down-the-testing-pyramid) *(blog post)* - tutorial that details how Cypress can execute integration and unit tests
+
+1. [Cypress Visual Regression](https://github.com/mjhea0/cypress-visual-regression) *(NPM module)* - module for adding visual regression testing to Cypress
+
+1. [Cypress Docs](https://docs.cypress.io/guides/overview/why-cypress.html) *(docs)* - the Cypress documentation (sets the standard for documentation)
+
+--
+
+##### Questions?
+
+✌️
+
+
+    </textarea>
+    <script src="./remark-latest.min.js">
+    </script>
+    <script>
+      var slideshow = remark.create({countIncrementalSlides: false});
+    </script>
+  </body>
+</html>
