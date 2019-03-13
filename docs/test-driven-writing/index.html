@@ -188,212 +188,33 @@ class: center, middle
 
 ### Red-Green-Refactor
 
+--
+
 TDD usually follows the "Red-Green-Refactor" cycle:
 
-1. Add a test to the test suite
-1. Run all the tests to ensure the new test fails (red)
-1. Write just enough code to get that single test to pass (green)
-1. Run all tests
-1. Refactor
-1. Repeat
+![tdd](images/tdd.png)
 
-![tdd](tdd.png)
+--
 
-This process sounds slower, and it often can be in the short-term, but it does improve the quality of the software project. Having adequate test coverage acts as a safeguard so you don't accidentally change the functionality. It's much better to catch a bug locally from your test suite than by a customer in production.
+1. It can be slower in the short-term, but it, more often than not, improves the quality of the software project in the long run.
 
-Finally, test suites can encapsulate the expectations of your software project so that your project's stakeholders (current self, future self, everyone else) can better understand the project.
+--
 
-STOP: Turn to your neighbor and talk about what test-driven development is.
+1. Having adequate test coverage acts as a safeguard so you don't accidentally change the functionality.
+
+--
+
+1. Finally, test suites can encapsulate the expectations of your software project so that your project's stakeholders (current self, future self, everyone else) can better understand the project.
 
 ---
 
-### Why Cypress?
+### TDD Review
 
---
-
-#### Developer-friendly
-
-1. Familiar Mocha and Chai syntax
-1. Access to native browser elements
-1. [Debug](https://docs.cypress.io/guides/guides/debugging.html#Using-debugger) failing tests in Chrome Dev Tools
-1. Amazing [documentation](https://docs.cypress.io)
-1. Auto reloads
-
---
-
-#### [Batteries-included](https://www.cypress.io/how-it-works/)
-
-1. Screenshots and videos
-1. Framework + assertions + [mocks](https://docs.cypress.io/guides/guides/stubs-spies-and-clocks.html#Stubs)
-1. [Stub network requests](https://docs.cypress.io/guides/guides/network-requests.html)
-1. Electron GUI (watch and debug tests in real-time, [time-travel](https://docs.cypress.io/guides/core-concepts/test-runner.html#Command-Log))
-
---
-
-#### Reliable
-
-1. [Waiting](https://docs.cypress.io/guides/core-concepts/introduction-to-cypress.html#Cypress-is-Not-Like-jQuery) is built-in to every command and assertion
-1. Consistent results that developers actually trust ❤️
+Turn to your neighbor and talk about what Test-Driven Development is.
 
 ---
 
-### Cypress in Action
-
---
-
-```javascript
-it('should handle feedback submission correctly', () => {
-  // navigate to testdriven.io
-  cy.visit('/');
-  cy.get('h1').contains('Test-Driven Development Courses');
-
-  // click feedback button
-  cy.get('button').contains('Feedback').click();
-  cy.get('#feedbackModal').should('have.css', 'display', 'block');
-  cy.get('h5').contains('Send Us Feedback');
-  cy.get('input[placeholder="Your email address"]').type('test@test.com');
-  cy.get('textarea').type('just a test');
-
-  // submit feedback
-  cy.get('button.btn.btn-primary[type="submit"]').contains('Send').click();
-  cy.get('h4').contains('Thank You!');
-  cy.get('button').contains('Close').click();
-  cy.get('#feedbackModal').should('have.css', 'display', 'none');
-});
-```
-
---
-
-<br>
-
-Be sure to review:
-
-1. [Best practices](https://docs.cypress.io/guides/references/best-practices.html)
-1. Each command has correct/incorrect usage - [example](https://docs.cypress.io/api/commands/click.html#Usage)
-
-
----
-
-### TDD Development Workflow (theory)
-
---
-
-Cypress is great for end-to-end testing (as a Selenium-replacement), but it's better to use it directly in your TDD workflow for unit and integration testing.
-
---
-
-<strong>Cypress is not just a testing tool--it's a development tool!</strong>
-
-<br>
-
---
-
-1. Convert user stories, requirements, etc. into partial test specs
-
---
-
-1. Add fixtures and stub out network calls
-
---
-
-1. Run the Cypress GUI and keep it open next to your code editor
-
---
-
-1. Use `.only` to iterate on a single test
-
---
-
-1. Ensure the test fails
-
---
-
-1. Code until that test passes (<span style="color:red;">red</span>, <span style="color:green;">green</span>, <span style="color:orange;">refactor</span>)
-
---
-
-1. Repeat the previous three steps until all tests are <span style="color:green;">green</span>
-
---
-
-1. Optional: Convert the integration tests to e2e tests
-
----
-
-class: center, middle
-
-## Practice
-
----
-
-### Project Setup
-
---
-
-1. Create a new project:
-    ```sh
-    $ mkdir cypress-workflow && cd cypress-workflow
-    $ npm init -y
-    $ npm install cypress --save-dev
-    ```
---
-
-1. Run Cypress to generate a new project scaffold:
-    ```sh
-    $ ./node_modules/.bin/cypress open
-    ```
---
-
-1. Remove the "cypress/integration/examples" directory.
-
---
-
-1. Add a *sample.spec.js* file to the "cypress/integration" directory.
-
----
-
-### TDD Development Workflow (action)
-
---
-
-#### Steps:
-
---
-
-1. Convert user stories, requirements, and acceptance criteria into partial test specs - `"As a user I can see the "hello, world!" text'`:
-    ```sh
-    describe('cypress sample', () => {
-      beforeEach(() => { cy.visit('http://localhost:8080') });
-      it('should display the "hello, world" text', () => {});
-    });
-    ```
---
-
-1. ~~Add fixtures and stub out network calls~~
-
---
-
-1. Run the Cypress GUI and keep it open next to your code editor
-
---
-
-1. Use `.only` to focus, and iterate, on a single test
-
---
-
-1. Ensure the test fails
-
---
-
-1. Code until that test passes (<span style="color:red;">red</span>, <span style="color:green;">green</span>, <span style="color:orange;">refactor</span>)
-
---
-
-1. ~~Repeat the previous three steps until all tests are <span style="color:green;">green</span>~~
-
---
-
-1. ~~Optional: Convert the integration tests to e2e tests~~
+### Test-Driven Writing
 
 ---
 
