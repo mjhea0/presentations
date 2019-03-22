@@ -73,10 +73,10 @@ class: center, middle
 - Authentication vs Authorization
 - OAuth
     - What is OAuth?
-    - OAuth 2.0 flow
-    - History of OAuth
+    - Terminology
     - Grant types
-    - Authorization before OAuth
+    - Authorization Code flow
+    - History of OAuth
 
 --
 
@@ -238,8 +238,8 @@ It's all about delegation:
 
 --
 
-1. The *client* application accesses resources, from a *resource server*, on behalf of the *user*.
-1. The *user* does not have to share their credentials with the *client*.
+1. The *Client* application accesses resources, from a *Resource Server*, on behalf of the *User*.
+1. The *User* does not have to share their credentials with the *Client*.
 
 --
 
@@ -254,23 +254,201 @@ It's all about delegation:
 
 ---
 
-### OAuth 2.0 Flow
+### Terminology
+
+--
+
+| Term                 | Definition                                                                                                                      |
+|----------------------|---------------------------------------------------------------------------------------------------------------------------------|
+| Resource Owner (aka User) | End user who authorizes an application to access their account                                                             |
+| Client (aka Consumer)     | Application that accesses protected resources on behalf of the user                                                        |
+| Authorization Server | Server which grants Access Tokens after the user authorizes the application                                                     |
+| Resource Server      | Restricted resource / API                                                                                                       |
+| Access Token         | Token used to access restricted resources                                                                                       |
+| Authorization Code   | Intermediate token returned to the client, after the user authorization step, which the client exchanges it for an access token |
+| Grant                | Method of acquiring an access token                                                                                             |
+
+---
+
+### Grant Types
+
+--
+
+| Grant Type                 | Use Case                    | Link                                                           |
+|----------------------------|-----------------------------|----------------------------------------------------------------|
+| Authorization Code         | Server-side web apps        | [section 4.1](https://tools.ietf.org/html/rfc6749#section-4.1) |
+| Implicit                   | Single Page Apps (SPAs)     | [section 4.2](https://tools.ietf.org/html/rfc6749#section-4.2) |
+| Resource Owner Credentials | Trusted first party clients | [section 4.3](https://tools.ietf.org/html/rfc6749#section-4.3) |
+| Client Credentials         | Machine-to-machine          | [section 4.4](https://tools.ietf.org/html/rfc6749#section-4.4) |
+
+--
+
+#### Questions
+
+--
+
+- **Which grant should you use?** [Decision tree](images/oauth-grants.svg)
+
+--
+
+- **First vs third party client?**
+
+    - First party clients are clients that you trust. For example, Twitter *probably* trusts the Twitter iPhone app since they own it.
+    - Third party clients are clients that you don't trust.
+
+--
+
+- **Access Token Owner?** Do you not need the user's permission to access the restricted resources?
+
+
+--
+
+<small>Source: <a href="https://alexbilbie.com/guide-to-oauth-2-grants/">A Guide to OAuth 2.0 Grants</a></small>
+
+---
+
+### Authorization Code Flow
+
+--
+
+<br>
+
+**[Step 1]** *Client* redirects the *Resource Owner* to the *Authorization Server*
+
+<img src="images/oauth-flow-step1.png" style="padding-left:30px;" alt="oauth flow step 1">
+
+--
+
+<br>
+
+**[Step 2]** *Resource Owner* grants authorization
+
+**[Step 3]** *Authorization Server* redirects the *Resource Owner* back to the *Client* with an *Authorization Code*
+
+<img src="images/oauth-flow-step2-step3.png" style="padding-left:30px;" alt="oauth flow step 2 and 3">
+
+---
+
+### Authorization Code Flow (continued...)
+
+--
+
+**[Step 4]** *Client* exchanges *Authorization Code* for *Access Token*
+
+<img src="images/oauth-flow-step4.png" style="padding-left:30px;" alt="oauth flow step 4">
+
+--
+
+<br>
+
+**[Step 5]** *Authorization Server* grants *Access Token*
+
+<img src="images/oauth-flow-step5.png" style="padding-left:30px;" alt="oauth flow step 5">
+
+---
+
+### Authorization Code Flow (continued...)
+
+--
+
+<br>
+
+**[Step 6]** *Client* uses the *Access Token* to access protected resources, from the *Resource Server*, on behalf of the *Resource Owner*
+
+<img src="images/oauth-flow.png" style="padding-left:30px;" alt="oauth flow">
+
+--
+
+<br>
+
+What's different about this flow for the other grant types&mdash;Implicit, Resource Owner Credentials, Client Credentials?
 
 ---
 
 ### History of OAuth
 
+--
+
+#### Before OAuth
+
+--
+
+The User would provide their credentials directly to the Client app.
+
+--
+
+##### Problems
+
+1. Client stores User's password (one more application with your password)
+1. Client gets complete access to the User's account (scope)
+1. User cannot revoke access to the Client unless they reset their password
+
+--
+
+#### [Oauth 1.0](https://oauth.net/core/1.0/)
+
+--
+
+Introduced in December 2017 to prevent the Client application from having to directly handle the User's credentials.
+
+--
+
+##### Problems
+
+1. Difficult to implement
+1. Complex cryptographic requirements
+1. Poor support for native desktop and mobile apps
+
 ---
 
-### Grant types
+### History of OAuth (continued...)
 
----
+--
 
-### Authorization Before OAuth
+#### [Oauth 2.0](https://oauth.net/2/)
+
+First came out in April 2010.
+
+--
+
+##### Problems
+
+1. Still difficult to implement
+1. Difficult for the User to update the scope
+1. Security concerns
+
+--
+
+<br>
+
+##### Recommended reads
+
+- [OAuth 2.0 and the Road to Hell](https://hueniverse.com/oauth-2-0-and-the-road-to-hell-8eec45921529)
+- [OAuth 2 Simplified](https://aaronparecki.com/oauth-2-simplified/)
+- [Introducing TAuth: Why OAuth 2.0 is bad for banking APIs and how we're fixing it](https://blog.teller.io/2016/04/26/tauth.html)
 
 ---
 
 ### Check for Understanding
+
+--
+
+- What's the difference between authentication and authorization?
+
+--
+
+- What is OAuth?
+
+--
+
+- Describe the various OAuth 2.0 grant types?
+
+--
+
+- How does the grant type affect the OAuth 2.0 authorization flow?
+
+<br>
+<br>
 
 🤔
 
