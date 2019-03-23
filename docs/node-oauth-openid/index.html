@@ -460,7 +460,184 @@ class: center, middle
 
 ---
 
-### What are we Building?
+### What are we building?
+
+--
+
+#### Day 1
+
+- We'll build an OAuth 2.0 Authorization Server with Node, Express, and Postgres that uses the Authorization Code grant type.
+
+<p style="margin:0"><img src="images/node-logo.png" alt="node logo" style="max-width:10%;padding-left:40px;"></p>
+
+--
+
+#### Day 2
+
+- We'll add OpenID Connect to the existing server.
+- Then, we'll create a separate Client application that can authorize against the Authorization Server.
+
+--
+
+#### Prerequisites
+
+You should:
+
+1. Have [Node](https://nodejs.org/) (v11.12.0), [NPM](https://www.npmjs.com/) (v6.7.0), [Postgres](https://www.postgresql.org/) (v9.6+), and [git](https://git-scm.com/) installed.
+1. Be familiar with Javascript syntax and fundamentals.
+1. Have a basic understanding of the Unix command line.
+1. Be able to build a RESTful API with Node, Express, and Postgres.
+
+---
+
+### Getting Started
+
+--
+
+Clone down the [node-oauth-server](https://github.com/mjhea0/node-oauth-server) repo, and then check out the `base` tag to the master branch:
+
+```sh
+$ git clone https://github.com/mjhea0/node-oauth-server
+$ git checkout tags/base -b master
+```
+
+--
+
+Install the dependencies:
+
+```sh
+$ npm install
+```
+
+--
+
+Run the server:
+
+```sh
+$ npm start
+```
+
+Ensure the server is up and running at [http://localhost:3001/](http://localhost:3001/) and [http://localhost:3001/ping](http://localhost:3001/ping).
+
+--
+
+<br>
+
+Let's review *app.js* together...
+
+---
+
+### Structure
+
+--
+
+#### Authorize Endpoints
+
+--
+
+`/authorize` - GET
+
+1. Query params - Grant type, client ID, redirect URI
+1. Force log in
+1. Verify the Client application along with the redirect URI
+1. Verify user
+1. Render template with authorize dialog
+
+--
+
+`/authorize/dialog` - GET
+
+1. Display authorize dialog
+
+--
+
+`/authorize/dialog` - POST
+
+1. If authorized, generate Authorization Code and redirect user to the redirect URI
+1. If not authorized, send back an error
+
+---
+
+### Structure (continued...)
+
+--
+
+#### Token Endpoint
+
+--
+
+`/token` - POST
+
+1. Payload - Grant type, Authorization Code, client ID, redirect URI
+1. Verify Authorization Code (exists, has not expired, has not been consumed)
+1. Verify the Client application along with the redirect URI
+1. Respond with the Access Token, the Refresh Token (optional), and how long the token is good for
+
+
+#### User Endpoint
+
+--
+
+`userinfo` - GET
+
+1. Query params - Access Token
+1. Verify Access Token (exists, has not expired)
+1. If valid, send back user info
+1. If not valid, send back an error
+
+---
+
+### Structure (continued...)
+
+--
+
+#### Models
+
+--
+
+1. `user` - user ID, email, client ID, scope (optional)
+1. `client` - name, redirect URI
+1. `authCode` - code, created at, consumed, client ID, user ID, redirect URI
+1. `accessToken` - token, created at, expires in, token type (e.g., bearer), consumed, user ID, refresh token (optional)
+
+--
+
+> Tokens must be unique, nonsequential, and nonguessable.
+
+--
+
+### Bearer Token
+
+--
+
+[Bearer Tokens](https://oauth.net/2/bearer-tokens/) are *probably* the most popular type of Access Token.
+
+--
+
+[Using Bearer Tokens](https://tools.ietf.org/html/rfc6750#section-2):
+
+1. Authorization Request Header Field: `Authorization: Bearer 4ae6ce68-4c59-4313-94e2-fcc2932cf5ca.`
+1. Form-Encoded Body Parameter: `Content-Type: application/x-www-form-urlencoded`, `access_token=mF_9.B5f-4.1JqM`
+1. URI Query Parameter: `resource?access_token=mF_9.B5f-4.1JqM`
+
+---
+
+### Implementation
+
+--
+
+So, we need to implement the following:
+
+1. Models: `user`, `client`, `authCode`, `accessToken`
+1. Routes: `authorize` (GET), `/authorize/dialog` (GET and POST), `token` (POST), `userinfo` (GET)
+
+--
+
+Let's "fake" user log in for now and get something working to appease our boss.
+
+--
+
+Where do we begin?
 
 ---
 
@@ -510,6 +687,19 @@ class: center, middle
 
 ---
 
+### What's Missing?
+
+1. Refresh Tokens (since Access Tokens are short-lived)
+1. Scope (permissions) and State (prevent CSRF) for Access Tokens
+
+Security Recommendations
+Always use https
+Issue short lived bearer tokens
+Don't pass bearer token in page URLs
+
+
+---
+
 ### Next Steps
 
 --
@@ -517,7 +707,7 @@ class: center, middle
 ##### Additional Resources
 
 1. [Authentication and Authorization: OpenID vs OAuth2 vs SAML](https://spin.atomicobject.com/2016/05/30/openid-oauth-saml/)
-1. Resource two
+1. Libraries: https://github.com/jaredhanson/oauth2orize, https://www.npmjs.com/package/oauth2-server,
 
 --
 
