@@ -96,15 +96,15 @@ class: center, middle
 - Day 1 Review
 - OpenID Connect
     - What is OpenID Connect?
-    - How does OpenID work with OAuth 2.0?
+    - How does OpenID Connect work with OAuth 2.0?
     - JSON Web Tokens (JWT)
 
 --
 
 ##### (2) Practice (~ 5 hours)
 
-- Adding OpenID Connect to the Node Server
-- Developing a Client-side Consumer
+- Adding OpenID Connect to the OAuth 2.0 Server
+- Developing a Client application with Node and Express
 
 --
 
@@ -176,15 +176,15 @@ By the end of this training, you will be able to:
 
 --
 
-1. Explain what OpenID is and how it works with OAuth
+1. Explain what OpenID Connect is and how it works with OAuth 2.0
 
 --
 
-1. Implement OpenID with Node
+1. Implement OpenID Connect with Node
 
 --
 
-1. Develop a client-side consumer app to interact with an OAuth 2.0 and OpenID server
+1. Develop a Client app to interact with an OAuth 2.0 and OpenID Connect server
 
 ---
 
@@ -441,7 +441,7 @@ First came out in April 2010.
 
 --
 
-- Describe the various OAuth 2.0 grant types?
+- Describe the various OAuth 2.0 grant types
 
 --
 
@@ -537,7 +537,7 @@ Let's review *app.js* together...
 
 `/authorize` - GET
 
-1. Query params - Grant type, client ID, redirect URI
+1. Query params - Grant type, client ID, redirect URI, user ID
 1. Force log in
 1. Verify the Client application along with the redirect URI
 1. Verify user
@@ -578,12 +578,12 @@ Let's review *app.js* together...
 
 --
 
-`userinfo` - GET
+`/userinfo` - GET
 
 1. Query params - Access Token
 1. Verify Access Token (exists, has not expired)
-1. If valid, send back user info
-1. If not valid, send back an error
+1. If valid, send back `true`
+1. If not valid, send back `false`
 
 ---
 
@@ -602,15 +602,11 @@ Let's review *app.js* together...
 
 --
 
-> Tokens must be unique, nonsequential, and nonguessable.
-
---
-
 ### Bearer Token
 
 --
 
-[Bearer Tokens](https://oauth.net/2/bearer-tokens/) are *probably* the most popular type of Access Token.
+[Bearer Tokens](https://oauth.net/2/bearer-tokens/) are *probably* the most popular type of Access Token. They must be unique, nonsequential, and nonguessable.
 
 --
 
@@ -629,15 +625,22 @@ Let's review *app.js* together...
 So, we need to implement the following:
 
 1. Models: `user`, `client`, `authCode`, `accessToken`
-1. Routes: `authorize` (GET), `/authorize/dialog` (GET and POST), `token` (POST), `userinfo` (GET)
+1. Routes: `/authorize` (GET), `/authorize/dialog` (GET and POST), `/token` (POST), `/userinfo` (GET)
 
 --
 
-Let's "fake" user log in for now and get something working to appease our boss.
+> Let's "fake" user log in for now and get something working.
 
 --
 
 Where do we begin?
+
+---
+
+### Homework
+
+1. Finish the Node Authentication Server
+1. Read [User Authentication with OAuth 2.0](https://oauth.net/articles/authentication/) and [Understanding OAuth 2.0 and OpenID Connect](https://blog.runscope.com/posts/understanding-oauth-2-and-openid-connect)
 
 ---
 
@@ -649,17 +652,79 @@ class: center, middle
 
 ### Day 1 Review
 
+--
+
+- What's the difference between authentication and authorization?
+
+--
+
+- What is OAuth?
+
+--
+
+- Describe the various OAuth 2.0 grant types
+
+--
+
+- How does the grant type affect the OAuth 2.0 authorization flow?
+
+<br>
+<br>
+
+🤔
+
 ---
 
 ### What is OpenID Connect?
 
----
+--
 
-### How does OpenID work with OAuth 2.0?
+[OpenID Connect](https://openid.net/2014/02/26/the-openid-foundation-launches-the-openid-connect-standard/) (or OIDC), the latest version of OpenID, is a standard for authentication, issued by the [OpenID Foundation](https://openid.net/foundation/) in February 2014.
+--
+
+#### How does OpenID Connect work with OAuth 2.0?
+
+--
+
+- OpenID Connect extends OAuth 2.0, adding an extra layer for handling user authentication. It's a superset of OAuth 2.0.
+
+--
+
+- With OpenID Connect, the `token` endpoint returns an ID Token along with the Access Token.
+
+--
+
+- The ID Token is a [JSON Web Token](https://tools.ietf.org/html/rfc7519) that contains information about the authenticated user.
 
 ---
 
 ### JSON Web Tokens (JWT)
+
+--
+
+A JSON Web Token (or JWT) is a cryptographically signed Base64-encoded JSON object.
+
+--
+
+##### Benefits
+
+- **Stateless**: Since tokens contain the required info to verify a user's identity, scaling is easier as you do not have to maintain a session store.
+- **Single Sign On**: After a token is generated, you can have your users access a variety of resources without having to re-authenticate them.
+
+--
+
+##### Drawbacks
+
+- **Cross-site Scripting (XSS) attacks**: Storing tokens in either local or session storage can lead to XSS attacks. Because of this, it's a good idea to store them in a cookie with `httpOnly` and secure flags.
+
+--
+
+##### Recommended reads
+
+- [JSON Web Token (JWT)](http://self-issued.info/docs/draft-ietf-oauth-json-web-token.html)
+- [Introduction to JSON Web Tokens](https://jwt.io/introduction/)
+- [What is the difference between encrypting and signing in asymmetric encryption?](https://stackoverflow.com/questions/454048/what-is-the-difference-between-encrypting-and-signing-in-asymmetric-encryption)
+
 
 ---
 
@@ -671,9 +736,82 @@ class: center, middle
 
 ### Adding OpenID
 
+#### Steps
+
+- Add `scope` to the `/authorize` endpoint
+
+--
+
+- Create (via [jsonwebtoken](https://github.com/auth0/node-jsonwebtoken)) then return an `id_token` in the `/token` endpoint
+
+--
+
+- Modify the `/userinfo` to decode the ID Token and return user info
+
+--
+
+#### Questions
+
+--
+
+- What are [JWT Claims](https://en.wikipedia.org/wiki/JSON_Web_Token)?
+
+--
+
+- Which Claims do you want to use in this example?
+
+--
+
+#### Security Recommendations
+
+- Always use HTTPS!
+
+--
+
+- Issue short lived bearer tokens
+
+--
+
+- Don't pass bearer token in page URLs
+
 ---
 
-### Client-side Consumer
+### Client Application
+
+--
+
+Let's spin up a new Express application to serve as the Client.
+
+--
+
+#### Functionality
+
+- Display "Authorize" button on page load to `/`
+
+--
+
+- On button click, redirect User (with Grant type, client ID, redirect URI, user ID, and Scope) to the Authorization Server's `/authorize` endpoint
+
+--
+
+- If the User authorization is successful, the User is redirect back to the client, to the redirect URI, with the Authorization Code
+
+--
+
+- With the Authorization Code in hand, request Access Token
+
+--
+
+- If the Authorization Code is valid, an Access Token + ID Token are sent back
+
+--
+
+- Store Access Token + ID Token
+
+--
+
+- On requests to restricted resources, send the Access Token + ID Token
+
 
 ---
 
@@ -685,18 +823,36 @@ class: center, middle
 
 ### Final Review
 
----
+--
 
-### What's Missing?
+- What's the difference between authentication and authorization?
 
-1. Refresh Tokens (since Access Tokens are short-lived)
-1. Scope (permissions) and State (prevent CSRF) for Access Tokens
+--
 
-Security Recommendations
-Always use https
-Issue short lived bearer tokens
-Don't pass bearer token in page URLs
+- What is OAuth?
 
+--
+
+- Describe the various OAuth 2.0 grant types
+
+--
+
+- How does the grant type affect the OAuth 2.0 authorization flow?
+
+--
+
+- What is OpenID Connect?
+
+--
+
+- How does OpenID connect work with OAuth 2.0?
+
+--
+
+<br>
+<br>
+
+🤔
 
 ---
 
@@ -704,9 +860,20 @@ Don't pass bearer token in page URLs
 
 --
 
+##### Finish the OpenID Connect + OAuth 2.0 server
+
+1. Add Refresh Tokens (since Access Tokens are short-lived)
+1. Incorporate Postgres
+1. Add Proper error handling
+
+<small>Anything else?</small>
+
+--
+
 ##### Additional Resources
 
 1. [Authentication and Authorization: OpenID vs OAuth2 vs SAML](https://spin.atomicobject.com/2016/05/30/openid-oauth-saml/)
+1. [SAML2 vs JWT: Understanding OpenID Connect Part 1](https://medium.com/@robert.broeckelmann/saml2-vs-jwt-understanding-openid-connect-part-1-fffe0d50f953)
 1. Libraries: https://github.com/jaredhanson/oauth2orize, https://www.npmjs.com/package/oauth2-server,
 
 --
