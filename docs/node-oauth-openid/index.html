@@ -74,15 +74,15 @@ class: center, middle
 - OAuth
     - What is OAuth?
     - Terminology
-    - Grant types
     - Authorization Code flow
+    - Grant types
     - History of OAuth
 
 --
 
 ##### (3) Practice (~ 5 hours)
 
-- Developing an OAuth 2.0 Server with Node
+- Developing an OAuth 2.0 Authorization Server with Node
 
 ---
 
@@ -245,12 +245,12 @@ It's all about delegation:
 
 <br>
 
-**Compared to OAuth 1.0, Oauth 2.0:**
+**Compared to OAuth 1.0, OAuth 2.0:**
 
 - Is slightly simpler to implement
 - Adds time to live (TTL) to the Access Tokens
 - Supports mobile and desktop apps
-- No longer requires client applications to have cryptography
+- No longer requires Client applications to have cryptography
 
 ---
 
@@ -266,7 +266,7 @@ It's all about delegation:
 | Resource Server      | Restricted resource / API                                                                                                       |
 | Access Token         | Token used to access restricted resources                                                                                       |
 | Authorization Code   | Intermediate token returned to the client, after the user authorization step, which the client exchanges it for an Access Token |
-| Grant                | Method of acquiring an access token                                                                                             |
+| Grant                | Method of acquiring an Access Token                                                                                             |
 
 ---
 
@@ -276,10 +276,10 @@ It's all about delegation:
 
 | Grant Type                 | Use Case                    | Link                                                           |
 |----------------------------|-----------------------------|----------------------------------------------------------------|
-| Authorization Code         | Server-side web apps        | [section 4.1](https://tools.ietf.org/html/rfc6749#section-4.1) |
-| Implicit                   | Single Page Apps (SPAs)     | [section 4.2](https://tools.ietf.org/html/rfc6749#section-4.2) |
-| Resource Owner Credentials (Password) | Trusted first party clients | [section 4.3](https://tools.ietf.org/html/rfc6749#section-4.3) |
-| Client Credentials         | Machine-to-machine          | [section 4.4](https://tools.ietf.org/html/rfc6749#section-4.4) |
+| Authorization Code         | Server-side web apps        | [4.1](https://tools.ietf.org/html/rfc6749#section-4.1) |
+| Implicit                   | Single Page Apps (SPAs)     | [4.2](https://tools.ietf.org/html/rfc6749#section-4.2) |
+| Resource Owner Credentials (Password) | Trusted first party clients | [4.3](https://tools.ietf.org/html/rfc6749#section-4.3) |
+| Client Credentials         | Machine-to-machine          | [4.4](https://tools.ietf.org/html/rfc6749#section-4.4) |
 
 --
 
@@ -361,7 +361,7 @@ It's all about delegation:
 
 <br>
 
-What's different about this flow for the other grant types&mdash;Implicit, Resource Owner Credentials, Client Credentials?
+What's different about this flow for the other grant types&mdash;Implicit, Resource Owner Credentials, Client Credentials? [Understanding OAuth2](http://www.bubblecode.net/en/2016/01/22/understanding-oauth2/)
 
 ---
 
