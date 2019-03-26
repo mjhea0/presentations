@@ -265,7 +265,7 @@ It's all about delegation:
 | Authorization Server | Server which grants Access Tokens after the user authorizes the application                                                     |
 | Resource Server      | Restricted resource / API                                                                                                       |
 | Access Token         | Token used to access restricted resources                                                                                       |
-| Authorization Code   | Intermediate token returned to the client, after the user authorization step, which the client exchanges it for an access token |
+| Authorization Code   | Intermediate token returned to the client, after the user authorization step, which the client exchanges it for an Access Token |
 | Grant                | Method of acquiring an access token                                                                                             |
 
 ---
@@ -278,7 +278,7 @@ It's all about delegation:
 |----------------------------|-----------------------------|----------------------------------------------------------------|
 | Authorization Code         | Server-side web apps        | [section 4.1](https://tools.ietf.org/html/rfc6749#section-4.1) |
 | Implicit                   | Single Page Apps (SPAs)     | [section 4.2](https://tools.ietf.org/html/rfc6749#section-4.2) |
-| Resource Owner Credentials | Trusted first party clients | [section 4.3](https://tools.ietf.org/html/rfc6749#section-4.3) |
+| Resource Owner Credentials (Password) | Trusted first party clients | [section 4.3](https://tools.ietf.org/html/rfc6749#section-4.3) |
 | Client Credentials         | Machine-to-machine          | [section 4.4](https://tools.ietf.org/html/rfc6749#section-4.4) |
 
 --
@@ -541,7 +541,7 @@ Let's review *app.js* together...
 1. Force log in
 1. Verify the Client application along with the redirect URI
 1. Verify user
-1. Render template with authorize dialog
+1. Redirect user to authorize dialog endpoint
 
 --
 
@@ -580,7 +580,7 @@ Let's review *app.js* together...
 
 `/userinfo` - GET
 
-1. Query params - Access Token
+1. Header - Access Token
 1. Verify Access Token (exists, has not expired)
 1. If valid, send back `true`
 1. If not valid, send back `false`
@@ -596,7 +596,7 @@ Let's review *app.js* together...
 --
 
 1. `user` - user ID, email, client ID, scope (optional)
-1. `client` - name, redirect URI
+1. `client` - client ID, name, redirect URI
 1. `authCode` - code, created at, consumed, client ID, user ID, redirect URI
 1. `accessToken` - token, created at, expires in, token type (e.g., bearer), consumed, user ID, refresh token (optional)
 
@@ -612,7 +612,7 @@ Let's review *app.js* together...
 
 [Using Bearer Tokens](https://tools.ietf.org/html/rfc6750#section-2):
 
-1. Authorization Request Header Field: `Authorization: Bearer 4ae6ce68-4c59-4313-94e2-fcc2932cf5ca.`
+1. Authorization Request Header Field: `Authorization: Bearer 4ae6ce68-4c59-4313-94e2-fcc2932cf5ca`
 1. Form-Encoded Body Parameter: `Content-Type: application/x-www-form-urlencoded`, `access_token=mF_9.B5f-4.1JqM`
 1. URI Query Parameter: `resource?access_token=mF_9.B5f-4.1JqM`
 
@@ -629,7 +629,7 @@ So, we need to implement the following:
 
 --
 
-> Let's "fake" user log in for now and get something working.
+> <small>Let's skip user log in for now and get something working. What else can we punt in order to get a working prototype up and running?</small>
 
 --
 
