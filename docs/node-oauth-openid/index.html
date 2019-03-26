@@ -571,7 +571,7 @@ Let's review *app.js* together...
 1. Payload - Grant type, Authorization Code, client ID, redirect URI
 1. Verify Authorization Code (exists, has not expired, has not been consumed)
 1. Verify the Client application along with the redirect URI
-1. Respond with the Access Token, the Refresh Token (optional), and how long the token is good for
+1. Respond via JSON with the Access Token, the Refresh Token (optional), and how long the token is good for
 
 
 #### User Endpoint
@@ -742,7 +742,7 @@ class: center, middle
 
 --
 
-- Create (via [jsonwebtoken](https://github.com/auth0/node-jsonwebtoken)) then return an `id_token` in the `/token` endpoint
+- Create (via [jsonwebtoken](https://github.com/auth0/node-jsonwebtoken) then return an ID Token in the `/token` endpoint
 
 --
 
