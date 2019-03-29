@@ -494,10 +494,11 @@ You should:
 
 --
 
-Clone down the [node-oauth-openid-server](https://github.com/mjhea0/node-oauth-openid-server) repo:
+Clone down the [node-oauth-openid](https://github.com/mjhea0/node-oauth-openid) repo and check out the [base](https://github.com/mjhea0/node-oauth-openid-server/releases/tag/base) tag:
 
 ```sh
-$ git clone https://github.com/mjhea0/node-oauth-openid-server
+$ git clone https://github.com/mjhea0/node-oauth-openid
+$ git checkout -b base
 ```
 
 --
@@ -534,25 +535,24 @@ Let's review *app.js* together...
 
 --
 
-`/authorize` - GET
+`/oauth/authorize` - GET
 
-1. Query params - Grant type, client ID, redirect URI, user ID
-1. Force log in
-1. Verify the Client application along with the redirect URI
-1. Verify user
-1. Redirect user to authorize dialog endpoint
+1. Query params - Grant type, client ID, redirect URI, state
+1. Force the user to log in
+1. Ensure the client exists
+1. Redirect user to the dialog endpoint
 
 --
 
-`/authorize/dialog` - GET
+`/oauth/authorize/dialog` - GET
 
 1. Display authorize dialog
 
 --
 
-`/authorize/dialog` - POST
+`/oauth/authorize/dialog` - POST
 
-1. If authorized, generate Authorization Code and redirect user to the redirect URI
+1. If authorized, generate Authorization Code and redirect user to the redirect URI with the Authorization Code and state
 1. If not authorized, send back an error
 
 ---
@@ -565,22 +565,22 @@ Let's review *app.js* together...
 
 --
 
-`/token` - POST
+`/oauth/token` - POST
 
-1. Payload - Grant type, Authorization Code, client ID, redirect URI
-1. Verify Authorization Code (exists, has not expired, has not been consumed)
-1. Verify the Client application along with the redirect URI
-1. Respond via JSON with the Access Token, the Refresh Token (optional), and how long the token is good for
+1. Payload - Authorization Code
+1. Ensure the Authorization Code has not expired or been consumed
+1. Mark Authorization Code as consumed
+1. Generate an Access Token (and an optional Refresh Token)
+1. Respond via JSON with the Access Token, optional Refresh Token, and how long the Access Token is good for
 
-
-#### User Endpoint
+#### User Info Endpoint
 
 --
 
-`/userinfo` - GET
+`/oauth/userinfo` - GET
 
-1. Header - Access Token
-1. Verify Access Token (exists, has not expired)
+1. Header - Access Token (`Authorization: Bearer <token>`)
+1. Ensure the Authorization Code is valid
 1. If valid, send back `true`
 1. If not valid, send back `false`
 
@@ -594,10 +594,10 @@ Let's review *app.js* together...
 
 --
 
-1. `user` - user ID, email, client ID, scope (optional)
+1. `user` - user ID, email, client ID
 1. `client` - client ID, name, redirect URI
-1. `authCode` - code, created at, consumed, client ID, user ID, redirect URI
-1. `accessToken` - token, created at, expires in, token type (e.g., bearer), consumed, user ID, refresh token (optional)
+1. `authCode` - code, created at, consumed, user ID
+1. `accessToken` - token, created at, expires in, token type (e.g., bearer), user ID, refresh token (optional)
 
 --
 
@@ -624,7 +624,7 @@ Let's review *app.js* together...
 So, we need to implement the following:
 
 1. Models: `user`, `client`, `authCode`, `accessToken`
-1. Routes: `/authorize` (GET), `/authorize/dialog` (GET and POST), `/token` (POST), `/userinfo` (GET)
+1. Routes: `/oauth/authorize` (GET), `/oauth/authorize/dialog` (GET and POST), `/oauth/token` (POST), `/oauth/userinfo` (GET)
 
 --
 
@@ -701,7 +701,7 @@ class: center, middle
 
 --
 
-A JSON Web Token (or JWT) is a JSON-based standard for securely transmitting information. They must be signed (JWS). They can be encrypted (JWE).
+A JSON Web Token (or JWT) is a JSON-based standard for securely transmitting information. They can signed (JWS) or encrypted (JWE).
 
 --
 
@@ -789,11 +789,11 @@ Let's spin up a new Express application to serve as the Client.
 
 --
 
-- On button click, redirect User (with Grant type, client ID, redirect URI, user ID, and Scope) to the Authorization Server's `/authorize` endpoint
+- On button click, redirect User (with Grant type, client ID, redirect URI, Scope, and State) to the Authorization Server's `/oauth/authorize` endpoint
 
 --
 
-- If the User authorization is successful, the User is redirect back to the client, to the redirect URI, with the Authorization Code
+- If the User authorization is successful, the User is redirect back to the Client, to the redirect URI, with the Authorization Code and State
 
 --
 
@@ -801,15 +801,15 @@ Let's spin up a new Express application to serve as the Client.
 
 --
 
-- If the Authorization Code is valid, an Access Token + ID Token are sent back
+- If the Authorization Code is valid, an ID Token is sent back
 
 --
 
-- Store Access Token + ID Token
+- Store the ID token
 
 --
 
-- On requests to restricted resources, send the Access Token + ID Token
+- On requests to restricted resources, send the ID Token in the request header
 
 
 ---
@@ -863,7 +863,8 @@ class: center, middle
 
 1. Add Refresh Tokens (since Access Tokens are short-lived)
 1. Incorporate Postgres
-1. Add Proper error handling
+1. Address any other `TODO`s
+1. Review the final code at [node-oauth-openid](https://github.com/mjhea0/node-oauth-openid)
 
 <small>Anything else?</small>
 
