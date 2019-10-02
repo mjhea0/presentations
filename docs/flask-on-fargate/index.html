@@ -392,16 +392,16 @@ $ docker-compose exec users /bin/bash -c "isort project/*/*.py" --check-only
     ```sh
     $ docker build \
       -f Dockerfile.fargate \
-      -t 046505967931.dkr.ecr.us-west-1.amazonaws.com/fargate-users:latest \
+      -t <YOUR_AWS_ACCOUNT_ID>.dkr.ecr.us-west-1.amazonaws.com/fargate-users:latest \
       .
     $ docker push \
-        046505967931.dkr.ecr.us-west-1.amazonaws.com/fargate-users:latest
+        <YOUR_AWS_ACCOUNT_ID>.dkr.ecr.us-west-1.amazonaws.com/fargate-users:latest
 
     $ docker build \
-      -t 046505967931.dkr.ecr.us-west-1.amazonaws.com/fargate-users-db:latest \
+      -t <YOUR_AWS_ACCOUNT_ID>.dkr.ecr.us-west-1.amazonaws.com/fargate-users-db:latest \
       ./project/db
     $ docker push \
-        046505967931.dkr.ecr.us-west-1.amazonaws.com/fargate-users-db:latest
+        <YOUR_AWS_ACCOUNT_ID>.dkr.ecr.us-west-1.amazonaws.com/fargate-users-db:latest
     ```
 
 ---
